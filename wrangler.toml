@@ -1,16 +1,25 @@
 name = "smart21brain"
+main = "src/index.js"
 compatibility_date = "2026-08-01"
-pages_build_output_dir = "."
 
-# D1 database binding — accessible in Functions as `env.DB`.
+# Serves every static file in this folder (index.html, css/, js/, images/,
+# icons/, etc.) automatically. Requests to /api/* are intercepted by the
+# Worker code in src/index.js before falling through to these assets —
+# see the fetch() handler. Files listed in .assetsignore are excluded from
+# upload (the Worker source, config, docs — nothing the browser needs).
+[assets]
+directory = "."
+binding = "ASSETS"
+
+# D1 database binding — accessible in the Worker as `env.DB`.
 # Replace `database_id` with the id printed by:
 #   wrangler d1 create smart21brain-db
 [[d1_databases]]
 binding = "DB"
 database_name = "smart21brain-db"
-database_id = "cf63aa71-9262-49ce-8092-02ebab807470"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 
-# R2 bucket binding — accessible in Functions as `env.MATERIALS`.
+# R2 bucket binding — accessible in the Worker as `env.MATERIALS`.
 # Create it first with:
 #   wrangler r2 bucket create smart21brain-materials
 [[r2_buckets]]

@@ -1,12 +1,14 @@
-# Deploying Smart21Brain to Cloudflare Pages (with D1 + R2)
+# Deploying Smart21Brain to a Cloudflare Worker (with D1 + R2)
 
-This site now has a real backend: **Cloudflare Pages Functions** in
-`functions/`, a **D1** database for accounts/games/quizzes/blog/progress,
-and an **R2** bucket for uploaded learning materials (PDFs/images).
+This site runs as a single **Cloudflare Worker** (`src/index.js`) that
+serves the static site *and* handles the `/api/*` routes, backed by a
+**D1** database (accounts, games, quizzes, blog, progress) and an **R2**
+bucket (uploaded learning materials — PDFs/images).
 
-I can't run these commands for you from here (no Cloudflare account access
-from this environment), but every command below is copy-pasteable — run
-them from your terminal, inside this `smart21brain/` folder.
+I can't run these commands for you from here (no access to your
+Cloudflare account or its API from this environment), but every command
+below is copy-pasteable — run them from your terminal, inside this
+`smart21brain/` folder.
 
 ## 0. Prerequisites
 
@@ -39,20 +41,21 @@ wrangler r2 bucket create smart21brain-materials
 The binding name (`MATERIALS`) is already set in `wrangler.toml` — no
 further config needed unless you rename the bucket.
 
-## 3. Deploy to Pages
+## 3. Deploy the Worker
 
 From inside `smart21brain/`:
 
 ```bash
-wrangler pages deploy . --project-name=smart21brain
+wrangler deploy
 ```
 
-First run will ask to create the Pages project — say yes. Wrangler reads
-`wrangler.toml` and automatically wires the `DB` and `MATERIALS` bindings
-into your Pages Functions.
+Wrangler reads `wrangler.toml`, bundles `src/index.js`, uploads every
+static file in this folder (except what's listed in `.assetsignore`) as
+Worker assets, and wires up the `DB` and `MATERIALS` bindings.
 
-Your site will be live at `https://smart21brain.pages.dev` (or your
-custom domain, if you attach one in the Cloudflare dashboard).
+Your site will be live at `https://smart21brain.<your-subdomain>.workers.dev`
+(or a custom domain, if you attach one in the Cloudflare dashboard under
+Workers & Pages → smart21brain → Triggers → Custom Domains).
 
 ## 4. Log in as admin
 
@@ -72,26 +75,40 @@ custom domain, if you attach one in the Cloudflare dashboard).
     "UPDATE users SET role = 'admin' WHERE email = 'you@yourdomain.com';"
   ```
 
-## 5. What's wired up so far
+## 5. Local development
+
+```bash
+wrangler dev
+```
+
+This runs the whole site + API locally with local D1/R2 emulation (data
+won't touch production until you deploy or run commands with `--remote`).
+
+## 6. What's wired up
 
 | Area | Status |
 |---|---|
 | Register / Login / Logout | ✅ real, backed by D1 (`/api/auth/*`) |
-| Admin: add games | ✅ `admin.html` → `/api/games` |
-| Admin: add quizzes | ✅ `admin.html` → `/api/quizzes` |
-| Admin: add blog posts | ✅ `admin.html` → `/api/blog` |
+| Admin: add/manage games, quizzes, blog posts | ✅ `admin.html` → list, create, delete all working |
 | Admin: upload learning materials | ✅ `admin.html` → `/api/materials` (stored in R2) |
-| Public pages reading live data | ⏳ `games.html`, `quiz.html`, `blog.html` etc. still show their original static demo content — next step is pointing them at these same `/api` endpoints instead of hardcoded HTML |
-| Dashboard stats | ✅ API ready (`/api/dashboard`) — not yet wired into `dashboard.html`'s UI |
+| Public pages reading live data | ✅ `games.html`, `quiz.html`, `blog.html`, `blog-post.html`, `dashboard.html` all pull from the API, with graceful fallback to demo content if the API isn't reachable |
+| Dashboard stats | ✅ real name, real avg quiz score, real recent activity |
 
-## 6. Local development
+## Project layout
 
-```bash
-wrangler pages dev . --d1=DB=smart21brain-db --r2=MATERIALS=smart21brain-materials
 ```
-
-This runs the whole site + API locally with local D1/R2 emulation (data
-won't touch production until you run commands with `--remote`).
+smart21brain/
+├── wrangler.toml         ← Worker config (D1 + R2 bindings, assets dir)
+├── schema.sql             ← D1 schema + seed admin
+├── .assetsignore          ← excludes src/, config, docs from static upload
+├── src/
+│   ├── index.js            ← Worker entry: routes /api/*, else serves assets
+│   ├── router.js           ← tiny path/method router
+│   ├── lib/auth.js         ← password hashing, sessions, cookies, helpers
+│   └── handlers/           ← one file per resource (auth, games, quizzes, blog, materials, dashboard)
+├── index.html, *.html      ← the static site (served as Worker assets)
+├── css/, js/, images/      ← static assets
+```
 
 ## API reference (all under `/api`)
 

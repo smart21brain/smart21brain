@@ -1,0 +1,7 @@
+src/
+wrangler.toml
+schema.sql
+DEPLOY_CLOUDFLARE.md
+.assetsignore
+node_modules/
+.git/
