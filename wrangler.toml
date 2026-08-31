@@ -1,0 +1,18 @@
+name = "smart21brain"
+compatibility_date = "2026-08-01"
+pages_build_output_dir = "."
+
+# D1 database binding — accessible in Functions as `env.DB`.
+# Replace `database_id` with the id printed by:
+#   wrangler d1 create smart21brain-db
+[[d1_databases]]
+binding = "DB"
+database_name = "smart21brain-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# R2 bucket binding — accessible in Functions as `env.MATERIALS`.
+# Create it first with:
+#   wrangler r2 bucket create smart21brain-materials
+[[r2_buckets]]
+binding = "MATERIALS"
+bucket_name = "smart21brain-materials"

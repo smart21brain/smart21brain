@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart21Brain</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/responsive.css?v=4">
+<link rel="stylesheet" href="css/animations.css?v=4">
+</head>
+<body class="p-0">
+
+<script src="js/i18n.js"></script>
+<script src="js/toast.js"></script>
+
+<div class="splash-shell">
+  <img src="images/logo/smart21brain-mascot.png" alt="Smart21Brain — a friendly brain mascot wearing glasses" class="splash-mark" loading="eager">
+  <div class="splash-tagline" data-i18n="splash_tagline">Learn. Watch. Read. Play.</div>
+  <div class="splash-dots"><span></span><span></span><span></span></div>
+</div>
+
+<script>
+  // One-time pass so index.html's entry gate lets this specific hand-off
+  // through instead of bouncing back to onboarding.html. index.html
+  // deletes this the instant it reads it, so it only ever covers this one
+  // transition — not future visits.
+  setTimeout(function () {
+    try { sessionStorage.setItem('s21-from-splash', '1'); } catch (e) { /* ignore */ }
+    window.location.href = 'index.html';
+  }, 2200);
+</script>
+
+</body>
+</html>
