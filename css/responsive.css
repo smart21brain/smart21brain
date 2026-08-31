@@ -1,0 +1,36 @@
+/* ======================================================
+   SMART21BRAIN — RESPONSIVE RULES
+   Mobile-first overrides
+   ====================================================== */
+
+@media (max-width: 991.98px) {
+  .hero-path { display: none; }
+  .section { padding: 3.5rem 0; }
+  .hero { padding: 3rem 0 2.5rem; min-height: 560px; text-align: center; background-position: center 30%; }
+  .hero .lead, .hero .lead-sub { margin-left: auto; margin-right: auto; }
+  .hero-search { margin-left: auto; margin-right: auto; }
+  .hero-divider-link { margin-left: auto; margin-right: auto; }
+  .stat-strip { justify-content: center; }
+  .cta-band { padding: 2.2rem; text-align: center; }
+}
+
+@media (max-width: 767.98px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.6rem; }
+  .section-head { text-align: center; margin-left: auto; margin-right: auto; }
+  .floating-stack { right: 1rem; bottom: 1rem; }
+  .fab { width: 48px; height: 48px; font-size: 1.1rem; }
+  .footer-bottom { text-align: center; }
+  .s21-footer .col-6 { margin-bottom: 1.8rem; }
+}
+
+@media (max-width: 575.98px) {
+  .hero-visual-card { display: none; }
+  .hero-search { padding: .4rem .4rem .4rem 1rem; }
+  .hero-search input { font-size: .9rem; }
+}
+
+/* Larger touch targets on touch devices */
+@media (hover: none) {
+  .btn-s21, .icon-btn, .s21-nav-link { min-height: 44px; }
+}
