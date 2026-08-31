@@ -1,0 +1,213 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/games/:id/score",
+      "mountPath": "/api/games/:id",
+      "method": "POST",
+      "module": [
+        "api/games/[id]/score.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes/:id/attempt",
+      "mountPath": "/api/quizzes/:id",
+      "method": "POST",
+      "module": [
+        "api/quizzes/[id]/attempt.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/auth/login",
+      "mountPath": "/api/auth",
+      "method": "POST",
+      "module": [
+        "api/auth/login.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/auth/logout",
+      "mountPath": "/api/auth",
+      "method": "POST",
+      "module": [
+        "api/auth/logout.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/auth/me",
+      "mountPath": "/api/auth",
+      "method": "GET",
+      "module": [
+        "api/auth/me.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/auth/register",
+      "mountPath": "/api/auth",
+      "method": "POST",
+      "module": [
+        "api/auth/register.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/blog/:slug",
+      "mountPath": "/api/blog",
+      "method": "DELETE",
+      "module": [
+        "api/blog/[slug].js:onRequestDelete"
+      ]
+    },
+    {
+      "routePath": "/api/blog/:slug",
+      "mountPath": "/api/blog",
+      "method": "GET",
+      "module": [
+        "api/blog/[slug].js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/blog/:slug",
+      "mountPath": "/api/blog",
+      "method": "PUT",
+      "module": [
+        "api/blog/[slug].js:onRequestPut"
+      ]
+    },
+    {
+      "routePath": "/api/games/:id",
+      "mountPath": "/api/games",
+      "method": "DELETE",
+      "module": [
+        "api/games/[id].js:onRequestDelete"
+      ]
+    },
+    {
+      "routePath": "/api/games/:id",
+      "mountPath": "/api/games",
+      "method": "GET",
+      "module": [
+        "api/games/[id].js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/games/:id",
+      "mountPath": "/api/games",
+      "method": "PUT",
+      "module": [
+        "api/games/[id].js:onRequestPut"
+      ]
+    },
+    {
+      "routePath": "/api/materials/:id",
+      "mountPath": "/api/materials",
+      "method": "DELETE",
+      "module": [
+        "api/materials/[id].js:onRequestDelete"
+      ]
+    },
+    {
+      "routePath": "/api/materials/:id",
+      "mountPath": "/api/materials",
+      "method": "GET",
+      "module": [
+        "api/materials/[id].js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes/:id",
+      "mountPath": "/api/quizzes",
+      "method": "DELETE",
+      "module": [
+        "api/quizzes/[id].js:onRequestDelete"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes/:id",
+      "mountPath": "/api/quizzes",
+      "method": "GET",
+      "module": [
+        "api/quizzes/[id].js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes/:id",
+      "mountPath": "/api/quizzes",
+      "method": "PUT",
+      "module": [
+        "api/quizzes/[id].js:onRequestPut"
+      ]
+    },
+    {
+      "routePath": "/api/blog",
+      "mountPath": "/api/blog",
+      "method": "GET",
+      "module": [
+        "api/blog/index.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/blog",
+      "mountPath": "/api/blog",
+      "method": "POST",
+      "module": [
+        "api/blog/index.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/dashboard",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/dashboard.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/games",
+      "mountPath": "/api/games",
+      "method": "GET",
+      "module": [
+        "api/games/index.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/games",
+      "mountPath": "/api/games",
+      "method": "POST",
+      "module": [
+        "api/games/index.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/materials",
+      "mountPath": "/api/materials",
+      "method": "GET",
+      "module": [
+        "api/materials/index.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/materials",
+      "mountPath": "/api/materials",
+      "method": "POST",
+      "module": [
+        "api/materials/index.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes",
+      "mountPath": "/api/quizzes",
+      "method": "GET",
+      "module": [
+        "api/quizzes/index.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/quizzes",
+      "mountPath": "/api/quizzes",
+      "method": "POST",
+      "module": [
+        "api/quizzes/index.js:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
