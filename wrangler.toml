@@ -8,7 +8,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "smart21brain-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "cf63aa71-9262-49ce-8092-02ebab807470"
 
 # R2 bucket binding — accessible in Functions as `env.MATERIALS`.
 # Create it first with:
