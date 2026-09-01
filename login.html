@@ -88,19 +88,18 @@
         <hr class="divider-soft my-4">
         <p class="text-center text-soft mb-2" style="font-size:.8rem" data-i18n="login_or_continue_as">Or continue as</p>
         <div class="d-flex gap-2">
-          <a href="dashboard.html" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="student"><i class="fa-solid fa-child"></i> <span data-i18n="admin_student">Student</span></a>
-          <a href="teachers.html" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="teacher"><i class="fa-solid fa-chalkboard-user"></i> <span data-i18n="admin_teacher">Teacher</span></a>
-          <a href="parents.html" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="parent"><i class="fa-solid fa-people-roof"></i> <span data-i18n="admin_parent">Parent</span></a>
-          <a href="admin.html" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="admin"><i class="fa-solid fa-user-shield"></i> <span data-i18n="admin_admin">Admin</span></a>
+          <button type="button" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="student"><i class="fa-solid fa-child"></i> <span data-i18n="admin_student">Student</span></button>
+          <button type="button" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="teacher"><i class="fa-solid fa-chalkboard-user"></i> <span data-i18n="admin_teacher">Teacher</span></button>
+          <button type="button" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="parent"><i class="fa-solid fa-people-roof"></i> <span data-i18n="admin_parent">Parent</span></button>
+          <button type="button" class="btn-s21 btn-s21-outline flex-fill justify-content-center" style="font-size:.82rem" data-quick-role="admin"><i class="fa-solid fa-user-shield"></i> <span data-i18n="admin_admin">Admin</span></button>
         </div>
       </div>
 
       <script>
-        // Demo-only role flag: no real auth/session exists yet, so this just
-        // remembers which dashboard the logo should return to.
-        document.querySelectorAll('[data-quick-role]').forEach((link) => {
-          link.addEventListener('click', () => {
-            localStorage.setItem('s21-role', link.dataset.quickRole);
+        document.querySelectorAll('[data-quick-role]').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.S21_toast?.('Please log in with your account to continue.');
           });
         });
       </script>

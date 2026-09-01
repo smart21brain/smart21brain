@@ -50,8 +50,14 @@ router.get('/api/dashboard', getDashboard);
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const protectedPages = new Set([
+      '/dashboard', '/dashboard.html',
+      '/admin', '/admin.html',
+      '/teachers', '/teachers.html',
+      '/parents', '/parents.html',
+    ]);
 
-    if (url.pathname === '/dashboard.html' || url.pathname === '/dashboard') {
+    if (protectedPages.has(url.pathname)) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
         return Response.redirect(new URL('/login.html', request.url), 302);
