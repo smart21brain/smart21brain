@@ -50,11 +50,11 @@
       </div>
     </div>
 
-    <!-- STEP 2 — GUEST OR JOIN -->
+    <!-- STEP 2 — JOIN -->
     <div class="onboard-step" data-step="2">
       <span class="onboard-eyebrow"><i class="fa-solid fa-user"></i> <span data-i18n="ob_step2_eyebrow">Step 2 of 5</span></span>
-      <h1 class="onboard-title" data-i18n="ob_step2_title">How would you like to continue?</h1>
-      <p class="onboard-sub" data-i18n="ob_step2_sub">Joining takes 3 quick questions and unlocks a personalized experience — or explore first as a guest.</p>
+      <h1 class="onboard-title" data-i18n="ob_step2_title">Create your learning profile</h1>
+      <p class="onboard-sub" data-i18n="ob_step2_sub">Joining takes a few quick questions and unlocks your personalized learning experience.</p>
 
       <div class="onboard-choice-row">
         <button type="button" class="onboard-choice join" data-choice="join">
@@ -62,14 +62,6 @@
           <span class="choice-text">
             <span class="choice-title d-block" data-i18n="ob_join_title">Join Smart21Brain</span>
             <span class="choice-sub" data-i18n="ob_join_sub">Personalized courses, progress tracking &amp; badges</span>
-          </span>
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-        <button type="button" class="onboard-choice guest" data-choice="guest">
-          <span class="choice-icon"><i class="fa-solid fa-eye"></i></span>
-          <span class="choice-text">
-            <span class="choice-title d-block" data-i18n="ob_guest_title">Continue as Guest</span>
-            <span class="choice-sub" data-i18n="ob_guest_sub">Browse the site now, join any time later</span>
           </span>
           <i class="fa-solid fa-chevron-right"></i>
         </button>
@@ -174,8 +166,7 @@
 (function () {
   const TOTAL_STEPS = 5;
   let current = 1;
-  let path = null; // 'join' | 'guest'
-  const answers = { language: null, accountType: null, level: null, referral: null, goals: [] };
+  const answers = { language: null, accountType: 'join', level: null, referral: null, goals: [] };
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -232,17 +223,11 @@
     });
   });
 
-  // Step 2 — the guest/join fork. Each choice acts immediately: Guest
-  // skips straight to the splash screen; Join continues to step 3.
+  // Step 2 — joining is required; there is no guest bypass.
   $$('.onboard-choice').forEach((btn) => {
     btn.addEventListener('click', () => {
-      path = btn.dataset.choice;
-      answers.accountType = path;
-      if (path === 'guest') {
-        finish();
-      } else {
-        showStep(3);
-      }
+      answers.accountType = 'join';
+      showStep(3);
     });
   });
 
