@@ -51,24 +51,22 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    const protectedPages = {
-      '/dashboard.html': ['user', 'student', 'teacher', 'parent', 'admin'],
-      '/dashboard': ['user', 'student', 'teacher', 'parent', 'admin'],
-      '/teachers.html': ['teacher', 'admin'],
-      '/teachers': ['teacher', 'admin'],
-      '/parents.html': ['parent', 'admin'],
-      '/parents': ['parent', 'admin'],
-      '/admin.html': ['admin'],
-      '/admin': ['admin'],
-    };
+    const protectedPaths = [
+      '/dashboard.html',
+      '/dashboard',
+      '/admin.html',
+      '/admin',
+      '/teachers.html',
+      '/teachers',
+      '/parents.html',
+      '/parents',
+      '/profile.html',
+      '/profile',
+    ];
 
-    const allowedRoles = protectedPages[url.pathname];
-    if (allowedRoles) {
+    if (protectedPaths.includes(url.pathname)) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
-        return Response.redirect(new URL('/login.html', request.url), 302);
-      }
-      if (!allowedRoles.includes(user.role)) {
         return Response.redirect(new URL('/login.html', request.url), 302);
       }
     }
