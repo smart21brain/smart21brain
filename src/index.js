@@ -51,23 +51,28 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    const protectedPaths = [
-      '/dashboard.html',
-      '/dashboard',
-      '/admin.html',
-      '/admin',
-      '/teachers.html',
-      '/teachers',
-      '/parents.html',
-      '/parents',
-      '/profile.html',
-      '/profile',
-    ];
+    const normalizedPath = url.pathname.replace(/\/+$/, '') || '/';
+    const protectedPages = {
+      '/dashboard.html': ['user', 'admin', 'teacher', 'parent'],
+      '/dashboard': ['user', 'admin', 'teacher', 'parent'],
+      '/admin.html': ['admin'],
+      '/admin': ['admin'],
+      '/teachers.html': ['teacher', 'admin'],
+      '/teachers': ['teacher', 'admin'],
+      '/parents.html': ['parent', 'admin'],
+      '/parents': ['parent', 'admin'],
+      '/profile.html': ['user', 'admin', 'teacher', 'parent'],
+      '/profile': ['user', 'admin', 'teacher', 'parent'],
+    };
 
-    if (protectedPaths.includes(url.pathname)) {
+    const allowedRoles = protectedPages[normalizedPath];
+    if (allowedRoles) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
         return Response.redirect(new URL('/login.html', request.url), 302);
+      }
+      if (!allowedRoles.includes(user.role)) {
+        return Response.redirect(new URL('/dashboard.html', request.url), 302);
       }
     }
 

@@ -53,9 +53,25 @@
         .then(async (res) => {
           const data = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(data.error || 'Login failed.');
+          const user = data.user || null;
+          const role = String((user && user.role) || 'user').toLowerCase();
+          const roleMap = {
+            admin: 'admin.html',
+            teacher: 'teachers.html',
+            parent: 'parents.html',
+            user: 'dashboard.html',
+          };
+          const targetPage = roleMap[role] || 'dashboard.html';
           restore();
-          window.S21_toast?.(t('runtime_welcome_back_toast', 'Welcome back! Taking you to your dashboard…'));
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+          const welcomeMessage = role === 'admin'
+            ? 'Welcome back, Admin! Redirecting to the admin dashboard…'
+            : role === 'teacher'
+              ? 'Welcome back, Teacher! Redirecting to your teacher dashboard…'
+              : role === 'parent'
+                ? 'Welcome back, Parent! Redirecting to your parent dashboard…'
+                : 'Welcome back! Redirecting to your dashboard…';
+          window.S21_toast?.(t('runtime_welcome_back_toast', welcomeMessage));
+          setTimeout(() => { window.location.href = targetPage; }, 700);
         })
         .catch((err) => {
           restore();

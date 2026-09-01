@@ -20,10 +20,9 @@
    verified on your SERVER before you trust it or create a session —
    never accept it as proof of identity purely in the browser.
 
-   Until real credentials are added, clicking either button shows a short
-   notice and — for demo purposes only — signs the visitor into the
-   dashboard the same way the "Continue as Student/Teacher/Parent/Admin"
-   shortcuts on the login page already do. */
+   Until real credentials are added, these buttons should not redirect the
+   user into a protected page. They must stay on the login screen and ask
+   the user to sign in with a real account. */
 (function () {
   const GOOGLE_CLIENT_ID = ''; // e.g. '1234567890-abc123.apps.googleusercontent.com'
   const APPLE_CLIENT_ID = '';  // e.g. 'com.smart21brain.web'
@@ -46,16 +45,18 @@
   }
 
   function demoContinue() {
-    try { localStorage.setItem('s21-role', 'student'); } catch (e) { /* ignore */ }
-    window.location.href = 'dashboard.html';
+    if (window.S21_toast) {
+      window.S21_toast('Please sign in with a real account. Social sign-in is not connected yet.');
+    }
+    return false;
   }
 
   function initGoogle(btn) {
     const ready = GOOGLE_CLIENT_ID && window.google && window.google.accounts && window.google.accounts.id;
     if (!ready) {
       btn.addEventListener('click', () => {
-        showNotice(btn, 'login_google_not_connected', "Google sign-in isn't connected yet — continuing with a demo account.");
-        setTimeout(demoContinue, 900);
+        showNotice(btn, 'login_google_not_connected', "Google sign-in isn't connected yet. Please use your email and password.");
+        demoContinue();
       });
       return;
     }
@@ -76,8 +77,8 @@
     const ready = APPLE_CLIENT_ID && APPLE_REDIRECT_URI && window.AppleID;
     if (!ready) {
       btn.addEventListener('click', () => {
-        showNotice(btn, 'login_apple_not_connected', "Apple sign-in isn't connected yet — continuing with a demo account.");
-        setTimeout(demoContinue, 900);
+        showNotice(btn, 'login_apple_not_connected', "Apple sign-in isn't connected yet. Please use your email and password.");
+        demoContinue();
       });
       return;
     }

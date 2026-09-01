@@ -3,6 +3,76 @@
 (function () {
   document.addEventListener('DOMContentLoaded', () => {
 
+    const pagePath = (new URL(window.location.href).pathname || '/').replace(/\/+$/, '') || '/';
+    const roleProtectedPages = {
+      '/dashboard.html': ['user', 'admin', 'teacher', 'parent'],
+      '/dashboard': ['user', 'admin', 'teacher', 'parent'],
+      '/admin.html': ['admin'],
+      '/admin': ['admin'],
+      '/teachers.html': ['teacher', 'admin'],
+      '/teachers': ['teacher', 'admin'],
+      '/parents.html': ['parent', 'admin'],
+      '/parents': ['parent', 'admin'],
+      '/profile.html': ['user', 'admin', 'teacher', 'parent'],
+      '/profile': ['user', 'admin', 'teacher', 'parent'],
+    };
+
+    function applyRoleVisibility(user) {
+      const allowedRoles = new Set(user ? [String(user.role || '').toLowerCase()] : []);
+      if (user && user.role === 'admin') {
+        allowedRoles.add('teacher');
+        allowedRoles.add('parent');
+        allowedRoles.add('user');
+      }
+
+      document.querySelectorAll('[data-role-access]').forEach((el) => {
+        const roles = (el.getAttribute('data-role-access') || '').split(',').map((r) => r.trim().toLowerCase()).filter(Boolean);
+        const show = !!user && roles.some((role) => allowedRoles.has(role));
+        el.style.display = show ? '' : 'none';
+      });
+
+      document.querySelectorAll('[data-role]').forEach((el) => {
+        const role = (el.getAttribute('data-role') || '').trim().toLowerCase();
+        if (!role) return;
+        const show = !!user && (role === 'admin' ? user.role === 'admin' : role === user.role || (user.role === 'admin' && ['teacher', 'parent', 'user'].includes(role)));
+        if (!show) el.style.display = 'none';
+      });
+    }
+
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        const user = data && data.user ? data.user : null;
+
+        if (pagePath === '/login' || pagePath === '/login.html') {
+          if (user) {
+            window.S21_toast?.('You are already signed in. Redirecting to your dashboard…');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          }
+          return;
+        }
+
+        applyRoleVisibility(user);
+
+        const allowedRoles = roleProtectedPages[pagePath];
+        if (!allowedRoles) return;
+        if (!user) {
+          window.S21_toast?.('Please log in to access this page.');
+          setTimeout(() => { window.location.href = 'login.html'; }, 600);
+          return;
+        }
+        if (!allowedRoles.includes(user.role)) {
+          window.S21_toast?.('You do not have access to this page.');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+        }
+      })
+      .catch(() => {
+        applyRoleVisibility(null);
+        if (pagePath !== '/login' && pagePath !== '/login.html') {
+          window.location.href = 'login.html';
+        }
+      });
+
     /* AOS animations */
     if (window.AOS) {
       AOS.init({ duration: 650, once: true, offset: 60, easing: 'ease-out-cubic' });
