@@ -46,16 +46,14 @@
   }
 
   function demoContinue() {
-    try { localStorage.setItem('s21-role', 'student'); } catch (e) { /* ignore */ }
-    window.location.href = 'dashboard.html';
+    showNotice(btn, 'login_google_not_connected', "Google sign-in isn't connected yet — please log in with your real account.");
   }
 
   function initGoogle(btn) {
     const ready = GOOGLE_CLIENT_ID && window.google && window.google.accounts && window.google.accounts.id;
     if (!ready) {
       btn.addEventListener('click', () => {
-        showNotice(btn, 'login_google_not_connected', "Google sign-in isn't connected yet — continuing with a demo account.");
-        setTimeout(demoContinue, 900);
+        showNotice(btn, 'login_google_not_connected', "Google sign-in isn't connected yet — please log in with your real account.");
       });
       return;
     }
@@ -66,7 +64,7 @@
         // YOUR backend to verify the signature and create a real session —
         // this demo only logs it.
         console.log('Google credential received — verify this server-side before trusting it', response);
-        demoContinue();
+        showNotice(btn, 'login_google_not_connected', 'Google sign-in is configured, but the backend session must be created server-side before access is allowed.');
       },
     });
     btn.addEventListener('click', () => window.google.accounts.id.prompt());
@@ -76,8 +74,7 @@
     const ready = APPLE_CLIENT_ID && APPLE_REDIRECT_URI && window.AppleID;
     if (!ready) {
       btn.addEventListener('click', () => {
-        showNotice(btn, 'login_apple_not_connected', "Apple sign-in isn't connected yet — continuing with a demo account.");
-        setTimeout(demoContinue, 900);
+        showNotice(btn, 'login_apple_not_connected', "Apple sign-in isn't connected yet — please log in with your real account.");
       });
       return;
     }
@@ -93,7 +90,7 @@
         // res.authorization.id_token is signed by Apple. Send it to YOUR
         // backend to verify before creating a session.
         console.log('Apple credential received — verify this server-side before trusting it', res);
-        demoContinue();
+        showNotice(btn, 'login_apple_not_connected', 'Apple sign-in is configured, but the backend session must be created server-side before access is allowed.');
       } catch (e) {
         console.warn('Apple sign-in was cancelled or failed', e);
       }

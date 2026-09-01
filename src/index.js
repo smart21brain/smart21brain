@@ -50,16 +50,25 @@ router.get('/api/dashboard', getDashboard);
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const protectedPages = new Set([
-      '/dashboard', '/dashboard.html',
-      '/admin', '/admin.html',
-      '/teachers', '/teachers.html',
-      '/parents', '/parents.html',
-    ]);
 
-    if (protectedPages.has(url.pathname)) {
+    const protectedPages = {
+      '/dashboard.html': ['user', 'student', 'teacher', 'parent', 'admin'],
+      '/dashboard': ['user', 'student', 'teacher', 'parent', 'admin'],
+      '/teachers.html': ['teacher', 'admin'],
+      '/teachers': ['teacher', 'admin'],
+      '/parents.html': ['parent', 'admin'],
+      '/parents': ['parent', 'admin'],
+      '/admin.html': ['admin'],
+      '/admin': ['admin'],
+    };
+
+    const allowedRoles = protectedPages[url.pathname];
+    if (allowedRoles) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
+        return Response.redirect(new URL('/login.html', request.url), 302);
+      }
+      if (!allowedRoles.includes(user.role)) {
         return Response.redirect(new URL('/login.html', request.url), 302);
       }
     }
