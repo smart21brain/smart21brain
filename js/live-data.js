@@ -119,8 +119,17 @@
     const welcomeName = document.querySelector('[data-i18n="dash_welcome_back_amara"]');
     if (!welcomeName) return; // not on the dashboard
     try {
+      const me = await getJSON('/api/auth/me');
+      if (!me || !me.user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
       const data = await getJSON('/api/dashboard');
-      if (!data || !data.user) return; // not signed in
+      if (!data || !data.user) {
+        window.location.href = 'login.html';
+        return;
+      }
 
       welcomeName.textContent = `Welcome back, ${data.user.name}! 👋`;
       welcomeName.removeAttribute('data-i18n');

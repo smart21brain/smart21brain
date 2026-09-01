@@ -5,6 +5,7 @@ import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import { getDashboard } from './handlers/dashboard.js';
+import { getSessionUser } from './lib/auth.js';
 
 const router = new Router();
 
@@ -49,6 +50,13 @@ router.get('/api/dashboard', getDashboard);
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname === '/dashboard.html' || url.pathname === '/dashboard') {
+      const user = await getSessionUser(request, env.DB);
+      if (!user) {
+        return Response.redirect(new URL('/login.html', request.url), 302);
+      }
+    }
 
     if (url.pathname.startsWith('/api/')) {
       try {
