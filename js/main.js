@@ -81,11 +81,13 @@
     /* Sticky navbar shadow on scroll */
     const navbar = document.querySelector('.s21-navbar');
     const backToTop = document.querySelector('.fab.top');
-    window.addEventListener('scroll', () => {
+    const updateScrollActions = () => {
       const y = window.scrollY;
       if (navbar) navbar.style.boxShadow = y > 12 ? '0 6px 20px rgba(0,0,0,.08)' : 'none';
-      if (backToTop) backToTop.classList.toggle('show', y > 480);
-    }, { passive: true });
+      if (backToTop) backToTop.classList.toggle('show', y > 200);
+    };
+    window.addEventListener('scroll', updateScrollActions, { passive: true });
+    updateScrollActions();
 
     backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
