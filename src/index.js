@@ -10,6 +10,7 @@ import * as contact from './handlers/contact.js';
 import * as search from './handlers/search.js';
 import * as assistant from './handlers/assistant.js';
 import * as account from './handlers/account.js';
+import * as activity from './handlers/activity.js';
 import { getSessionUser } from './lib/auth.js';
 
 const router = new Router();
@@ -28,6 +29,7 @@ router.post('/api/ai-assistant', assistant.ask);
 router.put('/api/account/profile', account.updateProfile);
 router.get('/api/account/profile', account.getProfile);
 router.put('/api/account/password', account.updatePassword);
+router.post('/api/activity/game-score', activity.submitGameScore);
 
 // ---- Games ----
 router.get('/api/games', games.listGames);

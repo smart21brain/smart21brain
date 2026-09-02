@@ -4,7 +4,7 @@ export async function getDashboard({ request, env }) {
   const user = await getSessionUser(request, env.DB);
   if (!user) return unauthorized();
 
-  const [quizStats, gameStats, recentQuizzes, recentGames] = await Promise.all([
+  const [quizStats, gameStats, recentQuizzes, recentGames, recentActivity] = await Promise.all([
     env.DB.prepare(
       'SELECT COUNT(*) AS attempts, COALESCE(AVG(score * 1.0 / NULLIF(total, 0)), 0) AS avg_ratio FROM quiz_attempts WHERE user_id = ?'
     ).bind(user.id).first(),
@@ -15,6 +15,9 @@ export async function getDashboard({ request, env }) {
       `SELECT qa.score, qa.total, qa.completed_at, q.title
        FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id
        WHERE qa.user_id = ? ORDER BY qa.completed_at DESC LIMIT 5`
+    ).bind(user.id).all(),
+    env.DB.prepare(
+      'SELECT game_key AS title, score, played_at FROM game_activity WHERE user_id = ? ORDER BY played_at DESC LIMIT 5'
     ).bind(user.id).all(),
     env.DB.prepare(
       `SELECT gs.score, gs.played_at, g.title
@@ -30,6 +33,6 @@ export async function getDashboard({ request, env }) {
     games_played: gameStats.plays,
     best_game_score: gameStats.best_score,
     recent_quizzes: recentQuizzes.results,
-    recent_games: recentGames.results,
+    recent_games: [...recentGames.results, ...recentActivity.results],
   });
 }

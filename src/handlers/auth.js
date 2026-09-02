@@ -40,6 +40,13 @@ export async function login({ request, env }) {
   if (!valid) return unauthorized('Incorrect email or password.');
 
   const { token, expires } = await createSession(env.DB, user.id);
+  await env.DB.prepare(
+    'INSERT INTO login_events (user_id, ip_address, user_agent) VALUES (?, ?, ?)'
+  ).bind(
+    user.id,
+    request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || null,
+    request.headers.get('User-Agent') || null
+  ).run();
 
   return json(
     { user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar_key: user.avatar_key } },

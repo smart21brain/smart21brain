@@ -167,6 +167,7 @@
       const nameInput = $('game-player-name');
       const name = nameInput.value.trim() || (window.S21_t ? window.S21_t('runtime_anonymous') : 'Anonymous');
       saveScore(name, state.score);
+      window.S21_recordGameScore?.(LEADERBOARD_KEY, state.score, { name, level: state.level });
       nameInput.value = '';
       renderLeaderboard();
       $('game-save-score-form').classList.add('d-none');

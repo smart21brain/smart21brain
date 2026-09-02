@@ -230,6 +230,7 @@
       const nameInput = $('game-player-name');
       const name = nameInput.value.trim() || (window.S21_t ? window.S21_t('runtime_anonymous') : 'Anonymous');
       saveScore(name, seconds);
+      window.S21_recordGameScore?.(LEADERBOARD_KEY, seconds, { name, time: seconds });
       nameInput.value = '';
       renderLeaderboard();
       $('game-save-score-form').classList.add('d-none');

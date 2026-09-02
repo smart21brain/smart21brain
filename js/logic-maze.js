@@ -174,6 +174,7 @@
       nameInput.value = '';
       renderLeaderboard();
       $('game-save-score-form').classList.add('d-none');
+        window.S21_recordGameScore?.(LEADERBOARD_KEY, moves, { name, time: seconds });
       $('game-saved-msg').classList.remove('d-none');
       window.S21_toast?.(window.S21_t ? window.S21_t('runtime_score_saved_toast') : 'Score saved to the leaderboard!', { icon: 'fa-trophy' });
     });

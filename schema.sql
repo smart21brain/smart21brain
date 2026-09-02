@@ -25,6 +25,15 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 
+CREATE TABLE IF NOT EXISTS login_events (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ip_address TEXT,
+  user_agent TEXT,
+  logged_in_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_login_events_user ON login_events(user_id);
+
 -- ---------------------------------------------------------------------
 -- Newsletter subscriptions
 -- ---------------------------------------------------------------------
@@ -74,6 +83,17 @@ CREATE TABLE IF NOT EXISTS game_scores (
 );
 CREATE INDEX IF NOT EXISTS idx_game_scores_user ON game_scores(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_scores_game ON game_scores(game_id);
+
+CREATE TABLE IF NOT EXISTS game_activity (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  game_key   TEXT NOT NULL,
+  score      INTEGER NOT NULL DEFAULT 0,
+  details    TEXT,
+  played_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_game_activity_user ON game_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_game_activity_game ON game_activity(game_key);
 
 -- ---------------------------------------------------------------------
 -- Quizzes (admin-managed, with questions stored as JSON) + attempts
