@@ -1,5 +1,8 @@
 (function (global) {
-  const GUEST_BYPASS_PATTERNS = [
+  'use strict';
+
+  const ROLE_NAMES = new Set(['student', 'teacher', 'parent', 'admin']);
+  const GUEST_PATTERNS = [
     /continue as guest/i,
     /continue as\s+(?:a\s+)?guest/i,
     /guest access/i,
@@ -7,111 +10,113 @@
     /join any time later/i,
   ];
 
-  // Role shortcuts shown under "Or continue as" on the login screen
-  // must never create a session or open a protected dashboard.
-  const LOGIN_ROLE_PATTERNS = [
-    /^student$/i,
-    /^teacher$/i,
-    /^parent$/i,
-    /^admin$/i,
-    /continue as\s+(?:a\s+)?(?:student|teacher|parent|admin)/i,
-  ];
-
-  function normalizeText(value) {
-    return String(value || '').replace(/\s+/g, ' ').trim();
+  function textOf(el) {
+    return String(
+      el?.textContent || el?.value || el?.getAttribute?.('aria-label') || el?.getAttribute?.('title') || ''
+    ).replace(/\s+/g, ' ').trim();
   }
 
-  function elementText(el) {
-    return normalizeText(
-      el?.textContent || el?.value ||
-      el?.getAttribute?.('aria-label') || el?.getAttribute?.('title') || ''
-    );
+  function isLoginPage() {
+    return !!global.document?.getElementById?.('login-form') || /(?:^|\/)login(?:\.html)?$/i.test(global.location?.pathname || '');
   }
 
-  function isGuestBypassElement(el) {
-    const tag = el?.tagName || el?.nodeName || '';
-    if (!['A', 'BUTTON', 'INPUT'].includes(String(tag).toUpperCase())) return false;
-    const text = elementText(el);
-    return !!text && GUEST_BYPASS_PATTERNS.some((pattern) => pattern.test(text));
+  function roleFromElement(el) {
+    if (!el) return '';
+    const dataRole = String(
+      el.getAttribute?.('data-role') || el.getAttribute?.('data-account-type') || el.getAttribute?.('data-login-as') || ''
+    ).trim().toLowerCase();
+    if (ROLE_NAMES.has(dataRole)) return dataRole;
+
+    const text = textOf(el).toLowerCase();
+    if (ROLE_NAMES.has(text)) return text;
+    const match = text.match(/^(?:continue\s+as\s+(?:a\s+)?)?(student|teacher|parent|admin)$/i);
+    return match ? match[1].toLowerCase() : '';
   }
 
   function isLoginRoleShortcut(el) {
+    if (!el || !isLoginPage()) return false;
+    const tag = String(el.tagName || '').toUpperCase();
+    if (!['A', 'BUTTON', 'INPUT'].includes(tag)) return false;
+    return !!roleFromElement(el);
+  }
+
+  function isGuestBypassElement(el) {
     if (!el) return false;
-    const tag = el.tagName || el.nodeName || '';
-    if (!['A', 'BUTTON', 'INPUT'].includes(String(tag).toUpperCase())) return false;
-    if (!global.document?.getElementById?.('login-form')) return false;
-
-    const text = elementText(el);
-    const dataRole = normalizeText(
-      el.getAttribute?.('data-role') ||
-      el.getAttribute?.('data-account-type') ||
-      el.getAttribute?.('data-login-as') || ''
-    );
-
-    return LOGIN_ROLE_PATTERNS.some((pattern) => pattern.test(text)) ||
-      /^(student|teacher|parent|admin)$/i.test(dataRole);
+    const tag = String(el.tagName || '').toUpperCase();
+    if (!['A', 'BUTTON', 'INPUT'].includes(tag)) return false;
+    const text = textOf(el);
+    return !!text && GUEST_PATTERNS.some((p) => p.test(text));
   }
 
-  function shouldAllowGuestFlow() {
-    return false;
-  }
-
-  function blockElement(el, message) {
-    if (!el || el.getAttribute?.('data-auth-bypass-blocked') === '1') return;
-
-    el.setAttribute('data-auth-bypass-blocked', '1');
+  function block(el, message) {
+    if (!el || el.dataset.s21AuthBlocked === '1') return;
+    el.dataset.s21AuthBlocked = '1';
     el.setAttribute('aria-disabled', 'true');
-    el.tabIndex = -1;
+    el.setAttribute('tabindex', '-1');
     if ('disabled' in el) el.disabled = true;
     el.style.pointerEvents = 'none';
     el.style.opacity = '0.5';
-
-    el.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      global.window?.S21_toast?.(message);
-    }, true);
+    el.title = message;
   }
 
-  function blockGuestBypass() {
+  function scan() {
     if (!global.document?.querySelectorAll) return;
-
     global.document.querySelectorAll('a, button, input[type="button"], input[type="submit"]').forEach((el) => {
-      if (isGuestBypassElement(el)) {
-        blockElement(el, 'Please sign in with a real account. Guest access is not allowed.');
-      }
       if (isLoginRoleShortcut(el)) {
-        blockElement(el, 'Please enter your email and password and log in first. Role shortcuts cannot bypass authentication.');
+        block(el, 'Login required. Enter your email and password first.');
+      } else if (isGuestBypassElement(el)) {
+        block(el, 'Login required. Guest access is not allowed.');
       }
     });
+  }
+
+  function installHardBlock() {
+    if (!global.document) return;
+
+    // Capture the click BEFORE any inline onclick, delegated handler, or
+    // navigation handler can use the role button to create/bypass a session.
+    global.document.addEventListener('click', (event) => {
+      if (!isLoginPage()) return;
+      const target = event.target?.closest?.('a, button, input[type="button"], input[type="submit"]');
+      if (!target) return;
+
+      const role = roleFromElement(target);
+      if (role) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        global.window?.S21_toast?.('Please enter your email and password and click Log In. The ' + role + ' shortcut cannot bypass authentication.');
+        return;
+      }
+
+      if (isGuestBypassElement(target)) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        global.window?.S21_toast?.('Please sign in with a real account. Guest access is not allowed.');
+      }
+    }, true);
+
+    scan();
+    if (global.MutationObserver && global.document.body) {
+      new MutationObserver(scan).observe(global.document.body, { childList: true, subtree: true });
+    }
   }
 
   const api = {
     isGuestBypassElement,
     isLoginRoleShortcut,
-    shouldAllowGuestFlow,
-    blockGuestBypass,
+    shouldAllowGuestFlow: () => false,
+    blockGuestBypass: scan,
   };
 
   global.S21AuthGuard = api;
 
-  if (typeof global.document !== 'undefined') {
-    const run = () => {
-      blockGuestBypass();
-      if (global.MutationObserver) {
-        const observer = new MutationObserver(blockGuestBypass);
-        observer.observe(global.document.body, { childList: true, subtree: true });
-      }
-    };
-
-    if (global.document.readyState === 'loading') {
-      global.document.addEventListener('DOMContentLoaded', run, { once: true });
-    } else {
-      run();
-    }
+  if (global.document?.readyState === 'loading') {
+    global.document.addEventListener('DOMContentLoaded', installHardBlock, { once: true });
+  } else {
+    installHardBlock();
   }
 
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = api;
-  }
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
