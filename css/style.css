@@ -576,8 +576,7 @@ a:hover { color: var(--s21-accent); }
 .fab:hover { transform: scale(1.08); }
 .fab.whatsapp { background: #25D366; }
 .fab.ai { background: linear-gradient(135deg, var(--s21-accent), #FF7A9C); }
-.fab.top { background: var(--s21-text); width: 44px; height: 44px; font-size: 1rem; opacity: 0; pointer-events: none; }
-.fab.top.show { opacity: 1; pointer-events: auto; }
+.fab.top { background: #2ECC71; width: 44px; height: 44px; font-size: 1rem; opacity: 1; pointer-events: auto; }
 
 .fab-avatar {
   width: 54px; height: 54px; border-radius: 50%;
@@ -588,12 +587,6 @@ a:hover { color: var(--s21-accent); }
   position: relative;
 }
 .fab-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.fab-avatar::after {
-  content: "";
-  position: absolute; bottom: 1px; right: 1px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: #2ECC71; border: 2px solid #fff;
-}
 .fab-avatar:hover { transform: scale(1.08); }
 
 /* ---- Search dropdown ---- */
