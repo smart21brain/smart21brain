@@ -63,6 +63,10 @@
           };
           const targetPage = roleMap[role] || 'dashboard.html';
           restore();
+          try {
+            localStorage.setItem('s21-onboarded', '1');
+            localStorage.removeItem('s21-needs-onboarding');
+          } catch (storageError) { /* continue if storage is unavailable */ }
           const welcomeMessage = role === 'admin'
             ? 'Welcome back, Admin! Redirecting to the admin dashboard…'
             : role === 'teacher'
@@ -98,6 +102,7 @@
           const data = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(data.error || 'Registration failed.');
           restore();
+          try { localStorage.setItem('s21-needs-onboarding', '1'); } catch (storageError) { /* continue if storage is unavailable */ }
           window.S21_toast?.(t('runtime_account_created_toast', 'Account created! Let\'s set things up…'));
           setTimeout(() => { window.location.href = 'onboarding.html'; }, 700);
         })

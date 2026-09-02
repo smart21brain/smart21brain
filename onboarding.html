@@ -20,6 +20,13 @@
 <script src="js/auth-guard.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>
+<script>
+  try {
+    if (localStorage.getItem('s21-onboarded') === '1' && localStorage.getItem('s21-needs-onboarding') !== '1') {
+      window.location.replace('index.html');
+    }
+  } catch (e) { /* continue if storage is unavailable */ }
+</script>
 
 <div class="onboard-shell">
   <div class="onboard-card">
@@ -185,6 +192,7 @@
   function finish() {
     try {
       localStorage.setItem('s21-onboarded', '1');
+      localStorage.removeItem('s21-needs-onboarding');
       localStorage.setItem('s21-onboarding-answers', JSON.stringify(answers));
       if (answers.language === 'Kiswahili') localStorage.setItem('s21-lang', 'sw');
     } catch (e) { /* ignore */ }
@@ -247,7 +255,10 @@
   $('[data-finish]').addEventListener('click', finish);
 
   $('#onboard-skip-all').addEventListener('click', () => {
-    try { localStorage.setItem('s21-onboarded', '1'); } catch (e) { /* ignore */ }
+    try {
+      localStorage.setItem('s21-onboarded', '1');
+      localStorage.removeItem('s21-needs-onboarding');
+    } catch (e) { /* ignore */ }
     window.location.href = 'splash.html';
   });
 })();

@@ -3,15 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <script>
-  // Entry gate: index.html must ALWAYS start with onboarding.html on a
-  // fresh load — not just a visitor's first-ever visit. The only load of
-  // index.html that's allowed straight through is the one immediately
-  // following the legitimate onboarding -> splash -> index.html chain,
-  // marked by a one-time "just came from splash" flag that splash.html
-  // sets right before handing off here. That flag is consumed (deleted)
-  // the instant it's read, so it can't be reused to bypass onboarding on
-  // a later visit — every other load of index.html (typing the URL,
-  // refreshing, a bookmark, a new tab) redirects to onboarding.html first.
+  // Entry gate: show onboarding only once per browser. A newly registered
+  // account gets an explicit one-time onboarding flag; logged-in users and
+  // returning visitors go straight to the homepage.
   (function () {
     try {
       var arrivingFromSplash = sessionStorage.getItem('s21-from-splash');
@@ -19,7 +13,9 @@
         sessionStorage.removeItem('s21-from-splash');
         return; // let index.html load normally
       }
-      window.location.replace('onboarding.html');
+      if (localStorage.getItem('s21-onboarded') !== '1') {
+        window.location.replace('onboarding.html');
+      }
     } catch (e) { /* storage unavailable — just show the homepage */ }
   })();
 </script>
