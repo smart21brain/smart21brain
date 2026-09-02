@@ -11,6 +11,7 @@ import * as search from './handlers/search.js';
 import * as assistant from './handlers/assistant.js';
 import * as account from './handlers/account.js';
 import * as activity from './handlers/activity.js';
+import * as google from './handlers/google.js';
 import { getSessionUser } from './lib/auth.js';
 
 const router = new Router();
@@ -30,6 +31,8 @@ router.put('/api/account/profile', account.updateProfile);
 router.get('/api/account/profile', account.getProfile);
 router.put('/api/account/password', account.updatePassword);
 router.post('/api/activity/game-score', activity.submitGameScore);
+router.get('/api/auth/google/config', google.config);
+router.post('/api/auth/google', google.signIn);
 
 // ---- Games ----
 router.get('/api/games', games.listGames);

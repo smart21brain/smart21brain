@@ -2,6 +2,10 @@ name = "smart21brain"
 main = "src/index.js"
 compatibility_date = "2026-08-01"
 
+[vars]
+# Set this to the Google OAuth Web Client ID from Google Cloud Console.
+GOOGLE_CLIENT_ID = ""
+
 # Serves every static file in this folder (index.html, css/, js/, images/,
 # icons/, etc.) automatically. Requests to /api/* are intercepted by the
 # Worker code in src/index.js before falling through to these assets —

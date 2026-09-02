@@ -34,6 +34,16 @@ CREATE TABLE IF NOT EXISTS login_events (
 );
 CREATE INDEX IF NOT EXISTS idx_login_events_user ON login_events(user_id);
 
+CREATE TABLE IF NOT EXISTS oauth_accounts (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  provider      TEXT NOT NULL,
+  provider_sub  TEXT NOT NULL,
+  created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(provider, provider_sub)
+);
+CREATE INDEX IF NOT EXISTS idx_oauth_accounts_user ON oauth_accounts(user_id);
+
 -- ---------------------------------------------------------------------
 -- Newsletter subscriptions
 -- ---------------------------------------------------------------------
