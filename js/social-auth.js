@@ -36,7 +36,7 @@
     const holder = btn.closest('.social-auth-group') || btn.parentElement;
     let note = holder.querySelector('.social-auth-note');
     if (!note) {
-      note = document.createElement('p');      wrangler d1 execute smart21brain-db --remote --file=./schema.sql
+      note = document.createElement('p');      
       note.className = 'social-auth-note text-soft text-center';
       note.style.cssText = 'font-size:.75rem;margin:.6rem 0 0';
       holder.appendChild(note);
