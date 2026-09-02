@@ -584,6 +584,32 @@ a:hover { color: var(--s21-accent); }
 }
 .fab.top.show { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 
+/* ---- Guest game access prompt ---- */
+.game-access-modal {
+  position: fixed; inset: 0; z-index: 2000; display: none;
+  align-items: center; justify-content: center; padding: 1.25rem;
+  background: rgba(18, 32, 25, .58);
+}
+.game-access-modal.is-open { display: flex; }
+.game-access-dialog {
+  position: relative; width: min(100%, 430px); padding: 2rem;
+  background: var(--s21-white); border: 1px solid var(--s21-border);
+  border-radius: var(--radius-md); box-shadow: 0 24px 70px rgba(0,0,0,.24);
+  text-align: center;
+}
+.game-access-close {
+  position: absolute; top: .65rem; right: .8rem; border: 0; background: none;
+  color: var(--s21-text-soft); font-size: 1.6rem; line-height: 1; cursor: pointer;
+}
+.game-access-icon {
+  width: 54px; height: 54px; margin: 0 auto 1rem; display: flex;
+  align-items: center; justify-content: center; border-radius: 50%;
+  background: var(--s21-primary-light); color: var(--s21-primary); font-size: 1.35rem;
+}
+.game-access-dialog h2 { margin-bottom: .5rem; font-size: 1.5rem; }
+.game-access-dialog p { margin-bottom: 1.5rem; color: var(--s21-text-soft); }
+.game-access-actions { display: flex; gap: .7rem; justify-content: center; flex-wrap: wrap; }
+
 .fab-avatar {
   width: 54px; height: 54px; border-radius: 50%;
   border: 3px solid var(--s21-secondary);

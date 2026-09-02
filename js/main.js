@@ -78,6 +78,64 @@
       AOS.init({ duration: 650, once: true, offset: 60, easing: 'ease-out-cubic' });
     }
 
+    /* Ask guests before starting a game so signed-in players keep a direct path. */
+    const gameStartButton = document.getElementById('game-start-btn');
+    if (gameStartButton) {
+      let gameStartConfirmed = false;
+      const gameAccessModal = document.createElement('div');
+      gameAccessModal.className = 'game-access-modal';
+      gameAccessModal.setAttribute('aria-hidden', 'true');
+      gameAccessModal.innerHTML = `
+        <div class="game-access-dialog" role="dialog" aria-modal="true" aria-labelledby="game-access-title">
+          <button type="button" class="game-access-close" aria-label="Close">&times;</button>
+          <div class="game-access-icon"><i class="fa-solid fa-gamepad"></i></div>
+          <h2 id="game-access-title">Ready to play?</h2>
+          <p>Continue as a guest to start playing, or log in to save scores and unlock more features.</p>
+          <div class="game-access-actions">
+            <button type="button" class="btn-s21 btn-s21-secondary" data-game-guest>Continue as Guest</button>
+            <a class="btn-s21 btn-s21-primary" href="login.html">Log In</a>
+          </div>
+        </div>`;
+      document.body.appendChild(gameAccessModal);
+
+      const closeGameAccessModal = () => {
+        gameAccessModal.classList.remove('is-open');
+        gameAccessModal.setAttribute('aria-hidden', 'true');
+      };
+      gameAccessModal.querySelector('.game-access-close').addEventListener('click', closeGameAccessModal);
+      gameAccessModal.addEventListener('click', (event) => {
+        if (event.target === gameAccessModal) closeGameAccessModal();
+      });
+      gameAccessModal.querySelector('[data-game-guest]').addEventListener('click', () => {
+        closeGameAccessModal();
+        gameStartConfirmed = true;
+        gameStartButton.click();
+      });
+
+      gameStartButton.addEventListener('click', async (event) => {
+        if (gameStartConfirmed) {
+          gameStartConfirmed = false;
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        try {
+          const response = await fetch('/api/auth/me', { credentials: 'include' });
+          const data = await response.json().catch(() => ({}));
+          if (data?.user) {
+            gameStartConfirmed = true;
+            gameStartButton.click();
+            return;
+          }
+        } catch (error) {
+          // A failed session check should still allow guest play.
+        }
+        gameAccessModal.classList.add('is-open');
+        gameAccessModal.setAttribute('aria-hidden', 'false');
+        gameAccessModal.querySelector('[data-game-guest]').focus();
+      }, true);
+    }
+
     /* Sticky navbar shadow on scroll */
     const navbar = document.querySelector('.s21-navbar');
     const backToTop = document.querySelector('.fab.top');
