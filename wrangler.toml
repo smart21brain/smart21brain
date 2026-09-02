@@ -25,3 +25,7 @@ database_id = "8d1eb316-d826-419b-93c6-e1a90f014571"
 [[r2_buckets]]
 binding = "MATERIALS"
 bucket_name = "smart21brain-materials"
+
+# Workers AI binding used by /api/ai-assistant.
+[ai]
+binding = "AI"

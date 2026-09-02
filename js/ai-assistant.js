@@ -15,10 +15,17 @@
       e.preventDefault();
       const input = form.querySelector('input');
       if (!input.value.trim()) return;
-      appendMessage(log, input.value.trim(), 'user');
-      // TODO: replace with a real backend call, e.g. POST /api/ai-assistant
-      appendMessage(log, 'This AI-generated answer is a placeholder — connect a backend endpoint to power real responses. AI content is always labeled separately from verified lessons.', 'ai');
+      const question = input.value.trim();
+      appendMessage(log, question, 'user');
       input.value = '';
+      appendMessage(log, 'Thinking…', 'ai');
+      fetch('/api/ai-assistant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: question }) })
+        .then(async (response) => {
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.error || 'The assistant is unavailable.');
+          log.lastElementChild.textContent = data.answer;
+        })
+        .catch((error) => { log.lastElementChild.textContent = error.message; });
     });
   });
 

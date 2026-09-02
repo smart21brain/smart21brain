@@ -106,11 +106,11 @@
             <form class="row g-3" id="account-details-form">
               <div class="col-md-6">
                 <label class="form-label fw-bold" style="font-size:.85rem" data-i18n="contact_full_name">Full name</label>
-                <input type="text" class="form-control s21-input" value="Amara Ndosi">
+                <input type="text" class="form-control s21-input" id="profile-name" value="Amara Ndosi" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-bold" style="font-size:.85rem" data-i18n="contact_email">Email</label>
-                <input type="email" class="form-control s21-input" value="amara@example.com">
+                <input type="email" class="form-control s21-input" id="profile-email" value="amara@example.com" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-bold" style="font-size:.85rem" data-i18n="profile_date_of_birth">Date of birth</label>
@@ -134,11 +134,11 @@
             <form class="row g-3" id="update-password-form">
               <div class="col-md-6">
                 <label class="form-label fw-bold" style="font-size:.85rem" data-i18n="profile_current_password">Current password</label>
-                <input type="password" class="form-control s21-input" placeholder="••••••••">
+                <input type="password" class="form-control s21-input" id="profile-current-password" placeholder="••••••••" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-bold" style="font-size:.85rem" data-i18n="profile_new_password">New password</label>
-                <input type="password" class="form-control s21-input" placeholder="••••••••">
+                <input type="password" class="form-control s21-input" id="profile-new-password" placeholder="••••••••" minlength="8" required>
               </div>
               <div class="col-12">
                 <button type="submit" class="btn-s21 btn-s21-outline" data-i18n="profile_update_password">Update password</button>

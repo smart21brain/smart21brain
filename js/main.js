@@ -139,24 +139,32 @@
       document.getElementById('reader-scroll-target')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    /* Contact form — EmailJS-ready placeholder.
-       Swap the setTimeout below for a real emailjs.sendForm() call once
-       EmailJS is initialized with your own Public Key on the page. */
+    /* Contact form */
     document.getElementById('contact-form')?.addEventListener('submit', function (e) {
-      e.preventDefault();
       if (!this.checkValidity()) { this.classList.add('was-validated'); return; }
+      e.preventDefault();
       const status = document.getElementById('contact-form-status');
       const btn = this.querySelector('button[type="submit"]');
       const original = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = original;
-        status.textContent = window.S21_t ? window.S21_t('runtime_demo_form_notice') : "Thanks — this demo form doesn't send yet. Connect EmailJS to go live.";
+      fetch('/api/contact', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('contact-name').value,
+          email: document.getElementById('contact-email').value,
+          phone: document.getElementById('contact-phone').value,
+          subject: document.getElementById('contact-subject').value,
+          message: document.getElementById('contact-message').value,
+        }),
+      }).then(async (response) => {
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Could not send your message.');
+        status.textContent = 'Thanks. Your message has been sent.';
         this.reset();
         this.classList.remove('was-validated');
-      }, 900);
+      }).catch((error) => { status.textContent = error.message; })
+        .finally(() => { btn.disabled = false; btn.innerHTML = original; });
     });
 
     /* Newsletter subscription */

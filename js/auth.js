@@ -108,26 +108,42 @@
     });
 
     const accountDetailsForm = document.getElementById('account-details-form');
-    accountDetailsForm?.addEventListener('submit', (e) => {
+    if (accountDetailsForm) {
+      fetch('/api/account/profile', { credentials: 'include' })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          if (!data?.user) return;
+          document.getElementById('profile-name').value = data.user.name;
+          document.getElementById('profile-email').value = data.user.email;
+        })
+        .catch(() => {});
+    }
+    accountDetailsForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!accountDetailsForm.checkValidity()) { accountDetailsForm.classList.add('was-validated'); return; }
       const btn = accountDetailsForm.querySelector('button[type="submit"]');
       const restore = withSpinner(btn, t('runtime_saving', 'Saving…'));
-      setTimeout(() => {
-        restore();
+      try {
+        const response = await fetch('/api/account/profile', { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('profile-name').value, email: document.getElementById('profile-email').value }) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not save changes.');
         window.S21_toast?.(t('runtime_changes_saved_toast', 'Changes saved.'));
-      }, 600);
+      } catch (error) { window.S21_toast?.(error.message); } finally { restore(); }
     });
 
     const updatePasswordForm = document.getElementById('update-password-form');
-    updatePasswordForm?.addEventListener('submit', (e) => {
+    updatePasswordForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!updatePasswordForm.checkValidity()) { updatePasswordForm.classList.add('was-validated'); return; }
       const btn = updatePasswordForm.querySelector('button[type="submit"]');
       const restore = withSpinner(btn, t('runtime_saving', 'Saving…'));
-      setTimeout(() => {
-        restore();
+      try {
+        const response = await fetch('/api/account/password', { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentPassword: document.getElementById('profile-current-password').value, newPassword: document.getElementById('profile-new-password').value }) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not update password.');
         window.S21_toast?.(t('runtime_password_updated_toast', 'Password updated.'));
         updatePasswordForm.reset();
-      }, 600);
+      } catch (error) { window.S21_toast?.(error.message); } finally { restore(); }
     });
   });
 })();

@@ -36,6 +36,21 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_email ON newsletter_subscribers(email);
 
 -- ---------------------------------------------------------------------
+-- Contact messages
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  name       TEXT NOT NULL,
+  email      TEXT NOT NULL,
+  phone      TEXT,
+  subject    TEXT NOT NULL,
+  message    TEXT NOT NULL,
+  status     TEXT NOT NULL DEFAULT 'new',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status);
+
+-- ---------------------------------------------------------------------
 -- Games (admin-managed catalog + per-user scores)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS games (

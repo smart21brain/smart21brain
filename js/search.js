@@ -57,6 +57,16 @@
     });
   }
 
+  async function getMatches(query) {
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Search failed');
+      return (await response.json()).results || [];
+    } catch (error) {
+      return SAMPLE_INDEX.filter((item) => item.title.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.s21-search-wrap').forEach((wrap) => {
       const input = wrap.querySelector('input');
@@ -65,7 +75,16 @@
       if (!input || !panel) return;
 
       input.addEventListener('focus', () => { panel.classList.add('open'); renderSuggestions(panel, input.value); });
-      input.addEventListener('input', () => renderSuggestions(panel, input.value));
+      let searchTimer;
+      input.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(async () => {
+          const query = input.value.trim();
+          if (!query) { renderSuggestions(panel, ''); return; }
+          const matches = await getMatches(query);
+          panel.innerHTML = `<div class="s21-search-group"><span>Suggestions</span>${matches.length ? matches.map((m) => `<a href="${m.href}" class="s21-search-item"><i class="fa-regular fa-circle-dot"></i> ${m.title} <em>${m.type}</em></a>`).join('') : '<p class="s21-search-empty">No matches yet — try another word.</p>'}</div>`;
+        }, 180);
+      });
       document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) panel.classList.remove('open'); });
       form?.addEventListener('submit', (e) => {
         e.preventDefault();

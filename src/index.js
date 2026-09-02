@@ -6,6 +6,10 @@ import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import { getDashboard } from './handlers/dashboard.js';
 import * as newsletter from './handlers/newsletter.js';
+import * as contact from './handlers/contact.js';
+import * as search from './handlers/search.js';
+import * as assistant from './handlers/assistant.js';
+import * as account from './handlers/account.js';
 import { getSessionUser } from './lib/auth.js';
 
 const router = new Router();
@@ -16,6 +20,14 @@ router.post('/api/auth/login', auth.login);
 router.post('/api/auth/logout', auth.logout);
 router.get('/api/auth/me', auth.me);
 router.post('/api/newsletter/subscribe', newsletter.subscribe);
+router.post('/api/contact', contact.sendMessage);
+router.get('/api/contact', contact.listMessages);
+router.get('/api/newsletter/subscribers', contact.listSubscribers);
+router.get('/api/search', search.search);
+router.post('/api/ai-assistant', assistant.ask);
+router.put('/api/account/profile', account.updateProfile);
+router.get('/api/account/profile', account.getProfile);
+router.put('/api/account/password', account.updatePassword);
 
 // ---- Games ----
 router.get('/api/games', games.listGames);
