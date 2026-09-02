@@ -219,7 +219,11 @@ a:hover { color: var(--s21-accent); }
   box-shadow: 0 6px 14px rgba(11,110,79,.35);
   flex-shrink: 0;
 }
-.s21-logo .mark svg { width: 24px; height: 24px; }
+.s21-logo .mark {
+  background: url('../images/logo/Untitled design (16).png') center / cover no-repeat;
+  overflow: hidden;
+}
+.s21-logo .mark svg { display: none; }
 .s21-logo .brand-21 { color: var(--s21-secondary); }
 
 .s21-nav-link {
