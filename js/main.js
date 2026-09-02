@@ -159,14 +159,37 @@
       }, 900);
     });
 
-    /* Newsletter form (placeholder — wire to real ESP later) */
+    /* Newsletter subscription */
     document.querySelectorAll('.newsletter-form').forEach((form) => {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn = form.querySelector('button');
+        if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
+        const input = form.querySelector('input[type="email"]');
+        const btn = form.querySelector('button[type="submit"]');
         const original = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-        setTimeout(() => { btn.innerHTML = original; form.reset(); }, 1800);
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        try {
+          const response = await fetch('/api/newsletter/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: input.value }),
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || 'Subscription failed.');
+          btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          form.reset();
+          form.classList.remove('was-validated');
+          if (window.S21_toast) window.S21_toast('You are subscribed. Welcome to the Smart21Brain newsletter!');
+        } catch (error) {
+          btn.innerHTML = original;
+          if (window.S21_toast) window.S21_toast(error.message || 'Could not subscribe. Please try again.');
+        } finally {
+          btn.disabled = false;
+          if (btn.innerHTML.includes('fa-check')) {
+            setTimeout(() => { btn.innerHTML = original; }, 1800);
+          }
+        }
       });
     });
 

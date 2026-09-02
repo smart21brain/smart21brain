@@ -5,6 +5,7 @@ import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import { getDashboard } from './handlers/dashboard.js';
+import * as newsletter from './handlers/newsletter.js';
 import { getSessionUser } from './lib/auth.js';
 
 const router = new Router();
@@ -14,6 +15,7 @@ router.post('/api/auth/register', auth.register);
 router.post('/api/auth/login', auth.login);
 router.post('/api/auth/logout', auth.logout);
 router.get('/api/auth/me', auth.me);
+router.post('/api/newsletter/subscribe', newsletter.subscribe);
 
 // ---- Games ----
 router.get('/api/games', games.listGames);

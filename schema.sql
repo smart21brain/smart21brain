@@ -26,6 +26,16 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 
 -- ---------------------------------------------------------------------
+-- Newsletter subscriptions
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  email         TEXT NOT NULL UNIQUE,
+  subscribed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_email ON newsletter_subscribers(email);
+
+-- ---------------------------------------------------------------------
 -- Games (admin-managed catalog + per-user scores)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS games (
