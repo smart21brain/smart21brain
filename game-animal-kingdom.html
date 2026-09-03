@@ -44,8 +44,8 @@
     <div class="d-none d-lg-flex align-items-center gap-2">
       <button class="icon-btn" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.72rem">SW</button>
       <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="desktop" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a></span>
     </div>
   </nav>
 </header>
@@ -71,8 +71,8 @@
     <div class="mt-auto d-flex flex-column gap-2">
       <button class="btn-s21 btn-s21-outline w-100" data-lang-toggle><i class="fa-solid fa-globe me-1"></i> <span data-lang-toggle-label>Kiswahili</span></button>
     <button class="btn-s21 btn-s21-outline w-100 mt-2" data-theme-toggle><i class="fa-solid fa-moon me-1"></i> <span data-theme-toggle-label>Dark Mode</span></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="mobile" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a></span>
     </div>
   </div>
 </div>
@@ -302,6 +302,7 @@
 <script src="js/voice-search.js"></script>
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
+<script src="js/nav-account.js"></script>
 <script>window.S21_QUIZ_CONFIG = { leaderboardKey: 's21-animal-kingdom-scores', questions: [{"en": {"q": "Which animal is known as the \"King of the Jungle\"?", "options": ["Lion", "Tiger", "Elephant", "Leopard"]}, "sw": {"q": "Mnyama gani anaitwa \"Mfalme wa Msitu\"?", "options": ["Simba", "Chui", "Tembo", "Duma"]}, "correct": 0}, {"en": {"q": "What do you call a baby kangaroo?", "options": ["Cub", "Joey", "Kid", "Pup"]}, "sw": {"q": "Mtoto wa kangaruu huitwaje?", "options": ["Toto", "Joey", "Mwana", "Mtoto wa mbwa"]}, "correct": 1}, {"en": {"q": "Which of these animals can fly?", "options": ["Ostrich", "Penguin", "Bat", "Kiwi"]}, "sw": {"q": "Ni mnyama gani kati ya hawa anayeweza kuruka?", "options": ["Mbuni", "Pengwini", "Popo", "Kiwi"]}, "correct": 2}, {"en": {"q": "The elephant is the largest living...", "options": ["Sea animal", "Land animal", "Bird", "Reptile"]}, "sw": {"q": "Tembo ni mnyama mkubwa zaidi wa...", "options": ["Baharini", "Nchi kavu", "Ndege", "Mtambaazi"]}, "correct": 1}, {"en": {"q": "Which animal is famous for changing colour to hide?", "options": ["Chameleon", "Zebra", "Giraffe", "Hippo"]}, "sw": {"q": "Mnyama gani anajulikana kwa kubadilisha rangi ili kujificha?", "options": ["Kinyonga", "Punda milia", "Twiga", "Kiboko"]}, "correct": 0}, {"en": {"q": "How many legs does a spider have?", "options": ["6", "8", "10", "4"]}, "sw": {"q": "Buibui ana miguu mingapi?", "options": ["6", "8", "10", "4"]}, "correct": 1}, {"en": {"q": "Which of these is a nocturnal animal (active at night)?", "options": ["Owl", "Rooster", "Peacock", "Ostrich"]}, "sw": {"q": "Ni mnyama gani kati ya hawa anayefanya kazi usiku?", "options": ["Bundi", "Jogoo", "Tausi", "Mbuni"]}, "correct": 0}, {"en": {"q": "Dolphins breathe using their...", "options": ["Gills", "Skin", "Lungs", "Fins"]}, "sw": {"q": "Pomboo hupumua kwa kutumia...", "options": ["Fangasi", "Ngozi", "Mapafu", "Mapezi"]}, "correct": 2}, {"en": {"q": "Which big cat has the fastest land speed?", "options": ["Lion", "Cheetah", "Tiger", "Leopard"]}, "sw": {"q": "Paka gani mkubwa ndiye mwenye kasi zaidi nchi kavu?", "options": ["Simba", "Duma", "Chui wa Bengal", "Chui"]}, "correct": 1}, {"en": {"q": "A group of lions is called a...", "options": ["Herd", "Pack", "Pride", "Flock"]}, "sw": {"q": "Kundi la simba huitwaje?", "options": ["Kundi la wanyama", "Kundi la mbwa mwitu", "Fahari", "Kundi la ndege"]}, "correct": 2}] };</script>
 <script src="js/activity.js"></script>
 <script src="js/quiz-game.js"></script>

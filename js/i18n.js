@@ -40,6 +40,7 @@
       cta_explore_subjects: 'Explore All Subjects',
       stat_learners: 'Active learners', stat_videos: 'Video lessons',
       stat_books: 'Digital books', stat_satisfaction: 'Parent satisfaction',
+      stat_quizzes: 'Quizzes completed',
 
       // ---- Homepage: section headers ----
       eyebrow_subjects: 'Popular subjects', head_subjects: 'Pick a strand, start exploring',
@@ -439,7 +440,7 @@
       login_ph_you_example_com: 'you@example.com',
       login_welcome_back_to_a_safer_way_to_learn: 'Welcome back to a safer way to learn.',
       login_pick_up_your_courses_continue_your_r: 'Pick up your courses, continue your reading streak, and jump back into your favorite game — right where you left off.',
-      login_child_safe_by_design: 'Child-safe by design', login_40_000_learners: '40,000+ learners',
+      login_child_safe_by_design: 'Child-safe by design', login_40_000_learners: 'Growing every day',
       login_log_in: 'Log in',
       login_good_to_see_you_again_let_s_keep_lea: 'Good to see you again — let\'s keep learning.',
       login_email_address: 'Email address',
@@ -657,7 +658,7 @@
       kids_everything_in_the_kids_zone_is_revie: 'Everything in the Kids Zone is reviewed before it\'s published, with no comments or open chat. You can set screen-time limits any time from the Parent dashboard.',
       kids_go_to_parent_dashboard: 'Go to Parent Dashboard',
       // ---- register ----
-      register_join_40_000_curious_learners: 'Join 40,000+ curious learners.',
+      register_join_40_000_curious_learners: 'Join our growing community of curious learners.',
       register_create_a_free_account_to_save_your_p: 'Create a free account to save your progress, earn badges, and get a personalized learning path from day one.',
       register_free_forever_plan: 'Free forever plan', register_no_card_required: 'No card required',
       register_create_your_account: 'Create your account',
@@ -724,6 +725,7 @@
       cta_explore_subjects: 'Gundua Masomo Yote',
       stat_learners: 'Wanafunzi hai', stat_videos: 'Masomo ya video',
       stat_books: 'Vitabu vya kidijitali', stat_satisfaction: 'Kuridhika kwa wazazi',
+      stat_quizzes: 'Maswali yaliyokamilika',
 
       // ---- Homepage: section headers ----
       eyebrow_subjects: 'Masomo Maarufu', head_subjects: 'Chagua somo, anza kuchunguza',
@@ -1135,7 +1137,7 @@
       login_ph_you_example_com: 'wewe@mfano.com',
       login_welcome_back_to_a_safer_way_to_learn: 'Karibu tena kwenye njia salama zaidi ya kujifunza.',
       login_pick_up_your_courses_continue_your_r: 'Endelea na kozi zako, endelea na mfululizo wako wa kusoma, na rudi kwenye mchezo wako unaoupenda — pale ulipoishia.',
-      login_child_safe_by_design: 'Salama kwa watoto kwa muundo', login_40_000_learners: 'Wanafunzi 40,000+',
+      login_child_safe_by_design: 'Salama kwa watoto kwa muundo', login_40_000_learners: 'Tunakua kila siku',
       login_log_in: 'Ingia',
       login_good_to_see_you_again_let_s_keep_lea: 'Vizuri kukuona tena — tuendelee kujifunza.',
       login_email_address: 'Anwani ya barua pepe',
@@ -1361,7 +1363,7 @@
       kids_everything_in_the_kids_zone_is_revie: 'Kila kitu kwenye Eneo la Watoto hukaguliwa kabla hakijachapishwa, hakuna maoni wala mazungumzo ya wazi. Unaweza kuweka vikomo vya muda wa skrini wakati wowote kutoka Dashibodi ya Mzazi.',
       kids_go_to_parent_dashboard: 'Nenda kwenye Dashibodi ya Mzazi',
       // ---- register ----
-      register_join_40_000_curious_learners: 'Jiunge na wanafunzi wadadisi 40,000+.',
+      register_join_40_000_curious_learners: 'Jiunge na jamii yetu inayokua ya wanafunzi wadadisi.',
       register_create_a_free_account_to_save_your_p: 'Fungua akaunti bure ili kuhifadhi maendeleo yako, kupata beji, na kupata njia ya kujifunza iliyobinafsishwa tangu siku ya kwanza.',
       register_free_forever_plan: 'Mpango wa bure milele',
       register_no_card_required: 'Hakuna kadi inayohitajika',

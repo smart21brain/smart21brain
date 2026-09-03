@@ -44,8 +44,8 @@
     <div class="d-none d-lg-flex align-items-center gap-2">
       <button class="icon-btn" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.72rem">SW</button>
       <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="desktop" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a></span>
     </div>
   </nav>
 </header>
@@ -71,8 +71,8 @@
     <div class="mt-auto d-flex flex-column gap-2">
       <button class="btn-s21 btn-s21-outline w-100" data-lang-toggle><i class="fa-solid fa-globe me-1"></i> <span data-lang-toggle-label>Kiswahili</span></button>
     <button class="btn-s21 btn-s21-outline w-100 mt-2" data-theme-toggle><i class="fa-solid fa-moon me-1"></i> <span data-theme-toggle-label>Dark Mode</span></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="mobile" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a></span>
     </div>
   </div>
 </div>
@@ -87,9 +87,9 @@
         <div class="row align-items-center g-4">
           <div class="col-md-8">
             <div class="d-flex align-items-center gap-3">
-              <img src="https://i.pravatar.cc/120?img=47" class="dash-avatar" alt="Amara's profile picture" loading="lazy">
+              <img id="dash-avatar-img" src="https://i.pravatar.cc/120?img=47" class="dash-avatar" alt="Your profile picture" loading="lazy">
               <div>
-                <h1 class="h3 text-white mb-1" data-i18n="dash_welcome_back_amara">Welcome back, Amara! 👋</h1>
+                <h1 class="h3 text-white mb-1" id="dash-welcome-heading" data-i18n="dash_welcome_back_amara">Welcome back, Amara! 👋</h1>
                 <div class="d-flex flex-wrap gap-2">
                   <span class="streak-flame"><i class="fa-solid fa-fire" style="color:#FFB703"></i> <span data-i18n="dash_12_day_streak">12-day streak</span></span>
                   <span class="streak-flame"><i class="fa-solid fa-star" style="color:var(--s21-secondary)"></i> <span data-i18n="dash_level_6_1_240_xp">Level 6 · 1,240 XP</span></span>
@@ -338,6 +338,7 @@
 <script src="js/voice-search.js"></script>
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
+<script src="js/nav-account.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>

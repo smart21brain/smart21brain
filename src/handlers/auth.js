@@ -3,27 +3,69 @@ import {
   getSessionUser, json, badRequest, unauthorized,
 } from '../lib/auth.js';
 
+const AVATAR_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+
 export async function register({ request, env }) {
-  const body = await request.json().catch(() => null);
-  if (!body || !body.name || !body.email || !body.password) {
+  const contentType = request.headers.get('Content-Type') || '';
+  let name, email, password, avatarFile = null;
+
+  if (contentType.includes('multipart/form-data')) {
+    // Registration with an optional profile photo comes in as multipart
+    // form data (fields: name, email, password, and file field "avatar").
+    const form = await request.formData().catch(() => null);
+    if (!form) return badRequest('Could not read the submitted form.');
+    name = form.get('name');
+    email = form.get('email');
+    password = form.get('password');
+    const file = form.get('avatar');
+    if (file && typeof file !== 'string' && file.size > 0) avatarFile = file;
+  } else {
+    const body = await request.json().catch(() => null);
+    name = body?.name;
+    email = body?.email;
+    password = body?.password;
+  }
+
+  if (!name || !email || !password) {
     return badRequest('Name, email and password are required.');
   }
-  const email = String(body.email).trim().toLowerCase();
-  if (body.password.length < 8) return badRequest('Password must be at least 8 characters.');
+  email = String(email).trim().toLowerCase();
+  if (String(password).length < 8) return badRequest('Password must be at least 8 characters.');
+
+  if (avatarFile) {
+    if (!AVATAR_TYPES[avatarFile.type]) {
+      return badRequest('Profile photo must be a PNG, JPG, WEBP or GIF image.');
+    }
+    if (avatarFile.size > MAX_AVATAR_BYTES) {
+      return badRequest('Profile photo is too large (5MB max).');
+    }
+  }
 
   const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
   if (existing) return badRequest('An account with that email already exists.');
 
-  const { hash, salt } = await hashPassword(body.password);
+  const { hash, salt } = await hashPassword(password);
+  const cleanName = String(name).trim();
   const result = await env.DB.prepare(
     'INSERT INTO users (name, email, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?)'
-  ).bind(String(body.name).trim(), email, hash, salt, 'user').run();
+  ).bind(cleanName, email, hash, salt, 'user').run();
 
   const userId = result.meta.last_row_id;
+
+  let avatarKey = null;
+  if (avatarFile) {
+    avatarKey = `avatars/${userId}-${crypto.randomUUID()}.${AVATAR_TYPES[avatarFile.type]}`;
+    await env.MATERIALS.put(avatarKey, await avatarFile.arrayBuffer(), {
+      httpMetadata: { contentType: avatarFile.type },
+    });
+    await env.DB.prepare('UPDATE users SET avatar_key = ? WHERE id = ?').bind(avatarKey, userId).run();
+  }
+
   const { token, expires } = await createSession(env.DB, userId);
 
   return json(
-    { user: { id: userId, name: body.name, email, role: 'user' } },
+    { user: { id: userId, name: cleanName, email, role: 'user', avatar_key: avatarKey } },
     { status: 201, headers: { 'Set-Cookie': sessionCookie(token, expires) } }
   );
 }

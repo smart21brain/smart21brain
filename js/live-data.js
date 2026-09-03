@@ -161,10 +161,43 @@
     } catch (e) { /* not signed in, or API unreachable — leave demo dashboard as-is */ }
   }
 
+  // ---- index.html: real, live homepage numbers (no invented marketing
+  // figures). Active learners and quizzes completed are counted straight
+  // from the database; video lessons / digital books are the actual
+  // counts of lessons/books published on the site right now. If the API
+  // isn't reachable the static "0" already in the markup is left alone
+  // rather than showing a fabricated number. ----
+  function animateStat(el, target, suffix) {
+    const numTarget = Number(target) || 0;
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = Math.floor(progress * numTarget).toLocaleString();
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = numTarget.toLocaleString() + (suffix || '');
+    }
+    requestAnimationFrame(tick);
+  }
+
+  async function wireHomeStats() {
+    const nodes = document.querySelectorAll('[data-live-stat]');
+    if (!nodes.length) return;
+    try {
+      const stats = await getJSON('/api/stats');
+      nodes.forEach((el) => {
+        const key = el.dataset.liveStat;
+        if (!(key in stats)) return;
+        animateStat(el, stats[key], el.dataset.suffix);
+      });
+    } catch (e) { /* API unreachable — leave the static "0" placeholders */ }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     wireGamesPage();
     wireBlogListPage();
     wireBlogPostPage();
     wireDashboardPage();
+    wireHomeStats();
   });
 })();

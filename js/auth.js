@@ -83,6 +83,36 @@
         });
     });
 
+    // Registration profile-photo picker: live preview + client-side checks
+    // (the server enforces the same limits, this just gives fast feedback).
+    const regAvatarInput = document.getElementById('reg-avatar');
+    const regAvatarPreview = document.getElementById('reg-avatar-preview');
+    const regAvatarPlaceholder = document.getElementById('reg-avatar-placeholder');
+    const regAvatarError = document.getElementById('reg-avatar-error');
+    const ALLOWED_AVATAR_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+    regAvatarInput?.addEventListener('change', () => {
+      const file = regAvatarInput.files?.[0];
+      if (regAvatarError) { regAvatarError.textContent = ''; regAvatarError.classList.add('d-none'); }
+      if (!file) return;
+      if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+        regAvatarInput.value = '';
+        if (regAvatarError) { regAvatarError.textContent = t('runtime_avatar_type_error', 'Please choose a PNG, JPG, WEBP or GIF image.'); regAvatarError.classList.remove('d-none'); }
+        return;
+      }
+      if (file.size > MAX_AVATAR_BYTES) {
+        regAvatarInput.value = '';
+        if (regAvatarError) { regAvatarError.textContent = t('runtime_avatar_size_error', 'That photo is too large (5MB max).'); regAvatarError.classList.remove('d-none'); }
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (regAvatarPreview) { regAvatarPreview.src = reader.result; regAvatarPreview.classList.remove('d-none'); }
+        regAvatarPlaceholder?.classList.add('d-none');
+      };
+      reader.readAsDataURL(file);
+    });
+
     const registerForm = document.getElementById('register-form');
     registerForm?.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -92,11 +122,18 @@
       const name = document.getElementById('reg-name').value;
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
+      const avatarFile = document.getElementById('reg-avatar')?.files?.[0] || null;
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('password', password);
+      if (avatarFile) formData.append('avatar', avatarFile);
+
       fetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, email, password }),
+        body: formData,
       })
         .then(async (res) => {
           const data = await res.json().catch(() => ({}));
@@ -120,9 +157,61 @@
           if (!data?.user) return;
           document.getElementById('profile-name').value = data.user.name;
           document.getElementById('profile-email').value = data.user.email;
+          const avatarImg = document.getElementById('profile-avatar-img');
+          if (avatarImg && data.user.avatar_key) {
+            avatarImg.src = `/api/avatar/${encodeURIComponent(data.user.id)}`;
+          }
+          if (avatarImg && data.user.name) {
+            avatarImg.alt = `${data.user.name}'s profile picture`;
+          }
         })
         .catch(() => {});
     }
+
+    // "Change photo" on the profile page: click the visible button to
+    // open a hidden file picker, then upload the chosen image right away.
+    const changePhotoBtn = document.getElementById('profile-change-photo-btn');
+    const profileAvatarInput = document.getElementById('profile-avatar-input');
+    const profileAvatarImg = document.getElementById('profile-avatar-img');
+    const profileAvatarError = document.getElementById('profile-avatar-error');
+    changePhotoBtn?.addEventListener('click', () => profileAvatarInput?.click());
+    profileAvatarInput?.addEventListener('change', async () => {
+      const file = profileAvatarInput.files?.[0];
+      if (profileAvatarError) { profileAvatarError.textContent = ''; profileAvatarError.classList.add('d-none'); }
+      if (!file) return;
+
+      const ALLOWED_AVATAR_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+      const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+      if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+        profileAvatarInput.value = '';
+        if (profileAvatarError) { profileAvatarError.textContent = t('runtime_avatar_type_error', 'Please choose a PNG, JPG, WEBP or GIF image.'); profileAvatarError.classList.remove('d-none'); }
+        return;
+      }
+      if (file.size > MAX_AVATAR_BYTES) {
+        profileAvatarInput.value = '';
+        if (profileAvatarError) { profileAvatarError.textContent = t('runtime_avatar_size_error', 'That photo is too large (5MB max).'); profileAvatarError.classList.remove('d-none'); }
+        return;
+      }
+
+      const restore = changePhotoBtn ? withSpinner(changePhotoBtn, t('runtime_uploading', 'Uploading…')) : null;
+      try {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const response = await fetch('/api/account/avatar', { method: 'POST', credentials: 'include', body: formData });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not update your photo.');
+        if (profileAvatarImg && data.user) {
+          profileAvatarImg.src = `/api/avatar/${encodeURIComponent(data.user.id)}?t=${Date.now()}`;
+        }
+        window.S21_toast?.(t('runtime_photo_updated_toast', 'Profile photo updated.'));
+      } catch (error) {
+        window.S21_toast?.(error.message);
+      } finally {
+        restore?.();
+        profileAvatarInput.value = '';
+      }
+    });
+
     accountDetailsForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!accountDetailsForm.checkValidity()) { accountDetailsForm.classList.add('was-validated'); return; }

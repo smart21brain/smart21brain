@@ -44,8 +44,8 @@
     <div class="d-none d-lg-flex align-items-center gap-2">
       <button class="icon-btn" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.72rem">SW</button>
       <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="desktop" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a></span>
     </div>
   </nav>
 </header>
@@ -71,8 +71,8 @@
     <div class="mt-auto d-flex flex-column gap-2">
       <button class="btn-s21 btn-s21-outline w-100" data-lang-toggle><i class="fa-solid fa-globe me-1"></i> <span data-lang-toggle-label>Kiswahili</span></button>
     <button class="btn-s21 btn-s21-outline w-100 mt-2" data-theme-toggle><i class="fa-solid fa-moon me-1"></i> <span data-theme-toggle-label>Dark Mode</span></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="mobile" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a></span>
     </div>
   </div>
 </div>
@@ -302,6 +302,7 @@
 <script src="js/voice-search.js"></script>
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
+<script src="js/nav-account.js"></script>
 <script>window.S21_QUIZ_CONFIG = { leaderboardKey: 's21-solar-system-scores', questions: [{"en": {"q": "Which planet is closest to the sun?", "options": ["Venus", "Mercury", "Earth", "Mars"]}, "sw": {"q": "Sayari gani iko karibu zaidi na jua?", "options": ["Zuhura", "Utaridi", "Dunia", "Mirihi"]}, "correct": 1}, {"en": {"q": "Which planet is known as the \"Red Planet\"?", "options": ["Jupiter", "Mars", "Saturn", "Venus"]}, "sw": {"q": "Sayari gani inajulikana kama \"Sayari Nyekundu\"?", "options": ["Mshtarii", "Mirihi", "Zohali", "Zuhura"]}, "correct": 1}, {"en": {"q": "What is at the centre of our solar system?", "options": ["Earth", "The Moon", "The Sun", "Jupiter"]}, "sw": {"q": "Ni nini kilicho katikati ya mfumo wetu wa jua?", "options": ["Dunia", "Mwezi", "Jua", "Mshtarii"]}, "correct": 2}, {"en": {"q": "Which is the largest planet in our solar system?", "options": ["Saturn", "Earth", "Jupiter", "Neptune"]}, "sw": {"q": "Ni sayari gani kubwa zaidi katika mfumo wetu wa jua?", "options": ["Zohali", "Dunia", "Mshtarii", "Neptuni"]}, "correct": 2}, {"en": {"q": "How many planets are in our solar system?", "options": ["7", "8", "9", "10"]}, "sw": {"q": "Kuna sayari ngapi katika mfumo wetu wa jua?", "options": ["7", "8", "9", "10"]}, "correct": 1}, {"en": {"q": "Which planet is famous for its beautiful rings?", "options": ["Saturn", "Mars", "Mercury", "Earth"]}, "sw": {"q": "Sayari gani inajulikana kwa pete zake nzuri?", "options": ["Zohali", "Mirihi", "Utaridi", "Dunia"]}, "correct": 0}, {"en": {"q": "What causes day and night on Earth?", "options": ["Earth's rotation", "The Moon", "The seasons", "Clouds"]}, "sw": {"q": "Ni nini husababisha mchana na usiku duniani?", "options": ["Mzunguko wa dunia", "Mwezi", "Misimu", "Mawingu"]}, "correct": 0}, {"en": {"q": "What do we call a large rock that orbits the sun?", "options": ["A star", "An asteroid", "A comet", "A moon"]}, "sw": {"q": "Tunaita nini jiwe kubwa linalozunguka jua?", "options": ["Nyota", "Asteroidi", "Nyota mkia", "Mwezi"]}, "correct": 1}, {"en": {"q": "Which planet is closest to Earth?", "options": ["Mars", "Venus", "Mercury", "Jupiter"]}, "sw": {"q": "Sayari gani iko karibu zaidi na Dunia?", "options": ["Mirihi", "Zuhura", "Utaridi", "Mshtarii"]}, "correct": 1}] };</script>
 <script src="js/activity.js"></script>
 <script src="js/quiz-game.js"></script>

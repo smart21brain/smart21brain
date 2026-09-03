@@ -44,8 +44,8 @@
     <div class="d-none d-lg-flex align-items-center gap-2">
       <button class="icon-btn" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.72rem">SW</button>
       <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="desktop" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a></span>
     </div>
   </nav>
 </header>
@@ -71,8 +71,8 @@
     <div class="mt-auto d-flex flex-column gap-2">
       <button class="btn-s21 btn-s21-outline w-100" data-lang-toggle><i class="fa-solid fa-globe me-1"></i> <span data-lang-toggle-label>Kiswahili</span></button>
     <button class="btn-s21 btn-s21-outline w-100 mt-2" data-theme-toggle><i class="fa-solid fa-moon me-1"></i> <span data-theme-toggle-label>Dark Mode</span></button>
-      <a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a>
+      <span data-guest-nav="mobile" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
+      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a></span>
     </div>
   </div>
 </div>
@@ -84,10 +84,12 @@
       <div class="row g-4 align-items-start">
         <div class="col-lg-3">
           <div class="s21-card p-4 text-center mb-3" data-aos="fade-up">
-            <img src="https://i.pravatar.cc/160?img=47" class="rounded-circle mb-3 avatar-ring" style="width:96px;height:96px" alt="Amara's profile picture" loading="lazy">
+            <img id="profile-avatar-img" src="https://i.pravatar.cc/160?img=47" class="rounded-circle mb-3 avatar-ring" style="width:96px;height:96px" alt="Your profile picture" loading="lazy">
             <h2 class="h6 mb-0" data-i18n="profile_amara_n">Amara N.</h2>
             <span class="text-soft" style="font-size:.82rem" data-i18n="profile_student_level_6">Student · Level 6</span>
-            <button class="btn-s21 btn-s21-outline w-100 justify-content-center mt-3" style="font-size:.82rem"><i class="fa-solid fa-camera"></i> <span data-i18n="profile_change_photo">Change photo</span></button>
+            <button type="button" class="btn-s21 btn-s21-outline w-100 justify-content-center mt-3" id="profile-change-photo-btn" style="font-size:.82rem"><i class="fa-solid fa-camera"></i> <span data-i18n="profile_change_photo">Change photo</span></button>
+            <input type="file" id="profile-avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" class="visually-hidden">
+            <div class="text-danger d-none mt-2" id="profile-avatar-error" style="font-size:.78rem"></div>
           </div>
           <div class="s21-card p-2" data-aos="fade-up" data-aos-delay="60">
             <div class="d-flex flex-column">
@@ -274,6 +276,7 @@
 <script src="js/voice-search.js"></script>
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
+<script src="js/nav-account.js"></script>
 <script src="js/auth.js"></script>
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>

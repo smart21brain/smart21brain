@@ -29,7 +29,7 @@
         Smart<span class="brand-21">21</span>Brain
       </a>
       <div>
-        <h2 class="text-white mb-2" data-i18n="register_join_40_000_curious_learners">Join 40,000+ curious learners.</h2>
+        <h2 class="text-white mb-2" data-i18n="register_join_40_000_curious_learners">Join our growing community of curious learners.</h2>
         <p style="color:rgba(255,255,255,.85);max-width:380px" data-i18n="register_create_a_free_account_to_save_your_p">Create a free account to save your progress, earn badges, and get a personalized learning path from day one.</p>
       </div>
       <div class="d-flex gap-4" style="color:rgba(255,255,255,.8);font-size:.85rem">
@@ -75,6 +75,20 @@
         </div>
 
         <form class="needs-validation" id="register-form" novalidate>
+          <div class="mb-4 text-center">
+            <div class="position-relative d-inline-block">
+              <div id="reg-avatar-placeholder" class="d-flex align-items-center justify-content-center rounded-circle" style="width:88px;height:88px;background:var(--s21-bg);border:2px dashed var(--s21-border)">
+                <i class="fa-solid fa-user" style="font-size:1.6rem;color:var(--s21-text-soft)"></i>
+              </div>
+              <img id="reg-avatar-preview" class="rounded-circle d-none" style="width:88px;height:88px;object-fit:cover;border:2px solid var(--s21-border)" alt="">
+              <label for="reg-avatar" class="icon-btn" style="position:absolute;bottom:-2px;right:-2px;width:30px;height:30px;cursor:pointer" aria-label="Upload profile photo">
+                <i class="fa-solid fa-camera" style="font-size:.7rem"></i>
+              </label>
+              <input type="file" id="reg-avatar" accept="image/png,image/jpeg,image/webp,image/gif" class="visually-hidden">
+            </div>
+            <div class="text-soft mt-2" style="font-size:.75rem" data-i18n="register_photo_optional_hint">Optional — add a profile photo (up to 5MB). It'll appear on your dashboard.</div>
+            <div class="text-danger d-none mt-1" id="reg-avatar-error" style="font-size:.78rem"></div>
+          </div>
           <div class="mb-3">
             <label for="reg-name" class="form-label fw-bold" style="font-size:.85rem" data-i18n="contact_full_name">Full name</label>
             <input type="text" class="form-control s21-input" id="reg-name" placeholder="Your full name" data-i18n-placeholder="register_ph_your_full_name" required>
