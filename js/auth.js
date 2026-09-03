@@ -157,6 +157,8 @@
           if (!data?.user) return;
           document.getElementById('profile-name').value = data.user.name;
           document.getElementById('profile-email').value = data.user.email;
+          const nameDisplay = document.getElementById('profile-name-display');
+          if (nameDisplay && data.user.name) nameDisplay.textContent = data.user.name;
           const avatarImg = document.getElementById('profile-avatar-img');
           if (avatarImg && data.user.avatar_key) {
             avatarImg.src = `/api/avatar/${encodeURIComponent(data.user.id)}`;
@@ -221,6 +223,8 @@
         const response = await fetch('/api/account/profile', { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('profile-name').value, email: document.getElementById('profile-email').value }) });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || 'Could not save changes.');
+        const nameDisplay = document.getElementById('profile-name-display');
+        if (nameDisplay) nameDisplay.textContent = document.getElementById('profile-name').value;
         window.S21_toast?.(t('runtime_changes_saved_toast', 'Changes saved.'));
       } catch (error) { window.S21_toast?.(error.message); } finally { restore(); }
     });

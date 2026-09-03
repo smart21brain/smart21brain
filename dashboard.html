@@ -91,15 +91,15 @@
               <div>
                 <h1 class="h3 text-white mb-1" id="dash-welcome-heading" data-i18n="dash_welcome_back_amara">Welcome back, Amara! 👋</h1>
                 <div class="d-flex flex-wrap gap-2">
-                  <span class="streak-flame"><i class="fa-solid fa-fire" style="color:#FFB703"></i> <span data-i18n="dash_12_day_streak">12-day streak</span></span>
-                  <span class="streak-flame"><i class="fa-solid fa-star" style="color:var(--s21-secondary)"></i> <span data-i18n="dash_level_6_1_240_xp">Level 6 · 1,240 XP</span></span>
+                  <span class="streak-flame"><i class="fa-solid fa-fire" style="color:#FFB703"></i> <span id="dash-streak-label">No streak yet</span></span>
+                  <span class="streak-flame"><i class="fa-solid fa-star" style="color:var(--s21-secondary)"></i> <span id="dash-level-label">Level 1 · 0 XP</span></span>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-md-4 text-md-end">
-            <div class="text-white mb-1" style="font-size:.82rem" data-i18n="dash_next_badge_in_260_xp">Next badge in 260 XP</div>
-            <div class="progress-s21"><span style="width:62%;background:linear-gradient(90deg,var(--s21-secondary),#FFB703)"></span></div>
+            <div class="text-white mb-1" style="font-size:.82rem" id="dash-level-progress-label">0 / 200 XP to next level</div>
+            <div class="progress-s21"><span id="dash-level-progress-bar" style="width:0%;background:linear-gradient(90deg,var(--s21-secondary),#FFB703)"></span></div>
           </div>
         </div>
       </div>
@@ -115,22 +115,22 @@
         </div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60">
           <div class="s21-card dash-stat-card">
-            <div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-clapperboard"></i></div>
-            <div class="stat-num">86</div>
-            <div class="text-soft" style="font-size:.8rem" data-i18n="dash_videos_watched">Videos watched</div>
+            <div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-circle-question"></i></div>
+            <div class="stat-num" id="dash-stat-quizzes">0</div>
+            <div class="text-soft" style="font-size:.8rem" data-i18n="dash_quizzes_taken">Quizzes taken</div>
           </div>
         </div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120">
           <div class="s21-card dash-stat-card">
-            <div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-book"></i></div>
-            <div class="stat-num">14</div>
-            <div class="text-soft" style="font-size:.8rem" data-i18n="dash_books_read">Books read</div>
+            <div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-gamepad"></i></div>
+            <div class="stat-num" id="dash-stat-games">0</div>
+            <div class="text-soft" style="font-size:.8rem" data-i18n="dash_games_played">Games played</div>
           </div>
         </div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180">
           <div class="s21-card dash-stat-card">
-            <div class="stat-icon" style="background:#E7F1FF;color:#3A86FF"><i class="fa-solid fa-circle-question"></i></div>
-            <div class="stat-num">91%</div>
+            <div class="stat-icon" style="background:#E7F1FF;color:#3A86FF"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="stat-num" id="dash-stat-quiz-avg">0%</div>
             <div class="text-soft" style="font-size:.8rem" data-i18n="dash_avg_quiz_score">Avg. quiz score</div>
           </div>
         </div>
@@ -174,17 +174,17 @@
           <!-- Badges -->
           <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
             <h2 class="h5 mb-0"><i class="fa-solid fa-award" style="color:var(--s21-secondary-dark)"></i> <span data-i18n="dash_your_badges">Your badges</span></h2>
-            <span class="text-soft" style="font-size:.85rem" data-i18n="dash_5_of_8_earned">5 of 8 earned</span>
+            <span class="text-soft" style="font-size:.85rem" id="dash-badges-count">0 of 8 earned</span>
           </div>
           <div class="row g-3 mb-4 text-center">
-            <div class="col-4 col-md-3" data-aos="zoom-in"><div class="badge-earned"><div class="badge-icon" style="background:#E7F1FF;color:#3A86FF"><i class="fa-solid fa-calculator"></i></div><div class="badge-name" data-i18n="dash_math_master">Math Master</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="40"><div class="badge-earned"><div class="badge-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-book"></i></div><div class="badge-name" data-i18n="dash_book_explorer">Book Explorer</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="80"><div class="badge-earned"><div class="badge-icon" style="background:#E4F3EC;color:#06A77D"><i class="fa-solid fa-flask"></i></div><div class="badge-name" data-i18n="dash_science_star">Science Star</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="120"><div class="badge-earned"><div class="badge-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-trophy"></i></div><div class="badge-name" data-i18n="dash_quiz_champion">Quiz Champion</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="160"><div class="badge-earned"><div class="badge-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-fire"></i></div><div class="badge-name" data-i18n="dash_7_day_streak">7-Day Streak</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="200"><div class="badge-earned locked"><div class="badge-icon"><i class="fa-solid fa-laptop-code"></i></div><div class="badge-name" data-i18n="dash_coding_hero">Coding Hero</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="240"><div class="badge-earned locked"><div class="badge-icon"><i class="fa-solid fa-palette"></i></div><div class="badge-name" data-i18n="dash_creative_star">Creative Star</div></div></div>
-            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="280"><div class="badge-earned locked"><div class="badge-icon"><i class="fa-solid fa-earth-africa"></i></div><div class="badge-name" data-i18n="dash_explorer">Explorer</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in"><div class="badge-earned locked" data-badge-id="math_master"><div class="badge-icon" style="background:#E7F1FF;color:#3A86FF"><i class="fa-solid fa-calculator"></i></div><div class="badge-name" data-i18n="dash_math_master">Math Master</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="40"><div class="badge-earned locked" data-badge-id="book_explorer"><div class="badge-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-book"></i></div><div class="badge-name" data-i18n="dash_book_explorer">Book Explorer</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="80"><div class="badge-earned locked" data-badge-id="science_star"><div class="badge-icon" style="background:#E4F3EC;color:#06A77D"><i class="fa-solid fa-flask"></i></div><div class="badge-name" data-i18n="dash_science_star">Science Star</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="120"><div class="badge-earned locked" data-badge-id="quiz_champion"><div class="badge-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-trophy"></i></div><div class="badge-name" data-i18n="dash_quiz_champion">Quiz Champion</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="160"><div class="badge-earned locked" data-badge-id="streak_7"><div class="badge-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-fire"></i></div><div class="badge-name" data-i18n="dash_7_day_streak">7-Day Streak</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="200"><div class="badge-earned locked" data-badge-id="coding_hero"><div class="badge-icon"><i class="fa-solid fa-laptop-code"></i></div><div class="badge-name" data-i18n="dash_coding_hero">Coding Hero</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="240"><div class="badge-earned locked" data-badge-id="creative_star"><div class="badge-icon"><i class="fa-solid fa-palette"></i></div><div class="badge-name" data-i18n="dash_creative_star">Creative Star</div></div></div>
+            <div class="col-4 col-md-3" data-aos="zoom-in" data-aos-delay="280"><div class="badge-earned locked" data-badge-id="explorer"><div class="badge-icon" style="background:#FFEDE0;color:#D97706"><i class="fa-solid fa-earth-africa"></i></div><div class="badge-name" data-i18n="dash_explorer">Explorer</div></div></div>
           </div>
 
           <!-- Recommended -->
@@ -212,6 +212,13 @@
         </div>
 
         <div class="col-lg-4">
+          <div class="s21-card p-4 mb-4" data-aos="fade-up">
+            <h3 class="h6 mb-3"><i class="fa-solid fa-clock-rotate-left" style="color:var(--s21-primary)"></i> <span data-i18n="dash_recent_activity">Recent activity</span></h3>
+            <ul class="list-unstyled d-flex flex-column gap-3 mb-0" style="font-size:.85rem" id="dash-recent-activity-list">
+              <li class="text-soft" data-i18n="dash_no_activity_yet" id="dash-recent-activity-empty">Nothing yet — go take a quiz or play a game!</li>
+            </ul>
+          </div>
+
           <div class="s21-card p-4 mb-4" data-aos="fade-up">
             <h3 class="h6 mb-3"><i class="fa-solid fa-bullseye" style="color:var(--s21-primary)"></i> <span data-i18n="dash_weekly_goal">Weekly goal</span></h3>
             <div class="progress-s21 mb-2"><span style="width:80%"></span></div>
@@ -339,6 +346,7 @@
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
+<script src="js/dashboard.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>
