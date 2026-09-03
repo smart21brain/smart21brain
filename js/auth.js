@@ -243,5 +243,22 @@
         updatePasswordForm.reset();
       } catch (error) { window.S21_toast?.(error.message); } finally { restore(); }
     });
+
+    document.querySelectorAll('[data-logout]').forEach((logoutLink) => {
+      logoutLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        logoutLink.setAttribute('aria-disabled', 'true');
+        logoutLink.style.pointerEvents = 'none';
+        try {
+          const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+          if (!response.ok) throw new Error('Could not log out. Please try again.');
+          window.location.href = logoutLink.href || 'login.html';
+        } catch (error) {
+          logoutLink.removeAttribute('aria-disabled');
+          logoutLink.style.pointerEvents = '';
+          window.S21_toast?.(error.message);
+        }
+      });
+    });
   });
 })();
