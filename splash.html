@@ -19,6 +19,8 @@
 <script src="js/toast.js"></script>
 
 <div class="splash-shell">
+  <video class="splash-video" src="videos/splash-intro.mp4" autoplay muted playsinline preload="auto"></video>
+  <div class="splash-overlay"></div>
   <img src="images/logo/coool.png" alt="Smart21Brain logo" class="splash-mark" loading="eager">
   <div class="splash-tagline" data-i18n="splash_tagline">Learn. Watch. Read. Play.</div>
   <div class="splash-dots"><span></span><span></span><span></span></div>
@@ -26,13 +28,34 @@
 
 <script>
   // One-time pass so index.html's entry gate lets this specific hand-off
-  // through instead of bouncing back to onboarding.html. index.html
-  // deletes this the instant it reads it, so it only ever covers this one
-  // transition — not future visits.
-  setTimeout(function () {
-    try { sessionStorage.setItem('s21-from-splash', '1'); } catch (e) { /* ignore */ }
+  // through instead of bouncing back to splash/onboarding. index.html
+  // deletes 's21-from-splash' the instant it reads it, so that flag only
+  // ever covers this one transition. 's21-splash-seen' persists for the
+  // rest of the browser session so the splash doesn't replay on every
+  // internal navigation back to index.html.
+  function goToIndex() {
+    if (goToIndex.done) return;
+    goToIndex.done = true;
+    try {
+      sessionStorage.setItem('s21-from-splash', '1');
+      sessionStorage.setItem('s21-splash-seen', '1');
+    } catch (e) { /* ignore */ }
     window.location.href = 'index.html';
-  }, 2200);
+  }
+
+  var introVideo = document.querySelector('.splash-video');
+  if (introVideo) {
+    // Move on as soon as the intro finishes playing.
+    introVideo.addEventListener('ended', goToIndex);
+    // If the video can't load or play (blocked autoplay, slow network,
+    // offline), don't strand the visitor on the splash screen.
+    introVideo.addEventListener('error', function () { setTimeout(goToIndex, 2200); });
+    introVideo.play().catch(function () { setTimeout(goToIndex, 2200); });
+  } else {
+    setTimeout(goToIndex, 2200);
+  }
+  // Hard safety net in case the 'ended' event never fires for any reason.
+  setTimeout(goToIndex, 12000);
 </script>
 
 </body>

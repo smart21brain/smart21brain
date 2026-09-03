@@ -3,19 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <script>
-  // Entry gate: show onboarding only once per browser. A newly registered
-  // account gets an explicit one-time onboarding flag; logged-in users and
-  // returning visitors go straight to the homepage.
+  // Entry gate: play the splash screen once per browser session, then
+  // show onboarding only once per browser. A newly registered account
+  // gets an explicit one-time onboarding flag; logged-in users and
+  // returning visitors go straight to the homepage after the splash.
   (function () {
     try {
       var arrivingFromSplash = sessionStorage.getItem('s21-from-splash');
+      var splashSeen = sessionStorage.getItem('s21-splash-seen');
+
       if (arrivingFromSplash === '1') {
         sessionStorage.removeItem('s21-from-splash');
-        return; // let index.html load normally
+      } else if (splashSeen !== '1') {
+        // First load this session and not coming from splash — show it first.
+        window.location.replace('splash.html');
+        return;
       }
+
       if (localStorage.getItem('s21-onboarded') !== '1') {
         window.location.replace('onboarding.html');
       }
+      // else: let index.html load normally
     } catch (e) { /* storage unavailable — just show the homepage */ }
   })();
 </script>
