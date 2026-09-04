@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-color-theme="nebula">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,10 +46,10 @@
       <p class="onboard-sub" data-i18n="ob_step1_sub">You can change this any time from the site menu.</p>
       <div class="onboard-options" data-group="language">
         <button type="button" class="onboard-option" data-value="English">
-          <i class="fa-solid fa-language"></i> <span data-i18n="ob_lang_english">English</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#4F46E5"><i class="fa-solid fa-language"></i></span> <span data-i18n="ob_lang_english">English</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Kiswahili">
-          <i class="fa-solid fa-language"></i> <span data-i18n="videos_kiswahili">Kiswahili</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#0EA5E9"><i class="fa-solid fa-language"></i></span> <span data-i18n="videos_kiswahili">Kiswahili</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
       </div>
       <div class="onboard-nav">
@@ -58,13 +58,21 @@
       </div>
     </div>
 
-    <!-- STEP 2 — JOIN -->
+    <!-- STEP 2 — GUEST OR JOIN -->
     <div class="onboard-step" data-step="2">
-      <span class="onboard-eyebrow"><i class="fa-solid fa-user"></i> <span data-i18n="ob_step2_eyebrow">Step 2 of 5</span></span>
-      <h1 class="onboard-title" data-i18n="ob_step2_title">Create your learning profile</h1>
-      <p class="onboard-sub" data-i18n="ob_step2_sub">Joining takes a few quick questions and unlocks your personalized learning experience.</p>
+      <span class="onboard-eyebrow"><i class="fa-solid fa-signs-post"></i> <span data-i18n="ob_step2_eyebrow">Step 2 of 5</span></span>
+      <h1 class="onboard-title" data-i18n="ob_step2_title">Welcome! How would you like to start?</h1>
+      <p class="onboard-sub" data-i18n="ob_step2_sub">Explore the app as a guest, or join to unlock personalized courses, progress tracking &amp; badges.</p>
 
       <div class="onboard-choice-row">
+        <button type="button" class="onboard-choice guest" data-choice="guest">
+          <span class="choice-icon"><i class="fa-solid fa-compass"></i></span>
+          <span class="choice-text">
+            <span class="choice-title d-block" data-i18n="ob_guest_title">Continue as Guest</span>
+            <span class="choice-sub" data-i18n="ob_guest_sub">Browse videos, books &amp; games right away</span>
+          </span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
         <button type="button" class="onboard-choice join" data-choice="join">
           <span class="choice-icon"><i class="fa-solid fa-user-plus"></i></span>
           <span class="choice-text">
@@ -88,16 +96,16 @@
       <p class="onboard-sub" data-i18n="ob_step3_sub">This helps us show age-appropriate content first.</p>
       <div class="onboard-options" data-group="level">
         <button type="button" class="onboard-option" data-value="Early Years (3-6)">
-          <i class="fa-solid fa-child-reaching"></i> <span data-i18n="ob_level_early">Early Years (3–6)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#10B981"><i class="fa-solid fa-child-reaching"></i></span> <span data-i18n="ob_level_early">Early Years (3–6)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Primary (7-12)">
-          <i class="fa-solid fa-child"></i> <span data-i18n="ob_level_primary">Primary (7–12)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#F59E0B"><i class="fa-solid fa-child"></i></span> <span data-i18n="ob_level_primary">Primary (7–12)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Secondary (13-17)">
-          <i class="fa-solid fa-user-graduate"></i> <span data-i18n="ob_level_secondary">Secondary (13–17)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#EF4444"><i class="fa-solid fa-user-graduate"></i></span> <span data-i18n="ob_level_secondary">Secondary (13–17)</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Parent / Teacher">
-          <i class="fa-solid fa-people-roof"></i> <span data-i18n="ob_level_parent">Parent / Teacher</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#8B5CF6"><i class="fa-solid fa-people-roof"></i></span> <span data-i18n="ob_level_parent">Parent / Teacher</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
       </div>
       <div class="onboard-nav">
@@ -113,19 +121,19 @@
       <p class="onboard-sub" data-i18n="ob_step4_sub">Just curious — helps us know what's working.</p>
       <div class="onboard-options" data-group="referral">
         <button type="button" class="onboard-option" data-value="Social Media">
-          <i class="fa-solid fa-hashtag"></i> <span data-i18n="ob_ref_social">Social Media</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#EC4899"><i class="fa-solid fa-hashtag"></i></span> <span data-i18n="ob_ref_social">Social Media</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Friend or Family">
-          <i class="fa-solid fa-user-group"></i> <span data-i18n="ob_ref_friend">Friend or Family</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#14B8A6"><i class="fa-solid fa-user-group"></i></span> <span data-i18n="ob_ref_friend">Friend or Family</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="School or Teacher">
-          <i class="fa-solid fa-chalkboard-user"></i> <span data-i18n="ob_ref_school">School or Teacher</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#F97316"><i class="fa-solid fa-chalkboard-user"></i></span> <span data-i18n="ob_ref_school">School or Teacher</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Search Engine">
-          <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="ob_ref_search">Search Engine</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#6366F1"><i class="fa-solid fa-magnifying-glass"></i></span> <span data-i18n="ob_ref_search">Search Engine</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Other">
-          <i class="fa-solid fa-ellipsis"></i> <span data-i18n="ob_ref_other">Other</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#22C55E"><i class="fa-solid fa-ellipsis"></i></span> <span data-i18n="ob_ref_other">Other</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
       </div>
       <div class="onboard-nav">
@@ -141,22 +149,22 @@
       <p class="onboard-sub" data-i18n="ob_step5_sub">Pick as many as apply — we'll tailor recommendations.</p>
       <div class="onboard-options" data-group="goals" data-multi="true">
         <button type="button" class="onboard-option" data-value="Improve grades">
-          <i class="fa-solid fa-chart-line"></i> <span data-i18n="ob_goal_grades">Improve grades</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#06B6D4"><i class="fa-solid fa-chart-line"></i></span> <span data-i18n="ob_goal_grades">Improve grades</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Learn to read">
-          <i class="fa-solid fa-book-open"></i> <span data-i18n="ob_goal_read">Learn to read</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#D946EF"><i class="fa-solid fa-book-open"></i></span> <span data-i18n="ob_goal_read">Learn to read</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Prepare for exams">
-          <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="ob_goal_exams">Prepare for exams</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#84CC16"><i class="fa-solid fa-pen-to-square"></i></span> <span data-i18n="ob_goal_exams">Prepare for exams</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Explore for fun">
-          <i class="fa-solid fa-face-smile"></i> <span data-i18n="ob_goal_fun">Explore for fun</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#3B82F6"><i class="fa-solid fa-face-smile"></i></span> <span data-i18n="ob_goal_fun">Explore for fun</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Support my child">
-          <i class="fa-solid fa-people-roof"></i> <span data-i18n="ob_goal_child">Support my child</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#F43F5E"><i class="fa-solid fa-people-roof"></i></span> <span data-i18n="ob_goal_child">Support my child</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
         <button type="button" class="onboard-option" data-value="Teach more effectively">
-          <i class="fa-solid fa-chalkboard"></i> <span data-i18n="ob_goal_teach">Teach more effectively</span> <span class="check"><i class="fa-solid fa-check"></i></span>
+          <span class="opt-icon" style="--opt-color:#A855F7"><i class="fa-solid fa-chalkboard"></i></span> <span data-i18n="ob_goal_teach">Teach more effectively</span> <span class="check"><i class="fa-solid fa-check"></i></span>
         </button>
       </div>
       <div class="onboard-nav">
@@ -232,9 +240,24 @@
     });
   });
 
-  // Step 2 — joining is required; there is no guest bypass.
+  // Step 2 — the fork: browse as a guest right away, or keep going to join.
+  function goGuest() {
+    try {
+      localStorage.setItem('s21-onboarded', '1');
+      localStorage.removeItem('s21-needs-onboarding');
+      localStorage.setItem('s21-account-type', 'guest');
+    } catch (e) { /* ignore */ }
+    window.location.href = 'splash.html';
+  }
+
   $$('.onboard-choice').forEach((btn) => {
     btn.addEventListener('click', () => {
+      const choice = btn.dataset.choice;
+      if (choice === 'guest') {
+        answers.accountType = 'guest';
+        goGuest();
+        return;
+      }
       answers.accountType = 'join';
       showStep(3);
     });

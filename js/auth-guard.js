@@ -1,14 +1,13 @@
 (function (global) {
   'use strict';
 
+  // NOTE: guest browsing is an intentional, supported part of the product —
+  // visitors can explore Smart21Brain without an account. This guard's job
+  // is narrower: on the login page specifically, it stops fake "Continue as
+  // Student / Teacher / Parent" role shortcuts from creating a session
+  // without real credentials. It no longer disables guest-access controls.
+
   const ROLE_NAMES = new Set(['student', 'teacher', 'parent', 'admin']);
-  const GUEST_PATTERNS = [
-    /continue as guest/i,
-    /continue as\s+(?:a\s+)?guest/i,
-    /guest access/i,
-    /browse the site now/i,
-    /join any time later/i,
-  ];
 
   function textOf(el) {
     return String(
@@ -40,14 +39,6 @@
     return !!roleFromElement(el);
   }
 
-  function isGuestBypassElement(el) {
-    if (!el) return false;
-    const tag = String(el.tagName || '').toUpperCase();
-    if (!['A', 'BUTTON', 'INPUT'].includes(tag)) return false;
-    const text = textOf(el);
-    return !!text && GUEST_PATTERNS.some((p) => p.test(text));
-  }
-
   function block(el, message) {
     if (!el || el.dataset.s21AuthBlocked === '1') return;
     el.dataset.s21AuthBlocked = '1';
@@ -60,12 +51,10 @@
   }
 
   function scan() {
-    if (!global.document?.querySelectorAll) return;
+    if (!global.document?.querySelectorAll || !isLoginPage()) return;
     global.document.querySelectorAll('a, button, input[type="button"], input[type="submit"]').forEach((el) => {
       if (isLoginRoleShortcut(el)) {
         block(el, 'Login required. Enter your email and password first.');
-      } else if (isGuestBypassElement(el)) {
-        block(el, 'Login required. Guest access is not allowed.');
       }
     });
   }
@@ -86,14 +75,6 @@
         event.stopPropagation();
         event.stopImmediatePropagation();
         global.window?.S21_toast?.('Please enter your email and password and click Log In. The ' + role + ' shortcut cannot bypass authentication.');
-        return;
-      }
-
-      if (isGuestBypassElement(target)) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        global.window?.S21_toast?.('Please sign in with a real account. Guest access is not allowed.');
       }
     }, true);
 
@@ -104,9 +85,8 @@
   }
 
   const api = {
-    isGuestBypassElement,
     isLoginRoleShortcut,
-    shouldAllowGuestFlow: () => false,
+    shouldAllowGuestFlow: () => true,
     blockGuestBypass: scan,
   };
 
