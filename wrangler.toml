@@ -7,13 +7,13 @@ compatibility_date = "2026-08-01"
 GOOGLE_CLIENT_ID = ""
 
 # Invite code required to self-register as an admin (register.html's
-# "Admin" role option). Do NOT put the real value here in plaintext —
-# set it as a secret instead so it's encrypted and out of source control:
+# "Admin" role option). This is a SECRET, not a var — don't add an
+# ADMIN_SIGNUP_CODE line here (a var and a secret can't share one name).
+# Set it with:
 #   wrangler secret put ADMIN_SIGNUP_CODE
-# Leaving it unset (as below) disables admin self-registration entirely;
-# admins can still be created via the seeded account in schema.sql or by
-# an existing admin updating a user's role directly in D1.
-ADMIN_SIGNUP_CODE = ""
+# Until it's set, admin self-registration is disabled entirely; admins
+# can still be created via the seeded account in schema.sql or by an
+# existing admin updating a user's role directly in D1.
 
 # Serves every static file in this folder (index.html, css/, js/, images/,
 # icons/, etc.) automatically. Requests to /api/* are intercepted by the
