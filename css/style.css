@@ -31,7 +31,7 @@
   --s21-accent: #EF476F;
   --s21-accent-dark: #D22F58;
   --s21-accent-tint: #FDECF1;
-  --s21-bg: #F7FAF8;
+  --s21-bg: #F1F7F3;
   --s21-text: #1E2A24;
   --s21-text-soft: #5B6470;
   --s21-white: #FFFFFF;
@@ -48,11 +48,17 @@
   /* ---- Surfaces ---- */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.5);
-  --card-shadow: 0 4px 18px color-mix(in srgb, var(--s21-primary) 8%, transparent);
-  --card-shadow-hover: 0 14px 32px color-mix(in srgb, var(--s21-primary) 16%, transparent);
+  --card-shadow: 0 6px 20px color-mix(in srgb, var(--s21-primary) 10%, transparent);
+  --card-shadow-hover: 0 16px 36px color-mix(in srgb, var(--s21-primary) 18%, transparent);
 
-  /* ---- Page background: soft blue + green tint instead of flat white ---- */
-  --s21-bg-image: linear-gradient(135deg, #EAF4FF 0%, #F6FBF8 42%, #E7F5EC 100%);
+  /* ---- Page background: a clearly visible soft blue → green wash
+     instead of an almost-white gradient, so white cards read as a
+     surface sitting on top of the page instead of melting into it. ---- */
+  --s21-bg-image:
+    radial-gradient(1200px 640px at 12% -8%, color-mix(in srgb, var(--subj-math) 16%, transparent), transparent 60%),
+    radial-gradient(1000px 620px at 100% 0%, color-mix(in srgb, var(--s21-accent) 12%, transparent), transparent 55%),
+    radial-gradient(1100px 700px at 50% 100%, color-mix(in srgb, var(--s21-primary) 14%, transparent), transparent 60%),
+    linear-gradient(135deg, #E4F0FF 0%, #F3FBF6 45%, #E1F3E8 100%);
 
   /* ---- Type ---- */
   --font-display: 'Poppins', 'Segoe UI', sans-serif;
@@ -469,7 +475,7 @@ a:hover { color: var(--s21-accent); }
 .s21-card {
   background: var(--s21-white);
   border-radius: var(--radius-md);
-  border: 1px solid var(--s21-border);
+  border: 1px solid color-mix(in srgb, var(--s21-primary) 10%, var(--s21-border));
   box-shadow: var(--card-shadow);
   transition: transform .3s var(--ease), box-shadow .3s var(--ease);
   overflow: hidden;
@@ -1481,6 +1487,8 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 .divider-soft { height: 1px; background: var(--s21-border); border: none; }
 .rounded-xl { border-radius: var(--radius-lg) !important; }
 .bg-primary-soft { background: var(--s21-primary-light); }
+.bg-secondary-soft { background: var(--s21-secondary-tint); }
+.bg-accent-soft { background: var(--s21-accent-tint); }
 .skip-link {
   position: absolute; left: -999px; top: 0; background: var(--s21-primary); color: #fff;
   padding: .7rem 1.2rem; z-index: 2000; border-radius: 0 0 8px 0;
