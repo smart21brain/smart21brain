@@ -5,6 +5,22 @@
    on every page, and this keeps them all in sync. */
 (function () {
   var STORAGE_KEY = 's21-theme';
+  var RESET_KEY = 's21-theme-reset-v2';
+
+  // One-time force-reset: any browser carrying an old saved preference
+  // (dark or light) from before this update — including leftovers from
+  // the color-theme picker that was removed — gets wiped exactly once so
+  // dark mode is what everyone actually sees by default again. After
+  // this runs once per browser, a visitor's own toggle choice is sticky
+  // as normal; this doesn't run again.
+  try {
+    if (!localStorage.getItem(RESET_KEY)) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('s21-color-theme');
+      localStorage.removeItem('s21-glass');
+      localStorage.setItem(RESET_KEY, '1');
+    }
+  } catch (e) { /* ignore */ }
 
   function getPreferredTheme() {
     try {
