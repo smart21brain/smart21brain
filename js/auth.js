@@ -113,6 +113,15 @@
       reader.readAsDataURL(file);
     });
 
+    // Registration role tabs: show the admin invite-code field only when
+    // "Admin" is selected.
+    const regAdminCodeWrap = document.getElementById('reg-admin-code-wrap');
+    document.querySelectorAll('.auth-role-tabs input[name="role"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        regAdminCodeWrap?.classList.toggle('d-none', radio.value !== 'admin' || !radio.checked);
+      });
+    });
+
     const registerForm = document.getElementById('register-form');
     registerForm?.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -123,11 +132,15 @@
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
       const avatarFile = document.getElementById('reg-avatar')?.files?.[0] || null;
+      const role = document.querySelector('.auth-role-tabs input[name="role"]:checked')?.value || 'user';
+      const adminCode = document.getElementById('reg-admin-code')?.value || '';
 
       const formData = new FormData();
       formData.append('name', name);
       formData.append('email', email);
       formData.append('password', password);
+      formData.append('role', role);
+      if (role === 'admin') formData.append('admin_code', adminCode);
       if (avatarFile) formData.append('avatar', avatarFile);
 
       fetch('/api/auth/register', {

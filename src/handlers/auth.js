@@ -5,19 +5,25 @@ import {
 
 const AVATAR_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+// DB roles. The register form's "Student" option maps to 'user' (the
+// student/general dashboard.html role) to match the rest of the codebase.
+const ALLOWED_ROLES = ['user', 'teacher', 'parent', 'admin'];
 
 export async function register({ request, env }) {
   const contentType = request.headers.get('Content-Type') || '';
-  let name, email, password, avatarFile = null;
+  let name, email, password, role, adminCode, avatarFile = null;
 
   if (contentType.includes('multipart/form-data')) {
     // Registration with an optional profile photo comes in as multipart
-    // form data (fields: name, email, password, and file field "avatar").
+    // form data (fields: name, email, password, role, admin_code, and a
+    // file field "avatar").
     const form = await request.formData().catch(() => null);
     if (!form) return badRequest('Could not read the submitted form.');
     name = form.get('name');
     email = form.get('email');
     password = form.get('password');
+    role = form.get('role');
+    adminCode = form.get('admin_code');
     const file = form.get('avatar');
     if (file && typeof file !== 'string' && file.size > 0) avatarFile = file;
   } else {
@@ -25,6 +31,8 @@ export async function register({ request, env }) {
     name = body?.name;
     email = body?.email;
     password = body?.password;
+    role = body?.role;
+    adminCode = body?.admin_code;
   }
 
   if (!name || !email || !password) {
@@ -32,6 +40,17 @@ export async function register({ request, env }) {
   }
   email = String(email).trim().toLowerCase();
   if (String(password).length < 8) return badRequest('Password must be at least 8 characters.');
+
+  role = String(role || 'user').toLowerCase();
+  if (!ALLOWED_ROLES.includes(role)) role = 'user';
+  // Self-service admin signup is gated behind a secret invite code (set
+  // ADMIN_SIGNUP_CODE via `wrangler secret put`) — otherwise anyone could
+  // grant themselves full admin control of the site.
+  if (role === 'admin') {
+    if (!env.ADMIN_SIGNUP_CODE || String(adminCode || '') !== env.ADMIN_SIGNUP_CODE) {
+      return badRequest('A valid admin invite code is required to create an admin account.');
+    }
+  }
 
   if (avatarFile) {
     if (!AVATAR_TYPES[avatarFile.type]) {
@@ -49,7 +68,7 @@ export async function register({ request, env }) {
   const cleanName = String(name).trim();
   const result = await env.DB.prepare(
     'INSERT INTO users (name, email, password_hash, password_salt, role) VALUES (?, ?, ?, ?, ?)'
-  ).bind(cleanName, email, hash, salt, 'user').run();
+  ).bind(cleanName, email, hash, salt, role).run();
 
   const userId = result.meta.last_row_id;
 
@@ -65,7 +84,7 @@ export async function register({ request, env }) {
   const { token, expires } = await createSession(env.DB, userId);
 
   return json(
-    { user: { id: userId, name: cleanName, email, role: 'user', avatar_key: avatarKey } },
+    { user: { id: userId, name: cleanName, email, role, avatar_key: avatarKey } },
     { status: 201, headers: { 'Set-Cookie': sessionCookie(token, expires) } }
   );
 }

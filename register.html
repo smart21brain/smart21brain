@@ -64,14 +64,14 @@
         </div>
 
         <div class="auth-role-tabs" role="radiogroup" aria-label="Account type">
-          <input type="radio" name="role" id="role-student" checked>
+          <input type="radio" name="role" id="role-student" value="user" checked>
           <label for="role-student"><i class="fa-solid fa-child fa-lg"></i> <span data-i18n="admin_student">Student</span></label>
-          <input type="radio" name="role" id="role-parent">
+          <input type="radio" name="role" id="role-parent" value="parent">
           <label for="role-parent"><i class="fa-solid fa-people-roof fa-lg"></i> <span data-i18n="admin_parent">Parent</span></label>
-          <input type="radio" name="role" id="role-teacher">
+          <input type="radio" name="role" id="role-teacher" value="teacher">
           <label for="role-teacher"><i class="fa-solid fa-chalkboard-user fa-lg"></i> <span data-i18n="admin_teacher">Teacher</span></label>
-          <input type="radio" name="role" id="role-school">
-          <label for="role-school"><i class="fa-solid fa-school fa-lg"></i> <span data-i18n="admin_school">School</span></label>
+          <input type="radio" name="role" id="role-admin" value="admin">
+          <label for="role-admin"><i class="fa-solid fa-user-shield fa-lg"></i> <span data-i18n="admin_admin">Admin</span></label>
         </div>
 
         <form class="needs-validation" id="register-form" novalidate>
@@ -111,6 +111,11 @@
             <input type="checkbox" class="form-check-input" id="reg-terms" required>
             <label class="form-check-label text-soft" for="reg-terms" style="font-size:.82rem"><span data-i18n="register_i_agree_to_the">I agree to the</span> <a href="#" data-i18n="footer_terms">Terms</a> <span data-i18n="register_and">and</span> <a href="#" data-i18n="register_child_safety_policy">Child Safety Policy</a>.</label>
             <div class="invalid-feedback" data-i18n="register_you_must_agree_before_continuing">You must agree before continuing.</div>
+          </div>
+          <div class="mb-4 d-none" id="reg-admin-code-wrap">
+            <label for="reg-admin-code" class="form-label fw-bold" style="font-size:.85rem">Admin invite code</label>
+            <input type="text" class="form-control s21-input" id="reg-admin-code" placeholder="Provided by your site administrator">
+            <div class="form-text" style="font-size:.78rem">Admin accounts require an invite code — ask an existing administrator for one.</div>
           </div>
           <button type="submit" class="btn-s21 btn-s21-primary w-100 justify-content-center mb-3" data-i18n="register_create_account">Create Account</button>
           <p class="text-center text-soft" style="font-size:.85rem"><span data-i18n="register_already_have_an_account">Already have an account?</span> <a href="login.html" class="fw-bold" data-i18n="login_log_in">Log in</a></p>

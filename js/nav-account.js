@@ -39,6 +39,13 @@
     document.querySelectorAll('[data-guest-nav="mobile"]').forEach((el) => {
       el.innerHTML = mobileMarkup(user);
     });
+    // Admins get a shortcut: the site logo (top navbar) takes them straight
+    // to their admin portal instead of the homepage, on every page.
+    if (user.role === 'admin') {
+      document.querySelectorAll('header a.s21-logo[href]').forEach((el) => {
+        el.setAttribute('href', 'admin.html');
+      });
+    }
   }
 
   function init() {

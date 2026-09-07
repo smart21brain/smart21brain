@@ -84,9 +84,13 @@ export default {
     const url = new URL(request.url);
 
     const normalizedPath = url.pathname.replace(/\/+$/, '') || '/';
+
+    // Each non-admin role has exactly one home dashboard. Admins can see
+    // every dashboard (useful for support/oversight); everyone else is
+    // confined to their own.
     const protectedPages = {
-      '/dashboard.html': ['user', 'admin', 'teacher', 'parent'],
-      '/dashboard': ['user', 'admin', 'teacher', 'parent'],
+      '/dashboard.html': ['user', 'admin'],
+      '/dashboard': ['user', 'admin'],
       '/admin.html': ['admin'],
       '/admin': ['admin'],
       '/teachers.html': ['teacher', 'admin'],
@@ -104,7 +108,13 @@ export default {
         return Response.redirect(new URL('/login.html', request.url), 302);
       }
       if (!allowedRoles.includes(user.role)) {
-        return Response.redirect(new URL('/dashboard.html', request.url), 302);
+        // Send them to *their own* dashboard, not always /dashboard.html —
+        // otherwise a teacher/parent bounced off another role's page would
+        // land back on a page they also can't access, looping forever.
+        const roleHome = {
+          admin: '/admin.html', teacher: '/teachers.html', parent: '/parents.html', user: '/dashboard.html',
+        };
+        return Response.redirect(new URL(roleHome[user.role] || '/dashboard.html', request.url), 302);
       }
     }
 
