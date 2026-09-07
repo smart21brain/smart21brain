@@ -249,6 +249,51 @@
   </section>
 
   <script>
+    // Admin-posted videos (uploaded file or external URL) — fetched live and
+    // inserted at the front of the grid, using the same card markup/filters.
+    (async function loadAdminVideos() {
+      const grid = document.getElementById('videoGrid');
+      if (!grid) return;
+      try {
+        const res = await fetch('/api/videos');
+        const { videos } = await res.json();
+        if (!Array.isArray(videos) || !videos.length) return;
+
+        function escapeHtml(str) {
+          const d = document.createElement('div');
+          d.textContent = str == null ? '' : String(str);
+          return d.innerHTML;
+        }
+        function formatDuration(sec) {
+          if (!sec) return 'New';
+          const m = Math.floor(sec / 60), s = Math.round(sec % 60);
+          return `${m}:${String(s).padStart(2, '0')}`;
+        }
+
+        const cardsHtml = videos.map((v) => {
+          const category = (v.subject || 'all').toLowerCase();
+          const thumb = v.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&q=70&auto=format&fit=crop';
+          const href = `video.html?id=${v.id}`;
+          return `
+            <div class="col-sm-6 col-lg-4 col-xl-3">
+              <div class="s21-card media-card" data-category="${escapeHtml(category)}">
+                <div class="thumb-wrap">
+                  <img src="${escapeHtml(thumb)}" alt="${escapeHtml(v.title)}" loading="lazy">
+                  ${v.subject ? `<span class="cat-badge">${escapeHtml(v.subject)}</span>` : ''}
+                  <a href="${href}" class="play-btn" aria-label="Play: ${escapeHtml(v.title)}"><span><i class="fa-solid fa-play"></i></span></a>
+                  <span class="duration-badge">${formatDuration(v.duration_seconds)}</span>
+                </div>
+                <div class="body"><h3><a href="${href}" class="text-reset">${escapeHtml(v.title)}</a></h3><div class="meta">${escapeHtml(v.description || '')}</div></div>
+              </div>
+            </div>`;
+        }).join('');
+
+        grid.insertAdjacentHTML('afterbegin', cardsHtml);
+      } catch {
+        // Silently fall back to the demo cards if the API isn't reachable.
+      }
+    })();
+
     document.querySelectorAll('[data-video-filter]').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('[data-video-filter]').forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed','false'); });

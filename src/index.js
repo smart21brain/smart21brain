@@ -4,6 +4,7 @@ import * as games from './handlers/games.js';
 import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
+import * as videos from './handlers/videos.js';
 import { getDashboard } from './handlers/dashboard.js';
 import * as newsletter from './handlers/newsletter.js';
 import * as contact from './handlers/contact.js';
@@ -66,6 +67,14 @@ router.get('/api/materials', materials.listMaterials);
 router.post('/api/materials', materials.uploadMaterial);
 router.get('/api/materials/:id', materials.getMaterial);
 router.delete('/api/materials/:id', materials.deleteMaterial);
+
+// ---- Videos (R2 file upload or external URL; admin-only writes) ----
+router.get('/api/videos', videos.listVideos);
+router.post('/api/videos', videos.createVideo);
+router.get('/api/videos/:id', videos.getVideo);
+router.put('/api/videos/:id', videos.updateVideo);
+router.delete('/api/videos/:id', videos.deleteVideo);
+router.get('/api/videos/:id/stream', videos.streamVideo);
 
 // ---- Dashboard ----
 router.get('/api/dashboard', getDashboard);

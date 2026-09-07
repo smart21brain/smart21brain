@@ -160,6 +160,27 @@ CREATE TABLE IF NOT EXISTS materials (
 );
 
 -- ---------------------------------------------------------------------
+-- Videos (admin-posted). Either an uploaded file (stored in the same
+-- MATERIALS R2 bucket, under a videos/ prefix) or a link to an
+-- externally-hosted video (YouTube, Vimeo, a CDN, etc).
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS videos (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  title             TEXT NOT NULL,
+  subject           TEXT,
+  description       TEXT,
+  source_type       TEXT NOT NULL DEFAULT 'file',  -- 'file' (R2) | 'url' (external link/embed)
+  file_key          TEXT,                           -- R2 object key, when source_type = 'file'
+  external_url      TEXT,                           -- link, when source_type = 'url'
+  thumbnail_url      TEXT,
+  duration_seconds  INTEGER,
+  published         INTEGER NOT NULL DEFAULT 1,      -- 0/1 — only published videos are public
+  created_by        INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_videos_published ON videos(published);
+
+-- ---------------------------------------------------------------------
 -- Seed an initial admin so the panel is reachable after first deploy.
 -- ⚠️ Change this password immediately after first login — see README.
 -- Email: admin@smart21brain.com   Password: ChangeMe123!

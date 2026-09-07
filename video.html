@@ -138,8 +138,8 @@
           <!-- TITLE + META -->
           <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mt-3" data-aos="fade-up">
             <div>
-              <span class="badge-pill mb-2"><i class="fa-solid fa-calculator"></i> <span data-i18n="game_mathematics">Mathematics</span></span>
-              <h1 class="h4 mb-1" data-i18n="video_times_tables_in_5_minutes">Times Tables in 5 Minutes</h1>
+              <span class="badge-pill mb-2" id="video-subject-badge"><i class="fa-solid fa-calculator"></i> <span data-i18n="game_mathematics">Mathematics</span></span>
+              <h1 class="h4 mb-1" id="video-title" data-i18n="video_times_tables_in_5_minutes">Times Tables in 5 Minutes</h1>
               <div class="text-soft" style="font-size:.85rem" data-i18n="video_120_483_views_published_jul_3_2026">120,483 views · Published Jul 3, 2026</div>
             </div>
             <div class="d-flex gap-2">
@@ -168,16 +168,18 @@
 
           <!-- DESCRIPTION -->
           <div class="s21-card p-3 mb-4" data-aos="fade-up">
-            <p class="mb-0 text-soft" style="font-size:.88rem" data-i18n="video_learn_the_times_tables_from_2_to_12_">Learn the times tables from 2 to 12 using patterns, tricks and a bit of rhythm — no rote memorization required. Perfect for a quick warm-up before homework or a classroom refresher.</p>
+            <p class="mb-0 text-soft" style="font-size:.88rem" id="video-description" data-i18n="video_learn_the_times_tables_from_2_to_12_">Learn the times tables from 2 to 12 using patterns, tricks and a bit of rhythm — no rote memorization required. Perfect for a quick warm-up before homework or a classroom refresher.</p>
           </div>
 
           <!-- CHAPTERS -->
-          <h2 class="h6 mb-2" data-aos="fade-up"><i class="fa-solid fa-list-ol" style="color:var(--s21-primary)"></i> <span data-i18n="video_chapters">Chapters</span></h2>
-          <div class="s21-card p-2 mb-4" data-aos="fade-up">
-            <div class="chapter-marker active" data-start="0" data-end="20"><span data-i18n="video_introduction">Introduction</span><span class="text-soft">0:00</span></div>
-            <div class="chapter-marker" data-start="20" data-end="45"><span data-i18n="video_the_pattern_trick_for_9s">The pattern trick for 9s</span><span class="text-soft">0:20</span></div>
-            <div class="chapter-marker" data-start="45" data-end="70"><span data-i18n="video_practice_round">Practice round</span><span class="text-soft">0:45</span></div>
-            <div class="chapter-marker" data-start="70" data-end="999"><span data-i18n="video_recap_next_steps">Recap &amp; next steps</span><span class="text-soft">1:10</span></div>
+          <div id="video-chapters-section">
+            <h2 class="h6 mb-2" data-aos="fade-up"><i class="fa-solid fa-list-ol" style="color:var(--s21-primary)"></i> <span data-i18n="video_chapters">Chapters</span></h2>
+            <div class="s21-card p-2 mb-4" data-aos="fade-up">
+              <div class="chapter-marker active" data-start="0" data-end="20"><span data-i18n="video_introduction">Introduction</span><span class="text-soft">0:00</span></div>
+              <div class="chapter-marker" data-start="20" data-end="45"><span data-i18n="video_the_pattern_trick_for_9s">The pattern trick for 9s</span><span class="text-soft">0:20</span></div>
+              <div class="chapter-marker" data-start="45" data-end="70"><span data-i18n="video_practice_round">Practice round</span><span class="text-soft">0:45</span></div>
+              <div class="chapter-marker" data-start="70" data-end="999"><span data-i18n="video_recap_next_steps">Recap &amp; next steps</span><span class="text-soft">1:10</span></div>
+            </div>
           </div>
 
           <!-- COMMENTS -->
@@ -350,6 +352,68 @@
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
 <script src="js/video.js"></script>
+<script>
+  // If this page was opened as video.html?id=123 (e.g. from the VideoHub grid
+  // or an admin-posted link), load that video instead of the static demo.
+  (async function loadRequestedVideo() {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) return; // no id -> keep showing the demo video as-is
+
+    try {
+      const res = await fetch(`/api/videos/${encodeURIComponent(id)}`);
+      if (!res.ok) return;
+      const { video } = await res.json();
+      if (!video) return;
+
+      const titleEl = document.getElementById('video-title');
+      const badgeEl = document.getElementById('video-subject-badge');
+      const descEl = document.getElementById('video-description');
+      const chaptersEl = document.getElementById('video-chapters-section');
+      if (titleEl) { titleEl.textContent = video.title; titleEl.removeAttribute('data-i18n'); }
+      if (descEl) { descEl.textContent = video.description || ''; descEl.removeAttribute('data-i18n'); }
+      if (badgeEl) badgeEl.querySelector('span')?.replaceChildren(document.createTextNode(video.subject || 'Video'));
+      document.title = `${video.title} — Smart21Brain VideoHub`;
+      // Admin-posted videos don't carry the demo's timestamped chapter list.
+      if (chaptersEl) chaptersEl.style.display = 'none';
+
+      const embedUrl = toEmbedUrl(video.external_url);
+      const shell = document.getElementById('player-shell');
+      if (video.source_type === 'url' && embedUrl) {
+        // YouTube/Vimeo-style link: swap the custom player for a simple embed.
+        shell.innerHTML = `<iframe src="${embedUrl}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:inherit" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(video.title)}"></iframe>`;
+      } else {
+        // Direct file — either our own R2 stream or a direct link to an mp4/webm.
+        const playerVideo = document.getElementById('player-video');
+        const source = playerVideo?.querySelector('source');
+        if (playerVideo && source) {
+          source.src = video.src;
+          if (video.thumbnail_url) playerVideo.setAttribute('poster', video.thumbnail_url);
+          playerVideo.load();
+        }
+      }
+    } catch {
+      // Fetch failed — leave the demo video in place rather than break the page.
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str == null ? '' : String(str);
+      return d.innerHTML;
+    }
+    function toEmbedUrl(url) {
+      if (!url) return null;
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtube.com') && u.searchParams.get('v')) {
+          return `https://www.youtube.com/embed/${u.searchParams.get('v')}`;
+        }
+        if (u.hostname === 'youtu.be') return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+        if (u.hostname.includes('vimeo.com')) return `https://player.vimeo.com/video/${u.pathname.split('/').pop()}`;
+        return null; // not a recognized embed host — treated as a direct file link instead
+      } catch { return null; }
+    }
+  })();
+</script>
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>
 </html>

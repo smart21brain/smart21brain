@@ -108,6 +108,53 @@
       }
     });
 
+    // Post Video — toggle file-vs-URL fields, then upload (multipart) or POST JSON
+    const videoForm = document.getElementById('admin-video-form');
+    if (videoForm) {
+      const fileWrap = document.getElementById('video-source-file');
+      const urlWrap = document.getElementById('video-source-url');
+      videoForm.querySelectorAll('input[name="source"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+          const isFile = videoForm.querySelector('input[name="source"]:checked').value === 'file';
+          fileWrap.classList.toggle('d-none', !isFile);
+          urlWrap.classList.toggle('d-none', isFile);
+        });
+      });
+
+      videoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = new FormData(videoForm);
+        const source = f.get('source');
+        try {
+          if (source === 'file') {
+            if (!f.get('file') || !f.get('file').size) throw new Error('Choose a video file to upload.');
+            f.delete('source');
+            f.delete('external_url');
+            const res = await fetch('/api/videos', { method: 'POST', credentials: 'include', body: f });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Upload failed.');
+          } else {
+            const external_url = f.get('external_url');
+            if (!external_url) throw new Error('Paste a video URL.');
+            await postJSON('/api/videos', {
+              title: f.get('title'),
+              subject: f.get('subject') || null,
+              description: f.get('description') || null,
+              external_url,
+              thumbnail_url: f.get('thumbnail_url') || null,
+            });
+          }
+          say('✅ Video posted — now live on every video listing site-wide.');
+          videoForm.reset();
+          fileWrap.classList.remove('d-none');
+          urlWrap.classList.add('d-none');
+          loadVideos();
+        } catch (err) {
+          say('❌ ' + err.message, true);
+        }
+      });
+    }
+
     // ---- Manage existing content: list + delete ----
     async function del(url) {
       const res = await fetch(url, { method: 'DELETE', credentials: 'include' });
@@ -155,6 +202,16 @@
         wireRowDeletes(el);
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load materials.</p>'; }
     }
+    async function loadVideos() {
+      const el = document.getElementById('mg-videos-list');
+      if (!el) return;
+      try {
+        const { videos } = await (await fetch('/api/videos', { credentials: 'include' })).json();
+        el.innerHTML = videos.length ? videos.map((v) => row(v.title, v.subject, `/api/videos/${v.id}`, loadVideos)).join('')
+          : '<p class="text-soft" style="font-size:.85rem">No videos yet.</p>';
+        wireRowDeletes(el);
+      } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</p>'; }
+    }
 
     function row(title, subtitle, deleteUrl, reload) {
       return `
@@ -180,7 +237,7 @@
           try {
             await del(btn.dataset.deleteUrl);
             say('✅ Deleted.');
-            loadGames(); loadQuizzes(); loadBlog(); loadMaterials();
+            loadGames(); loadQuizzes(); loadBlog(); loadMaterials(); loadVideos();
           } catch (err) {
             say('❌ ' + err.message, true);
           }
@@ -192,5 +249,6 @@
     loadQuizzes();
     loadBlog();
     loadMaterials();
+    loadVideos();
   });
 })();
