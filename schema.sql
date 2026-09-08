@@ -174,6 +174,10 @@ CREATE TABLE IF NOT EXISTS videos (
   external_url      TEXT,                           -- link, when source_type = 'url'
   thumbnail_url      TEXT,
   duration_seconds  INTEGER,
+  -- Where this video is shown on the site, e.g. ",videohub,kids,".
+  -- Stored comma-padded so "LIKE '%,kids,%'" matches whole tags only.
+  -- One of: videohub | cartoons | courses | kids (any combination).
+  placements        TEXT NOT NULL DEFAULT ',videohub,',
   published         INTEGER NOT NULL DEFAULT 1,      -- 0/1 — only published videos are public
   created_by        INTEGER REFERENCES users(id) ON DELETE SET NULL,
   created_at        TEXT NOT NULL DEFAULT (datetime('now'))

@@ -162,7 +162,7 @@
   <section class="section pt-0">
     <div class="container">
       <h2 class="text-center mb-4" data-aos="fade-up" data-i18n="kids_watch_play_now">Watch &amp; play now</h2>
-      <div class="row g-4">
+      <div class="row g-4" id="kidsWatchGrid">
         
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
           <div class="s21-card media-card">
@@ -318,5 +318,31 @@
 <script src="js/nav-account.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
+<script>
+  // Admin-posted videos placed on "Kids Zone" — inserted at the front of the "Watch & play now" grid.
+  (async function loadAdminKidsVideos() {
+    const grid = document.getElementById('kidsWatchGrid');
+    if (!grid) return;
+    try {
+      const { videos } = await (await fetch('/api/videos?placement=kids')).json();
+      if (!Array.isArray(videos) || !videos.length) return;
+      const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+      const thumbFallback = 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=70&auto=format&fit=crop';
+      const formatDuration = (sec) => { if (!sec) return 'New'; const m = Math.floor(sec / 60), s = Math.round(sec % 60); return `${m}:${String(s).padStart(2, '0')}`; };
+      const html = videos.map((v) => `
+        <div class="col-6 col-md-3" data-aos="fade-up">
+          <div class="s21-card media-card">
+            <div class="thumb-wrap">
+              <img src="${esc(v.thumbnail_url || thumbFallback)}" alt="${esc(v.title)}" loading="lazy">
+              <a href="video.html?id=${v.id}" class="play-btn" aria-label="Play: ${esc(v.title)}"><span><i class="fa-solid fa-play"></i></span></a>
+              <span class="duration-badge">${formatDuration(v.duration_seconds)}</span>
+            </div>
+            <div class="body"><h3 class="h6 mb-0">${esc(v.title)}</h3></div>
+          </div>
+        </div>`).join('');
+      grid.insertAdjacentHTML('afterbegin', html);
+    } catch { /* fall back to the demo cards */ }
+  })();
+</script>
 </body>
 </html>

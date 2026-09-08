@@ -142,9 +142,10 @@
               description: f.get('description') || null,
               external_url,
               thumbnail_url: f.get('thumbnail_url') || null,
+              placements: f.getAll('placements'),
             });
           }
-          say('✅ Video posted — now live on every video listing site-wide.');
+          say('✅ Video posted — now live wherever you selected.');
           videoForm.reset();
           fileWrap.classList.remove('d-none');
           urlWrap.classList.add('d-none');
@@ -207,7 +208,7 @@
       if (!el) return;
       try {
         const { videos } = await (await fetch('/api/videos', { credentials: 'include' })).json();
-        el.innerHTML = videos.length ? videos.map((v) => row(v.title, v.subject, `/api/videos/${v.id}`, loadVideos)).join('')
+        el.innerHTML = videos.length ? videos.map((v) => row(v.title, [v.subject, v.placements.join(', ')].filter(Boolean).join(' · '), `/api/videos/${v.id}`, loadVideos)).join('')
           : '<p class="text-soft" style="font-size:.85rem">No videos yet.</p>';
         wireRowDeletes(el);
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</p>'; }
@@ -216,9 +217,22 @@
     const ROLE_LABELS = { user: 'Student', teacher: 'Teacher', parent: 'Parent', admin: 'Admin' };
     async function loadUsers() {
       const tbody = document.getElementById('admin-users-tbody');
-      if (!tbody) return;
       try {
         const { users } = await (await fetch('/api/users', { credentials: 'include' })).json();
+
+        // Stat cards: real counts by role, computed from the same response
+        // that fills the table below — no extra request needed.
+        const counts = { user: 0, teacher: 0, parent: 0, admin: 0 };
+        users.forEach((u) => { if (u.role in counts) counts[u.role]++; });
+        const setStat = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n.toLocaleString(); };
+        setStat('stat-total-users', users.length);
+        setStat('stat-students', counts.user);
+        setStat('stat-teachers', counts.teacher);
+        setStat('stat-parents', counts.parent);
+        const lastUpdated = document.getElementById('admin-last-updated');
+        if (lastUpdated) lastUpdated.textContent = `Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+        if (!tbody) return;
         tbody.innerHTML = users.length ? users.map((u) => `
           <tr>
             <td>${escapeHtml(u.name)}<div class="text-soft" style="font-size:.75rem">${escapeHtml(u.email)}</div></td>
@@ -251,7 +265,7 @@
             }
           });
         });
-      } catch { tbody.innerHTML = '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">Couldn\'t load users.</td></tr>'; }
+      } catch { if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">Couldn\'t load users.</td></tr>'; }
     }
 
     function row(title, subtitle, deleteUrl, reload) {

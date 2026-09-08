@@ -1169,12 +1169,23 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
    via the key-free google.com/maps?...&output=embed URL format. */
 
 /* ---- Admin dashboard ---- */
+.admin-topbar .admin-console-badge {
+  margin-left: .75rem;
+  font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+  color: var(--s21-text-soft);
+  border: 1px solid var(--s21-border);
+  border-radius: var(--radius-pill);
+  padding: .3rem .8rem;
+}
 .admin-shell { display: flex; min-height: calc(100vh - 76px); }
 .admin-sidebar {
   width: 240px; flex-shrink: 0;
   background: var(--s21-white);
   border-right: 1px solid var(--s21-border);
   padding: 1.6rem 1rem;
+  position: sticky; top: 76px;
+  height: calc(100vh - 76px);
+  overflow-y: auto;
 }
 .admin-sidebar .nav-link {
   display: flex; align-items: center; gap: .7rem;
@@ -1185,6 +1196,8 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
   background: var(--s21-primary-light); color: var(--s21-primary);
 }
 .admin-content { flex: 1; padding: 1.8rem; min-width: 0; }
+.admin-content .dash-stat-card { text-align: left; display: flex; align-items: center; gap: 1rem; }
+.admin-content .dash-stat-card .stat-icon { margin: 0; flex-shrink: 0; }
 .moderation-row {
   display: flex; align-items: center; gap: 1rem;
   padding: .9rem; border-radius: var(--radius-md);

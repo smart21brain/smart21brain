@@ -255,7 +255,7 @@
       const grid = document.getElementById('videoGrid');
       if (!grid) return;
       try {
-        const res = await fetch('/api/videos');
+        const res = await fetch('/api/videos?placement=videohub');
         const { videos } = await res.json();
         if (!Array.isArray(videos) || !videos.length) return;
 

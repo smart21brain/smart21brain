@@ -6,16 +6,38 @@ import { getSessionUser, json, badRequest, unauthorized, forbidden, notFound } f
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg'];
 
-function withSrc(v) {
-  return { ...v, src: v.source_type === 'url' ? v.external_url : `/api/videos/${v.id}/stream` };
+// Where a video can be shown on the site. An admin picks one or more of
+// these when posting a video; it then appears in that page's grid.
+const ALLOWED_PLACEMENTS = ['videohub', 'cartoons', 'courses', 'kids'];
+
+function normalizePlacements(input) {
+  const list = Array.isArray(input) ? input : String(input || '').split(',');
+  const clean = [...new Set(list.map((p) => String(p).trim().toLowerCase()).filter((p) => ALLOWED_PLACEMENTS.includes(p)))];
+  if (!clean.length) clean.push('videohub');
+  return `,${clean.join(',')},`; // comma-padded so LIKE '%,tag,%' matches whole tags only
 }
 
-export async function listVideos({ env }) {
-  const { results } = await env.DB.prepare(
-    `SELECT id, title, subject, description, source_type, external_url, thumbnail_url,
-            duration_seconds, created_at
-     FROM videos WHERE published = 1 ORDER BY created_at DESC`
-  ).all();
+function withSrc(v) {
+  return {
+    ...v,
+    src: v.source_type === 'url' ? v.external_url : `/api/videos/${v.id}/stream`,
+    placements: (v.placements || ',videohub,').split(',').filter(Boolean),
+  };
+}
+
+export async function listVideos({ url, env }) {
+  const placement = url.searchParams.get('placement');
+  let query = `SELECT id, title, subject, description, source_type, external_url, thumbnail_url,
+                      duration_seconds, placements, created_at
+               FROM videos WHERE published = 1`;
+  const binds = [];
+  if (placement && ALLOWED_PLACEMENTS.includes(placement)) {
+    query += ' AND placements LIKE ?';
+    binds.push(`%,${placement},%`);
+  }
+  query += ' ORDER BY created_at DESC';
+
+  const { results } = await env.DB.prepare(query).bind(...binds).all();
   return json({ videos: results.map(withSrc) });
 }
 
@@ -55,14 +77,15 @@ export async function createVideo({ request, env }) {
     });
 
     const result = await env.DB.prepare(
-      `INSERT INTO videos (title, subject, description, source_type, file_key, thumbnail_url, published, created_by)
-       VALUES (?, ?, ?, 'file', ?, ?, ?, ?)`
+      `INSERT INTO videos (title, subject, description, source_type, file_key, thumbnail_url, placements, published, created_by)
+       VALUES (?, ?, ?, 'file', ?, ?, ?, ?, ?)`
     ).bind(
       title,
       form.get('subject') || null,
       form.get('description') || null,
       key,
       form.get('thumbnail_url') || null,
+      normalizePlacements(form.getAll('placements')),
       form.get('published') === 'false' ? 0 : 1,
       user.id
     ).run();
@@ -82,14 +105,15 @@ export async function createVideo({ request, env }) {
   }
 
   const result = await env.DB.prepare(
-    `INSERT INTO videos (title, subject, description, source_type, external_url, thumbnail_url, published, created_by)
-     VALUES (?, ?, ?, 'url', ?, ?, ?, ?)`
+    `INSERT INTO videos (title, subject, description, source_type, external_url, thumbnail_url, placements, published, created_by)
+     VALUES (?, ?, ?, 'url', ?, ?, ?, ?, ?)`
   ).bind(
     body.title,
     body.subject || null,
     body.description || null,
     body.external_url,
     body.thumbnail_url || null,
+    normalizePlacements(body.placements),
     body.published === false ? 0 : 1,
     user.id
   ).run();
@@ -107,11 +131,12 @@ export async function updateVideo({ request, params, env }) {
 
   const body = await request.json().catch(() => ({}));
   await env.DB.prepare(
-    `UPDATE videos SET title = ?, subject = ?, description = ?, published = ? WHERE id = ?`
+    `UPDATE videos SET title = ?, subject = ?, description = ?, placements = ?, published = ? WHERE id = ?`
   ).bind(
     body.title ?? video.title,
     body.subject ?? video.subject,
     body.description ?? video.description,
+    body.placements ? normalizePlacements(body.placements) : video.placements,
     body.published === false ? 0 : 1,
     params.id
   ).run();

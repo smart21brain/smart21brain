@@ -94,7 +94,7 @@
 
   <section class="section pt-4">
     <div class="container">
-      <div class="row g-4">
+      <div class="row g-4" id="cartoonsGrid">
         
         <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
           <div class="s21-card media-card">
@@ -284,5 +284,33 @@
 <script src="js/nav-account.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
+<script>
+  // Admin-posted videos placed on "Cartoons" — inserted at the front of the grid.
+  (async function loadAdminCartoons() {
+    const grid = document.getElementById('cartoonsGrid');
+    if (!grid) return;
+    try {
+      const { videos } = await (await fetch('/api/videos?placement=cartoons')).json();
+      if (!Array.isArray(videos) || !videos.length) return;
+      const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+      const thumbFallback = 'https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?w=600&q=70&auto=format&fit=crop';
+      const html = videos.map((v) => `
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <div class="s21-card media-card">
+            <div class="thumb-wrap">
+              <img src="${esc(v.thumbnail_url || thumbFallback)}" alt="${esc(v.title)}" loading="lazy">
+              ${v.subject ? `<span class="cat-badge">${esc(v.subject)}</span>` : ''}
+              <a href="video.html?id=${v.id}" class="play-btn" aria-label="Watch ${esc(v.title)}"><span><i class="fa-solid fa-play"></i></span></a>
+            </div>
+            <div class="body">
+              <h3>${esc(v.title)}</h3>
+              <p class="text-soft mb-2" style="font-size:.85rem">${esc(v.description || '')}</p>
+            </div>
+          </div>
+        </div>`).join('');
+      grid.insertAdjacentHTML('afterbegin', html);
+    } catch { /* fall back to the demo cards */ }
+  })();
+</script>
 </body>
 </html>
