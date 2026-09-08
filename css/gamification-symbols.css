@@ -1,18 +1,16 @@
 /* ============================================================
    GAMIFICATION SECTION — dark blue theme + animated Three.js
-   game-icon background. A transparent WebGL layer of drifting
-   gamepad / ball / dice / trophy badges reacts to the cursor,
-   the section background is a dark navy gradient, and the four
-   achievement badges share one unified accent colour so they
-   read clearly against the dark background, the white text and
-   the site's green / gold / pink buttons.
+   game-icon background. A transparent WebGL layer of soft,
+   single-colour glowing icons (gamepad / ball / dice / trophy)
+   drifts behind the content and reacts to the cursor. The four
+   achievement badges keep their original brand colours.
    ============================================================ */
 
 .section-gamification {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  --gami-accent: #2DD4BF; /* single icon accent colour — distinct from bg / text / buttons */
+  --gami-accent: #2DD4BF;
   background:
     radial-gradient(900px 520px at 8% -10%, color-mix(in srgb, var(--gami-accent) 16%, transparent), transparent 60%),
     radial-gradient(1000px 620px at 105% 110%, color-mix(in srgb, #3A86FF 14%, transparent), transparent 55%),
@@ -35,15 +33,6 @@
 }
 .section-gamification .achievement-title {
   color: #fff;
-}
-
-/* Achievement badges: one unified accent colour instead of four mismatched
-   gradients, so they read clearly against the dark blue background. */
-.section-gamification .game-emoji {
-  background: color-mix(in srgb, var(--gami-accent) 22%, #0C1E45 78%);
-  border: 1px solid color-mix(in srgb, var(--gami-accent) 55%, transparent);
-  color: var(--gami-accent);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--gami-accent) 30%, transparent);
 }
 
 /* Canvas host sits behind the content, fills the whole section */

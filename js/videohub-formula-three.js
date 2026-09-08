@@ -1,18 +1,20 @@
 /* ============================================================
-   Smart21Brain Gamification — Three.js interactive game-icon
-   background. A field of soft, single-colour, line-icon style
-   glyphs (gamepad / ball / joystick / dice / trophy / star)
-   drifts behind the content and gently reacts to the mouse /
-   touch cursor. Every glyph shares one accent colour and the
-   same clean, rounded stroke style, so the set reads as a
-   coherent icon set rather than mismatched emoji.
+   Smart21Brain VideoHub — Three.js interactive maths-formula
+   background. A field of drifting maths symbols and short
+   formulas (π, ∑, √, ∫, a²+b²=c², E=mc² ...) plus a couple of
+   simple line-drawn formula graphics (a graph curve, a fraction
+   bar, an angle) that gently react to the mouse / touch cursor.
+   Everything renders in one flat colour — the site's official
+   "Mathematics" subject colour — and the section keeps its own
+   existing background colour untouched (fully transparent
+   renderer).
    ============================================================ */
 (function () {
   "use strict";
 
   function init() {
-    var host = document.getElementById("gamificationCanvas");
-    var section = host && host.closest(".section-gamification");
+    var host = document.getElementById("videohubFormulaCanvas");
+    var section = host && host.closest(".section-videohub-formula");
     if (!host || !section || typeof THREE === "undefined") return;
 
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -44,16 +46,35 @@
     resize();
     window.addEventListener("resize", resize);
 
-    // ---------- Single accent colour for every glyph ----------
-    var ICON_COLOR = "#EAF4FF";        // soft near-white, cool glow on the dark blue bg
-    var GLOW_COLOR = "rgba(120,178,255,0.85)";
+    // ---------- Single accent colour — the site's "Mathematics" subject colour ----------
+    var cssVal = getComputedStyle(document.documentElement).getPropertyValue("--subj-math");
+    var MATH_COLOR = (cssVal && cssVal.trim()) || "#3A86FF";
+    var GLOW_COLOR = "rgba(58,134,255,0.45)";
 
-    // ---------- Icon canvas builder: transparent bg, one flat colour,
-    // consistent rounded stroke weight and a soft glow — no cutouts,
-    // no gradients, so every glyph shares the exact same visual build. ----------
-    var STROKE = 12; // consistent line weight, in a 256px canvas, across all glyphs
+    // ---------- Text-glyph texture builder ----------
+    function makeTextTexture(str, fontSize) {
+      var size = 256;
+      var cvs = document.createElement("canvas");
+      cvs.width = cvs.height = size;
+      var ctx = cvs.getContext("2d");
+      ctx.font = "700 " + fontSize + "px 'Segoe UI', system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = GLOW_COLOR;
+      ctx.shadowBlur = 16;
+      ctx.fillStyle = MATH_COLOR;
+      ctx.fillText(str, size / 2, size / 2 + fontSize * 0.06);
+      ctx.shadowBlur = 4;
+      ctx.fillText(str, size / 2, size / 2 + fontSize * 0.06);
+      var tex = new THREE.CanvasTexture(cvs);
+      tex.needsUpdate = true;
+      return tex;
+    }
 
-    function iconTexture(drawGlyph) {
+    // ---------- Small line-drawn formula graphics (same colour, same stroke weight) ----------
+    var STROKE = 7;
+
+    function iconCanvas(drawFn) {
       var size = 256;
       var cvs = document.createElement("canvas");
       cvs.width = cvs.height = size;
@@ -61,153 +82,79 @@
       ctx.translate(size / 2, size / 2);
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
-      ctx.strokeStyle = ICON_COLOR;
-      ctx.fillStyle = ICON_COLOR;
+      ctx.strokeStyle = MATH_COLOR;
+      ctx.fillStyle = MATH_COLOR;
       ctx.lineWidth = STROKE;
       ctx.shadowColor = GLOW_COLOR;
-      ctx.shadowBlur = 20;
-      drawGlyph(ctx, size * 0.5);
-      // a second, tighter pass keeps edges crisp under the soft glow
-      ctx.shadowBlur = 6;
-      drawGlyph(ctx, size * 0.5);
+      ctx.shadowBlur = 14;
+      drawFn(ctx, size * 0.5);
+      ctx.shadowBlur = 4;
+      drawFn(ctx, size * 0.5);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-
       var tex = new THREE.CanvasTexture(cvs);
       tex.needsUpdate = true;
-      tex.anisotropy = 4;
       return tex;
     }
 
-    // ---------- Game glyphs (drawn centred at 0,0; r = half the canvas) ----------
-    // All glyphs use only stroked outlines + a few small filled dots, at the
-    // same STROKE weight, so the whole set reads as one consistent icon family.
-
-    function drawGamepad(ctx, r) {
-      var w = r * 0.82, h = r * 0.46;
+    function drawGraphCurve(ctx, r) {
+      // axes
       ctx.beginPath();
-      ctx.moveTo(-w * 0.55, -h * 0.35);
-      ctx.bezierCurveTo(-w * 0.75, -h, -w * 0.15, -h * 0.9, 0, -h * 0.55);
-      ctx.bezierCurveTo(w * 0.15, -h * 0.9, w * 0.75, -h, w * 0.55, -h * 0.35);
-      ctx.bezierCurveTo(w * 0.85, h * 0.15, w * 0.55, h * 1.05, w * 0.2, h * 0.55);
-      ctx.bezierCurveTo(w * 0.08, h * 0.3, -w * 0.08, h * 0.3, -w * 0.2, h * 0.55);
-      ctx.bezierCurveTo(-w * 0.55, h * 1.05, -w * 0.85, h * 0.15, -w * 0.55, -h * 0.35);
-      ctx.closePath();
+      ctx.moveTo(-r * 0.65, r * 0.55); ctx.lineTo(r * 0.65, r * 0.55);
+      ctx.moveTo(-r * 0.55, r * 0.65); ctx.lineTo(-r * 0.55, -r * 0.55);
       ctx.stroke();
-      // D-pad
+      // parabola-ish curve
       ctx.beginPath();
-      ctx.moveTo(-w * 0.42, -h * 0.1); ctx.lineTo(-w * 0.22, -h * 0.1);
-      ctx.moveTo(-w * 0.32, -h * 0.2); ctx.lineTo(-w * 0.32, 0);
-      ctx.stroke();
-      // face buttons
-      var bx = w * 0.36, by = -h * 0.05, br = r * 0.06;
-      [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (p) {
-        ctx.beginPath();
-        ctx.arc(bx + p[0] * br * 1.8, by + p[1] * br * 1.8, br * 0.55, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-
-    function drawBall(ctx, r) {
-      var rad = r * 0.55;
-      ctx.beginPath();
-      ctx.arc(0, 0, rad, 0, Math.PI * 2);
-      ctx.stroke();
-      // three soft seam curves, same stroke weight, thinner for hierarchy
-      ctx.save();
-      ctx.lineWidth = STROKE * 0.55;
-      for (var i = 0; i < 3; i++) {
-        ctx.save();
-        ctx.rotate((i * Math.PI) / 3);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, rad * 0.98, rad * 0.36, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
+      for (var x = -r * 0.5; x <= r * 0.55; x += r * 0.05) {
+        var xn = x / (r * 0.55);
+        var y = -(1 - xn * xn) * r * 0.5 + r * 0.15;
+        if (x === -r * 0.5) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-      ctx.restore();
-    }
-
-    function drawJoystick(ctx, r) {
-      ctx.beginPath();
-      ctx.ellipse(0, r * 0.42, r * 0.4, r * 0.14, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, r * 0.32);
-      ctx.lineTo(0, -r * 0.18);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(0, -r * 0.32, r * 0.2, 0, Math.PI * 2);
       ctx.stroke();
     }
 
-    function drawDice(ctx, r) {
-      var half = r * 0.44;
-      roundRect(ctx, -half, -half, half * 2, half * 2, half * 0.32);
+    function drawFractionBar(ctx, r) {
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.45, 0); ctx.lineTo(r * 0.45, 0);
       ctx.stroke();
-      var pip = r * 0.07;
-      var pts = [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]];
-      pts.forEach(function (p) {
-        ctx.beginPath();
-        ctx.arc(p[0] * half * 0.5, p[1] * half * 0.5, pip, 0, Math.PI * 2);
-        ctx.fill();
-      });
+      ctx.font = "700 " + (r * 0.62) + "px 'Segoe UI', system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText("a", 0, -r * 0.14);
+      ctx.textBaseline = "hanging";
+      ctx.fillText("b", 0, r * 0.14);
     }
 
-    function roundRect(ctx, x, y, w, h, rad) {
+    function drawAngle(ctx, r) {
       ctx.beginPath();
-      ctx.moveTo(x + rad, y);
-      ctx.arcTo(x + w, y, x + w, y + h, rad);
-      ctx.arcTo(x + w, y + h, x, y + h, rad);
-      ctx.arcTo(x, y + h, x, y, rad);
-      ctx.arcTo(x, y, x + w, y, rad);
-      ctx.closePath();
-    }
-
-    function drawTrophy(ctx, r) {
-      var w = r * 0.5, h = r * 0.6;
-      ctx.beginPath();
-      ctx.moveTo(-w, -h);
-      ctx.lineTo(w, -h);
-      ctx.bezierCurveTo(w * 1.05, -h * 0.15, w * 0.55, h * 0.35, 0, h * 0.4);
-      ctx.bezierCurveTo(-w * 0.55, h * 0.35, -w * 1.05, -h * 0.15, -w, -h);
-      ctx.closePath();
+      ctx.moveTo(-r * 0.4, r * 0.35);
+      ctx.lineTo(-r * 0.4, -r * 0.4);
+      ctx.moveTo(-r * 0.4, r * 0.35);
+      ctx.lineTo(r * 0.45, r * 0.35);
       ctx.stroke();
-      // handles
-      ctx.beginPath(); ctx.arc(-w * 1.3, -h * 0.55, w * 0.42, Math.PI * 0.15, Math.PI * 1.55); ctx.stroke();
-      ctx.beginPath(); ctx.arc(w * 1.3, -h * 0.55, w * 0.42, Math.PI * 1.45, Math.PI * 2.85); ctx.stroke();
-      // stem + base
       ctx.beginPath();
-      ctx.moveTo(0, h * 0.4); ctx.lineTo(0, h * 0.72);
-      ctx.stroke();
-      roundRect(ctx, -w * 0.75, h * 0.72, w * 1.5, h * 0.22, r * 0.05);
+      ctx.arc(-r * 0.4, r * 0.35, r * 0.35, -Math.PI / 2, -Math.PI / 10);
       ctx.stroke();
     }
 
-    function drawStar(ctx, r) {
-      var spikes = 5, outer = r * 0.55, inner = outer * 0.44;
-      var rot = -Math.PI / 2;
-      ctx.beginPath();
-      for (var i = 0; i < spikes; i++) {
-        var xo = Math.cos(rot) * outer, yo = Math.sin(rot) * outer;
-        ctx.lineTo(xo, yo);
-        rot += Math.PI / spikes;
-        var xi = Math.cos(rot) * inner, yi = Math.sin(rot) * inner;
-        ctx.lineTo(xi, yi);
-        rot += Math.PI / spikes;
-      }
-      ctx.closePath();
-      ctx.stroke();
-    }
-
-    var glyphSet = [drawGamepad, drawBall, drawJoystick, drawDice, drawTrophy, drawStar];
-
-    // ---------- Build the (single-colour) texture pool — one texture per glyph ----------
-    var textures = glyphSet.map(function (fn) { return iconTexture(fn); });
+    // ---------- Build the (single-colour) texture pool ----------
+    var glyphs = ["\u03c0", "\u03a3", "\u221a", "\u221e", "\u222b", "\u0394", "\u00d7", "\u00f7", "\u00b1", "%"];
+    var formulas = ["E=mc\u00b2", "a\u00b2+b\u00b2=c\u00b2", "\u03c0r\u00b2"];
+    var textures = [];
+    glyphs.forEach(function (g) {
+      textures.push(makeTextTexture(g, 150));
+    });
+    formulas.forEach(function (f) {
+      textures.push(makeTextTexture(f, 58));
+    });
+    [drawGraphCurve, drawFractionBar, drawAngle].forEach(function (fn) {
+      textures.push(iconCanvas(fn));
+    });
 
     // ---------- Sprites ----------
     var group = new THREE.Group();
     scene.add(group);
     var sprites = [];
-    var count = isSmall ? 12 : reduceMotion ? 12 : 18;
+    var count = isSmall ? 14 : reduceMotion ? 14 : 22;
 
     function visibleSizeAtZ(depth) {
       var vFov = (camera.fov * Math.PI) / 180;
@@ -217,8 +164,8 @@
     }
 
     // Grid-jittered placement so glyphs spread across the whole section
-    // instead of clumping behind the image or the text column.
-    var cols = isSmall ? 4 : 6;
+    // instead of clumping behind one column of video cards.
+    var cols = isSmall ? 4 : 7;
     var rows = Math.max(3, Math.ceil(count / cols));
     var cellOrder = [];
     for (var c = 0; c < cols * rows; c++) cellOrder.push(c);
@@ -235,14 +182,13 @@
         transparent: true,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending, // soft glow, suits the dark blue background
-        opacity: 0.4 + Math.random() * 0.3
+        opacity: 0.35 + Math.random() * 0.25 // soft — sits behind the real cards
       });
       var sprite = new THREE.Sprite(mat);
       var z = -5 + Math.random() * 7; // -5 .. 2
       var bounds = visibleSizeAtZ(z);
       var usableW = bounds.width * 0.96;
-      var usableH = bounds.height * 0.92;
+      var usableH = bounds.height * 0.9;
 
       var cell = cellOrder[cellIndex % cellOrder.length];
       cellIndex++;
@@ -256,7 +202,7 @@
       var baseY = -usableH / 2 + cellH * (row + 0.5) + jitterY;
 
       sprite.position.set(baseX, baseY, z);
-      var scale = 1.7 + Math.random() * 1.3;
+      var scale = 1.3 + Math.random() * 1.1;
       sprite.scale.set(scale, scale, 1);
       group.add(sprite);
       sprites.push({
@@ -265,9 +211,9 @@
         offset: new THREE.Vector2(0, 0),
         vel: new THREE.Vector2(0, 0),
         phase: Math.random() * Math.PI * 2,
-        speed: 0.22 + Math.random() * 0.3,
-        floatAmp: 0.35 + Math.random() * 0.5,
-        rotSpeed: (Math.random() - 0.5) * 0.12
+        speed: 0.2 + Math.random() * 0.3,
+        floatAmp: 0.3 + Math.random() * 0.45,
+        rotSpeed: (Math.random() - 0.5) * 0.1
       });
     }
 
