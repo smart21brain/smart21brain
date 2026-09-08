@@ -213,6 +213,47 @@
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</p>'; }
     }
 
+    const ROLE_LABELS = { user: 'Student', teacher: 'Teacher', parent: 'Parent', admin: 'Admin' };
+    async function loadUsers() {
+      const tbody = document.getElementById('admin-users-tbody');
+      if (!tbody) return;
+      try {
+        const { users } = await (await fetch('/api/users', { credentials: 'include' })).json();
+        tbody.innerHTML = users.length ? users.map((u) => `
+          <tr>
+            <td>${escapeHtml(u.name)}<div class="text-soft" style="font-size:.75rem">${escapeHtml(u.email)}</div></td>
+            <td>
+              <select class="form-select form-select-sm" style="width:auto" data-user-role="${u.id}">
+                ${Object.entries(ROLE_LABELS).map(([value, label]) =>
+                  `<option value="${value}" ${u.role === value ? 'selected' : ''}>${label}</option>`).join('')}
+              </select>
+            </td>
+            <td class="text-soft" style="font-size:.85rem">${escapeHtml(new Date(u.created_at + 'Z').toLocaleDateString())}</td>
+          </tr>`).join('') : '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">No users yet.</td></tr>';
+
+        tbody.querySelectorAll('[data-user-role]').forEach((select) => {
+          select.addEventListener('change', async () => {
+            const id = select.dataset.userRole;
+            const previous = Array.from(select.options).find((o) => o.defaultSelected)?.value;
+            try {
+              const res = await fetch(`/api/users/${id}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ role: select.value }),
+              });
+              const data = await res.json().catch(() => ({}));
+              if (!res.ok) throw new Error(data.error || 'Could not update role.');
+              say(`✅ Role updated to ${ROLE_LABELS[select.value]}.`);
+            } catch (err) {
+              say('❌ ' + err.message, true);
+              if (previous) select.value = previous; // revert the dropdown on failure
+            }
+          });
+        });
+      } catch { tbody.innerHTML = '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">Couldn\'t load users.</td></tr>'; }
+    }
+
     function row(title, subtitle, deleteUrl, reload) {
       return `
         <div class="d-flex justify-content-between align-items-center p-2" style="border:1px solid var(--s21-border);border-radius:10px">
@@ -250,5 +291,6 @@
     loadBlog();
     loadMaterials();
     loadVideos();
+    loadUsers();
   });
 })();

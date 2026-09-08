@@ -5,6 +5,7 @@ import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import * as videos from './handlers/videos.js';
+import * as users from './handlers/users.js';
 import { getDashboard } from './handlers/dashboard.js';
 import * as newsletter from './handlers/newsletter.js';
 import * as contact from './handlers/contact.js';
@@ -75,6 +76,10 @@ router.get('/api/videos/:id', videos.getVideo);
 router.put('/api/videos/:id', videos.updateVideo);
 router.delete('/api/videos/:id', videos.deleteVideo);
 router.get('/api/videos/:id/stream', videos.streamVideo);
+
+// ---- Users (admin-only: list + change role) ----
+router.get('/api/users', users.listUsers);
+router.put('/api/users/:id/role', users.updateUserRole);
 
 // ---- Dashboard ----
 router.get('/api/dashboard', getDashboard);
