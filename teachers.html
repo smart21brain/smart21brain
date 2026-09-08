@@ -56,6 +56,16 @@
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column">
+    <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">On this page</div>
+    <nav class="d-flex flex-column gap-1 mb-3" data-section-nav>
+      <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
+      <a href="#courses" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-book-open me-2"></i> My courses</a>
+      <a href="#students" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users me-2"></i> Students</a>
+      <a href="#reviews" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-comment-dots me-2"></i> Reviews</a>
+      <a href="#announcements" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-bell me-2"></i> Announcements</a>
+      <a href="#settings" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gear me-2"></i> Settings</a>
+    </nav>
+    <hr class="w-100">
     <ul class="navbar-nav gap-1 mb-4">
       <li class="nav-item"><a class="nav-link s21-nav-link" href="index.html" data-i18n="nav_home">Home</a></li>
       <li class="nav-item"><a class="nav-link s21-nav-link" href="subjects.html" data-i18n="nav_learn">Learn</a></li>
@@ -79,8 +89,20 @@
 
 <main id="main">
 
-  <section class="section-tight" style="padding-top:2rem" data-role-access="teacher,admin">
-    <div class="container">
+  <div class="admin-shell" data-role-access="teacher,admin">
+    <aside class="admin-sidebar">
+      <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Teacher</div>
+      <nav class="d-flex flex-column gap-1" data-section-nav>
+        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> Overview</a>
+        <a href="#courses" class="nav-link"><i class="fa-solid fa-book-open"></i> My courses</a>
+        <a href="#students" class="nav-link"><i class="fa-solid fa-users"></i> Students</a>
+        <a href="#reviews" class="nav-link"><i class="fa-solid fa-comment-dots"></i> Reviews</a>
+        <a href="#announcements" class="nav-link"><i class="fa-solid fa-bell"></i> Announcements</a>
+        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+    </aside>
+
+    <div class="admin-content">
 
       <!-- Welcome banner -->
       <div class="dash-welcome mb-4" data-aos="fade-up">
@@ -104,7 +126,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div class="row g-3 mb-4">
+      <div class="row g-3 mb-4" id="overview">
         <div class="col-6 col-md-3" data-aos="fade-up">
           <div class="s21-card dash-stat-card">
             <div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-book-open"></i></div>
@@ -139,7 +161,7 @@
         <div class="col-lg-8">
 
           <!-- My courses -->
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
+          <div class="s21-card p-4 mb-4" id="courses" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-book-open" style="color:var(--s21-primary)"></i> <span data-i18n="teachers_my_courses">My courses</span></h2>
               <a href="#" class="text-soft" style="font-size:.85rem" data-i18n="teachers_manage_all">Manage all</a>
@@ -169,7 +191,7 @@
           </div>
 
           <!-- Student progress -->
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
+          <div class="s21-card p-4 mb-4" id="students" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-chart-line" style="color:var(--s21-accent)"></i> <span data-i18n="teachers_students_needing_attention">Students needing attention</span></h2>
               <a href="#" class="text-soft" style="font-size:.85rem" data-i18n="teachers_view_all_students">View all students</a>
@@ -202,7 +224,7 @@
           </div>
 
           <!-- Reviews -->
-          <div class="s21-card p-4" data-aos="fade-up">
+          <div class="s21-card p-4" id="reviews" data-aos="fade-up">
             <h2 class="h5 mb-3"><i class="fa-solid fa-comment-dots" style="color:var(--s21-primary)"></i> <span data-i18n="teachers_recent_reviews">Recent reviews</span></h2>
             <div class="d-flex gap-3 mb-3">
               <img src="https://i.pravatar.cc/60?img=47" width="40" height="40" class="rounded-circle" alt="" loading="lazy">
@@ -242,16 +264,34 @@
             </ul>
           </div>
 
-          <div class="s21-card p-4" data-aos="fade-up" data-aos-delay="120">
+          <div class="s21-card p-4 mb-4" id="announcements" data-aos="fade-up" data-aos-delay="120">
             <h3 class="h6 mb-3"><i class="fa-solid fa-bell" style="color:var(--s21-accent)"></i> <span data-i18n="teachers_announcements">Announcements</span></h3>
             <p class="text-soft mb-3" style="font-size:.85rem" data-i18n="teachers_post_an_update_your_students_and_the">Post an update your students and their parents will see on their dashboards.</p>
             <textarea class="form-control s21-input mb-2" rows="3" placeholder="Write an announcement…" data-i18n-placeholder="teachers_ph_write_an_announcement"></textarea>
             <button class="btn-s21 btn-s21-primary w-100 justify-content-center" style="font-size:.85rem" data-i18n="teachers_post_announcement">Post announcement</button>
           </div>
+
+          <!-- Settings -->
+          <div class="s21-card p-4" id="settings" data-aos="fade-up" data-aos-delay="180">
+            <h3 class="h6 mb-3"><i class="fa-solid fa-gear" style="color:var(--s21-text-soft)"></i> Teacher settings</h3>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span style="font-size:.85rem">Show my profile to parents</span>
+              <label class="s21-switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span style="font-size:.85rem">Email me new student comments</span>
+              <label class="s21-switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2">
+              <span style="font-size:.85rem">Weekly performance summary email</span>
+              <label class="s21-switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <a href="profile.html" class="btn-s21 btn-s21-outline w-100 justify-content-center mt-3" style="font-size:.85rem"><i class="fa-solid fa-user-gear"></i> Manage account &amp; payout details</a>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
 </main>
 
@@ -351,6 +391,7 @@
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
+<script src="js/sidebar-nav.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>

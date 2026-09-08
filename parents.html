@@ -56,6 +56,16 @@
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column">
+    <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">On this page</div>
+    <nav class="d-flex flex-column gap-1 mb-3" data-section-nav>
+      <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
+      <a href="#children" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-child-reaching me-2"></i> Children</a>
+      <a href="#report" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-chart-line me-2"></i> Learning report</a>
+      <a href="#screentime" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-hourglass-half me-2"></i> Screen time</a>
+      <a href="#subscription" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-crown me-2"></i> Subscription</a>
+      <a href="#settings" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gear me-2"></i> Settings</a>
+    </nav>
+    <hr class="w-100">
     <ul class="navbar-nav gap-1 mb-4">
       <li class="nav-item"><a class="nav-link s21-nav-link" href="index.html" data-i18n="nav_home">Home</a></li>
       <li class="nav-item"><a class="nav-link s21-nav-link" href="subjects.html" data-i18n="nav_learn">Learn</a></li>
@@ -79,8 +89,20 @@
 
 <main id="main">
 
-  <section class="section-tight" style="padding-top:2rem" data-role-access="parent,admin">
-    <div class="container">
+  <div class="admin-shell" data-role-access="parent,admin">
+    <aside class="admin-sidebar">
+      <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Parent</div>
+      <nav class="d-flex flex-column gap-1" data-section-nav>
+        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> Overview</a>
+        <a href="#children" class="nav-link"><i class="fa-solid fa-child-reaching"></i> Children</a>
+        <a href="#report" class="nav-link"><i class="fa-solid fa-chart-line"></i> Learning report</a>
+        <a href="#screentime" class="nav-link"><i class="fa-solid fa-hourglass-half"></i> Screen time</a>
+        <a href="#subscription" class="nav-link"><i class="fa-solid fa-crown"></i> Subscription</a>
+        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+    </aside>
+
+    <div class="admin-content">
 
       <!-- Welcome banner -->
       <div class="dash-welcome mb-4" data-aos="fade-up">
@@ -101,12 +123,19 @@
       </div>
 
       <!-- Child selector -->
-      <div class="d-flex flex-wrap gap-2 mb-4" role="tablist" aria-label="Select child" data-aos="fade-up">
-        <button type="button" class="child-tab active"><img src="https://i.pravatar.cc/60?img=47" alt=""> <span data-i18n="parents_amara_9">Amara, 9</span></button>
-        <button type="button" class="child-tab"><img src="https://i.pravatar.cc/60?img=68" alt=""> <span data-i18n="parents_joseph_12">Joseph, 12</span></button>
+      <div id="children" class="mb-4" data-aos="fade-up">
+        <div class="d-flex flex-wrap gap-2 mb-3" role="tablist" aria-label="Select child">
+          <button type="button" class="child-tab active"><img src="https://i.pravatar.cc/60?img=47" alt=""> <span data-i18n="parents_amara_9">Amara, 9</span></button>
+          <button type="button" class="child-tab"><img src="https://i.pravatar.cc/60?img=68" alt=""> <span data-i18n="parents_joseph_12">Joseph, 12</span></button>
+        </div>
+        <div class="s21-card p-3 d-flex flex-wrap gap-4" style="font-size:.85rem">
+          <div><span class="text-soft">Grade</span><div class="fw-bold" id="child-grade">Grade 4</div></div>
+          <div><span class="text-soft">School</span><div class="fw-bold" id="child-school">Uhuru Primary</div></div>
+          <div><span class="text-soft">Plan</span><div class="fw-bold">Premium (2 profiles)</div></div>
+        </div>
       </div>
 
-      <div class="row g-4 align-items-start">
+      <div class="row g-4 align-items-start" id="overview">
         <div class="col-lg-8">
 
           <!-- Stat cards -->
@@ -142,7 +171,7 @@
           </div>
 
           <!-- Weekly report -->
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
+          <div class="s21-card p-4 mb-4" id="report" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-chart-line" style="color:var(--s21-primary)"></i> <span data-i18n="parents_this_week_s_learning_report">This week's learning report</span></h2>
               <a href="#" class="text-soft" style="font-size:.85rem" data-i18n="book_download_pdf">Download PDF</a>
@@ -181,7 +210,7 @@
 
         <div class="col-lg-4">
           <!-- Screen time controls -->
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
+          <div class="s21-card p-4 mb-4" id="screentime" data-aos="fade-up">
             <h3 class="h6 mb-3"><i class="fa-solid fa-hourglass-half" style="color:var(--s21-primary)"></i> <span data-i18n="parents_screen_time_controls">Screen-time controls</span></h3>
             <label class="d-block mb-1" style="font-size:.85rem"><span data-i18n="parents_daily_limit">Daily limit:</span> <strong id="screentime-value" data-i18n="parents_90_minutes">90 minutes</strong></label>
             <input type="range" class="form-range mb-3" min="15" max="180" step="15" value="90" id="screentime-slider" aria-label="Daily screen-time limit in minutes">
@@ -201,7 +230,7 @@
           </div>
 
           <!-- Subscription -->
-          <div class="s21-card p-4 mb-4" data-aos="fade-up" data-aos-delay="60">
+          <div class="s21-card p-4 mb-4" id="subscription" data-aos="fade-up" data-aos-delay="60">
             <h3 class="h6 mb-3"><i class="fa-solid fa-crown" style="color:var(--s21-secondary-dark)"></i> <span data-i18n="parents_subscription">Subscription</span></h3>
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="badge-pill gold" data-i18n="parents_premium_plan">Premium plan</span>
@@ -212,15 +241,33 @@
           </div>
 
           <!-- Report button -->
-          <div class="s21-card p-4" data-aos="fade-up" data-aos-delay="120">
+          <div class="s21-card p-4 mb-4" data-aos="fade-up" data-aos-delay="120">
             <h3 class="h6 mb-2"><i class="fa-solid fa-shield-heart" style="color:var(--s21-accent)"></i> <span data-i18n="parents_safety">Safety</span></h3>
             <p class="text-soft mb-3" style="font-size:.85rem" data-i18n="parents_something_doesn_t_look_right_report_">Something doesn't look right? Report content directly to our safety team.</p>
             <a href="#" class="btn-s21 btn-s21-outline w-100 justify-content-center" style="font-size:.85rem"><i class="fa-solid fa-flag"></i> <span data-i18n="contact_report_a_concern">Report a concern</span></a>
           </div>
+
+          <!-- Settings -->
+          <div class="s21-card p-4" id="settings" data-aos="fade-up" data-aos-delay="180">
+            <h3 class="h6 mb-3"><i class="fa-solid fa-gear" style="color:var(--s21-text-soft)"></i> Parent settings</h3>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span style="font-size:.85rem">Weekly progress report email</span>
+              <label class="s21-switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span style="font-size:.85rem">Achievement &amp; badge alerts</span>
+              <label class="s21-switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2">
+              <span style="font-size:.85rem">Promotional emails</span>
+              <label class="s21-switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <a href="profile.html" class="btn-s21 btn-s21-outline w-100 justify-content-center mt-3" style="font-size:.85rem"><i class="fa-solid fa-user-gear"></i> Manage account details</a>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <script>
     const s21ScreenSlider = document.getElementById('screentime-slider');
@@ -334,6 +381,7 @@
 <script src="js/ai-assistant.js"></script>
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
+<script src="js/sidebar-nav.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>

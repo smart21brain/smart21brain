@@ -56,6 +56,16 @@
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body d-flex flex-column">
+    <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">On this page</div>
+    <nav class="d-flex flex-column gap-1 mb-3" data-section-nav>
+      <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
+      <a href="#courses" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-book-open me-2"></i> My courses</a>
+      <a href="#badges" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-award me-2"></i> Badges</a>
+      <a href="#recommended" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-sparkles me-2"></i> Recommended</a>
+      <a href="#activity" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-clock-rotate-left me-2"></i> Activity &amp; goals</a>
+      <a href="#notifications" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-bell me-2"></i> Notifications</a>
+    </nav>
+    <hr class="w-100">
     <ul class="navbar-nav gap-1 mb-4">
       <li class="nav-item"><a class="nav-link s21-nav-link" href="index.html" data-i18n="nav_home">Home</a></li>
       <li class="nav-item"><a class="nav-link s21-nav-link" href="subjects.html" data-i18n="nav_learn">Learn</a></li>
@@ -79,8 +89,20 @@
 
 <main id="main">
 
-  <section class="section-tight" style="padding-top:2rem">
-    <div class="container">
+  <div class="admin-shell" data-role-access="user,admin">
+    <aside class="admin-sidebar">
+      <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">My Dashboard</div>
+      <nav class="d-flex flex-column gap-1" data-section-nav>
+        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> Overview</a>
+        <a href="#courses" class="nav-link"><i class="fa-solid fa-book-open"></i> My courses</a>
+        <a href="#badges" class="nav-link"><i class="fa-solid fa-award"></i> Badges</a>
+        <a href="#recommended" class="nav-link"><i class="fa-solid fa-sparkles"></i> Recommended</a>
+        <a href="#activity" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Activity &amp; goals</a>
+        <a href="#notifications" class="nav-link"><i class="fa-solid fa-bell"></i> Notifications</a>
+      </nav>
+    </aside>
+
+    <div class="admin-content">
 
       <!-- Welcome banner -->
       <div class="dash-welcome mb-4" data-aos="fade-up">
@@ -105,7 +127,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div class="row g-3 mb-4">
+      <div class="row g-3 mb-4" id="overview">
         <div class="col-6 col-md-3" data-aos="fade-up">
           <div class="s21-card dash-stat-card">
             <div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-book-open"></i></div>
@@ -140,7 +162,7 @@
         <div class="col-lg-8">
 
           <!-- Continue learning -->
-          <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
+          <div id="courses" class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
             <h2 class="h5 mb-0"><i class="fa-solid fa-rotate" style="color:var(--s21-primary)"></i> <span data-i18n="head_continue">Continue learning</span></h2>
             <a href="courses.html" class="text-soft" style="font-size:.85rem" data-i18n="dash_view_all">View all</a>
           </div>
@@ -172,7 +194,7 @@
           </div>
 
           <!-- Badges -->
-          <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
+          <div id="badges" class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
             <h2 class="h5 mb-0"><i class="fa-solid fa-award" style="color:var(--s21-secondary-dark)"></i> <span data-i18n="dash_your_badges">Your badges</span></h2>
             <span class="text-soft" style="font-size:.85rem" id="dash-badges-count">0 of 8 earned</span>
           </div>
@@ -188,7 +210,7 @@
           </div>
 
           <!-- Recommended -->
-          <h2 class="h5 mb-3" data-aos="fade-up"><i class="fa-solid fa-sparkles" style="color:var(--s21-accent)"></i> <span data-i18n="dash_recommended_for_you">Recommended for you</span></h2>
+          <h2 class="h5 mb-3" id="recommended" data-aos="fade-up"><i class="fa-solid fa-sparkles" style="color:var(--s21-accent)"></i> <span data-i18n="dash_recommended_for_you">Recommended for you</span></h2>
           <div class="row g-3">
             <div class="col-md-4" data-aos="fade-up">
               <div class="s21-card media-card">
@@ -212,20 +234,22 @@
         </div>
 
         <div class="col-lg-4">
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
-            <h3 class="h6 mb-3"><i class="fa-solid fa-clock-rotate-left" style="color:var(--s21-primary)"></i> <span data-i18n="dash_recent_activity">Recent activity</span></h3>
-            <ul class="list-unstyled d-flex flex-column gap-3 mb-0" style="font-size:.85rem" id="dash-recent-activity-list">
-              <li class="text-soft" data-i18n="dash_no_activity_yet" id="dash-recent-activity-empty">Nothing yet — go take a quiz or play a game!</li>
-            </ul>
+          <div id="activity">
+            <div class="s21-card p-4 mb-4" data-aos="fade-up">
+              <h3 class="h6 mb-3"><i class="fa-solid fa-clock-rotate-left" style="color:var(--s21-primary)"></i> <span data-i18n="dash_recent_activity">Recent activity</span></h3>
+              <ul class="list-unstyled d-flex flex-column gap-3 mb-0" style="font-size:.85rem" id="dash-recent-activity-list">
+                <li class="text-soft" data-i18n="dash_no_activity_yet" id="dash-recent-activity-empty">Nothing yet — go take a quiz or play a game!</li>
+              </ul>
+            </div>
+
+            <div class="s21-card p-4 mb-4" data-aos="fade-up">
+              <h3 class="h6 mb-3"><i class="fa-solid fa-bullseye" style="color:var(--s21-primary)"></i> <span data-i18n="dash_weekly_goal">Weekly goal</span></h3>
+              <div class="progress-s21 mb-2"><span style="width:80%"></span></div>
+              <div class="d-flex justify-content-between text-soft" style="font-size:.8rem"><span data-i18n="dash_4_5_lessons">4 / 5 lessons</span><span>80%</span></div>
+            </div>
           </div>
 
-          <div class="s21-card p-4 mb-4" data-aos="fade-up">
-            <h3 class="h6 mb-3"><i class="fa-solid fa-bullseye" style="color:var(--s21-primary)"></i> <span data-i18n="dash_weekly_goal">Weekly goal</span></h3>
-            <div class="progress-s21 mb-2"><span style="width:80%"></span></div>
-            <div class="d-flex justify-content-between text-soft" style="font-size:.8rem"><span data-i18n="dash_4_5_lessons">4 / 5 lessons</span><span>80%</span></div>
-          </div>
-
-          <div class="s21-card p-4 mb-4" data-aos="fade-up" data-aos-delay="60">
+          <div class="s21-card p-4 mb-4" id="notifications" data-aos="fade-up" data-aos-delay="60">
             <h3 class="h6 mb-3"><i class="fa-solid fa-bell" style="color:var(--s21-accent)"></i> <span data-i18n="dash_notifications">Notifications</span></h3>
             <ul class="list-unstyled d-flex flex-column gap-3" style="font-size:.85rem">
               <li class="d-flex gap-2"><i class="fa-solid fa-circle-check text-soft mt-1"></i> <span data-i18n="dash_new_quiz_added_solar_system">New quiz added: Solar System</span></li>
@@ -234,7 +258,7 @@
             </ul>
           </div>
 
-          <div class="s21-card p-4" data-aos="fade-up" data-aos-delay="120">
+          <div class="s21-card p-4" id="certificates" data-aos="fade-up" data-aos-delay="120">
             <h3 class="h6 mb-3"><i class="fa-solid fa-award" style="color:var(--s21-secondary-dark)"></i> <span data-i18n="dash_certificates">Certificates</span></h3>
             <div class="d-flex align-items-center gap-3 mb-2">
               <i class="fa-solid fa-certificate fa-lg" style="color:var(--s21-secondary-dark)"></i>
@@ -245,7 +269,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
 </main>
 
@@ -347,6 +371,7 @@
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/sidebar-nav.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 </body>

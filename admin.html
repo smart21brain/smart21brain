@@ -45,7 +45,7 @@
   </div>
   <div class="offcanvas-body d-flex flex-column">
     <span data-guest-nav="mobile" style="display:contents"></span>
-    <nav class="d-flex flex-column gap-1 mb-4 mt-2">
+    <nav class="d-flex flex-column gap-1 mb-4 mt-2" data-section-nav>
       <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
       <a href="#users" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users me-2"></i> Users</a>
       <a href="#moderation" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-shield-halved me-2"></i> Content moderation</a>
@@ -67,7 +67,7 @@
   <div class="admin-shell" data-role-access="admin">
     <aside class="admin-sidebar">
       <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em" data-i18n="admin_admin">Admin</div>
-      <nav class="d-flex flex-column gap-1">
+      <nav class="d-flex flex-column gap-1" data-section-nav>
         <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span data-i18n="admin_overview">Overview</span></a>
         <a href="#users" class="nav-link"><i class="fa-solid fa-users"></i> <span data-i18n="admin_users">Users</span></a>
         <a href="#moderation" class="nav-link"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="admin_content_moderation">Content moderation</span></a>
@@ -409,6 +409,7 @@
 <script src="js/polish-animations.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/sidebar-nav.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>
 <script src="js/search.js"></script>
