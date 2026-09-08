@@ -30,6 +30,20 @@
     renderer.setClearColor(0x000000, 0);
     host.appendChild(renderer.domElement);
 
+    // ---------- Resize (set up + run BEFORE placing sprites, so camera.aspect
+    // is correct and glyphs spread across the section's full width, not just
+    // the center) ----------
+    function resize() {
+      var w = host.clientWidth || section.clientWidth;
+      var h = host.clientHeight || section.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
     // ---------- Palette (matches brand vars) ----------
     var palette = [
       { fill: "#FFFFFF", glow: "rgba(255,255,255,0.9)" },
@@ -172,13 +186,27 @@
     var group = new THREE.Group();
     scene.add(group);
     var sprites = [];
-    var count = isSmall ? 16 : reduceMotion ? 14 : 26;
+    var count = isSmall ? 18 : reduceMotion ? 16 : 32;
 
     function visibleSizeAtZ(depth) {
       var vFov = (camera.fov * Math.PI) / 180;
       var height = 2 * Math.tan(vFov / 2) * Math.abs(camera.position.z - depth);
       var width = height * camera.aspect;
       return { width: width, height: height };
+    }
+
+    // Grid-jittered placement: split the section into a loose grid and drop
+    // one glyph per cell (with randomness) so they spread evenly across the
+    // whole width/height instead of clumping near the center.
+    var cols = isSmall ? 5 : 7;
+    var rows = Math.max(3, Math.ceil(count / cols));
+    var cellIndex = 0;
+    var cellOrder = [];
+    for (var c = 0; c < cols * rows; c++) cellOrder.push(c);
+    // shuffle so the reading order doesn't look like a rigid grid
+    for (var sIdx = cellOrder.length - 1; sIdx > 0; sIdx--) {
+      var rIdx = Math.floor(Math.random() * (sIdx + 1));
+      var tmp = cellOrder[sIdx]; cellOrder[sIdx] = cellOrder[rIdx]; cellOrder[rIdx] = tmp;
     }
 
     for (var i = 0; i < count; i++) {
@@ -194,10 +222,20 @@
       var sprite = new THREE.Sprite(mat);
       var z = -6 + Math.random() * 9; // -6 .. 3
       var bounds = visibleSizeAtZ(z);
-      var marginX = bounds.width * 0.42;
-      var marginY = bounds.height * 0.42;
-      var baseX = (Math.random() * 2 - 1) * marginX;
-      var baseY = (Math.random() * 2 - 1) * marginY;
+      var usableW = bounds.width * 0.94;
+      var usableH = bounds.height * 0.9;
+
+      var cell = cellOrder[cellIndex % cellOrder.length];
+      cellIndex++;
+      var col = cell % cols;
+      var row = Math.floor(cell / cols);
+      var cellW = usableW / cols;
+      var cellH = usableH / rows;
+      var jitterX = (Math.random() - 0.5) * cellW * 0.85;
+      var jitterY = (Math.random() - 0.5) * cellH * 0.85;
+      var baseX = -usableW / 2 + cellW * (col + 0.5) + jitterX;
+      var baseY = -usableH / 2 + cellH * (row + 0.5) + jitterY;
+
       sprite.position.set(baseX, baseY, z);
       var scale = pick.kind === "icon" ? 2.1 + Math.random() * 1.1 : 1.5 + Math.random() * 1.3;
       sprite.scale.set(scale, scale, 1);
@@ -271,18 +309,6 @@
     window.addEventListener("touchend", function () { pointerActive = false; }, { passive: true });
     window.addEventListener("mouseleave", function () { pointerActive = false; }, { passive: true });
 
-    // ---------- Resize ----------
-    function resize() {
-      var w = host.clientWidth || section.clientWidth;
-      var h = host.clientHeight || section.clientHeight;
-      if (!w || !h) return;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    }
-    resize();
-    window.addEventListener("resize", resize);
-
     // ---------- Pause when off-screen (perf) ----------
     var isVisible = true;
     if ("IntersectionObserver" in window) {
@@ -294,8 +320,10 @@
 
     // ---------- Animation loop ----------
     var clock = new THREE.Clock();
-    var influenceRadius = 6.2;
-    var repelStrength = 2.6;
+    var gravityRadius = 9.5;   // wide field: glyphs get pulled toward the cursor
+    var gravityStrength = 1.9; // how strongly they're pulled in + swirl around it
+    var coreRadius = 2.4;      // very close to the cursor they push back out
+    var repelStrength = 3.4;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -316,20 +344,33 @@
         var floatX = Math.cos(t * s.speed * 0.7 + s.phase) * s.floatAmp * 0.5;
 
         if (pointerActive && !reduceMotion) {
-          var dx = s.base.x + s.offset.x - mouseWorld.x;
-          var dy = s.base.y + float * 0.3 + s.offset.y - mouseWorld.y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < influenceRadius && dist > 0.0001) {
-            var force = (1 - dist / influenceRadius) * repelStrength;
-            s.vel.x += (dx / dist) * force * 0.045;
-            s.vel.y += (dy / dist) * force * 0.045;
+          var px = s.base.x + s.offset.x;
+          var py = s.base.y + float * 0.3 + s.offset.y;
+          var dx = mouseWorld.x - px; // vector FROM glyph TO cursor
+          var dy = mouseWorld.y - py;
+          var dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
+
+          if (dist < gravityRadius) {
+            var pull = (1 - dist / gravityRadius) * gravityStrength;
+            // gentle pull toward the cursor, like a gravity field
+            s.vel.x += (dx / dist) * pull * 0.05;
+            s.vel.y += (dy / dist) * pull * 0.05;
+            // small tangential swirl so glyphs orbit rather than fly straight in
+            s.vel.x += (-dy / dist) * pull * 0.03;
+            s.vel.y += (dx / dist) * pull * 0.03;
+          }
+          if (dist < coreRadius) {
+            // too close: push back out so glyphs don't pile up on the cursor
+            var push = (1 - dist / coreRadius) * repelStrength;
+            s.vel.x += (-dx / dist) * push * 0.09;
+            s.vel.y += (-dy / dist) * push * 0.09;
           }
         }
         // spring back to rest + damping
-        s.vel.x += -s.offset.x * 0.02;
-        s.vel.y += -s.offset.y * 0.02;
-        s.vel.x *= 0.9;
-        s.vel.y *= 0.9;
+        s.vel.x += -s.offset.x * 0.016;
+        s.vel.y += -s.offset.y * 0.016;
+        s.vel.x *= 0.91;
+        s.vel.y *= 0.91;
         s.offset.x += s.vel.x;
         s.offset.y += s.vel.y;
 
