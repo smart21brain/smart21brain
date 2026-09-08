@@ -225,6 +225,54 @@ a:hover { color: var(--s21-accent); }
 }
 .btn-s21-ghost-white:hover { background: rgba(255,255,255,.28); color: #fff; }
 
+/* ---- Guest CTA (login page) — big, warm, attention-grabbing ---- */
+.btn-s21-guest-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.15rem 1.4rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-body);
+  color: #3D2B00;
+  background: linear-gradient(120deg, var(--s21-secondary) 0%, #FFB703 45%, var(--s21-accent) 100%);
+  background-size: 220% 220%;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--s21-secondary) 45%, transparent);
+  animation: s21GuestGlow 4.5s ease-in-out infinite;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background-position .6s ease;
+}
+.btn-s21-guest-cta:hover, .btn-s21-guest-cta:focus-visible {
+  transform: translateY(-3px) scale(1.012);
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--s21-accent) 45%, transparent);
+  background-position: 100% 50%;
+  color: #3D2B00;
+}
+.btn-s21-guest-cta:active { transform: translateY(0) scale(1); }
+.btn-s21-guest-cta .guest-cta-icon {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.55);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem;
+}
+.btn-s21-guest-cta .guest-cta-text {
+  display: flex; flex-direction: column; text-align: left; flex-grow: 1; min-width: 0;
+}
+.btn-s21-guest-cta .guest-cta-text strong { font-size: 1.05rem; font-weight: 800; line-height: 1.25; }
+.btn-s21-guest-cta .guest-cta-text small { font-size: .78rem; font-weight: 700; opacity: .82; }
+.btn-s21-guest-cta .guest-cta-arrow { font-size: 1rem; transition: transform .25s var(--ease); flex-shrink: 0; }
+.btn-s21-guest-cta:hover .guest-cta-arrow { transform: translateX(5px); }
+@keyframes s21GuestGlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-s21-guest-cta { animation: none; }
+}
+
 /* ---- Navbar ---- */
 .s21-navbar {
   position: sticky;

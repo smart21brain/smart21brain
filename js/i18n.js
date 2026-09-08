@@ -455,6 +455,7 @@
       login_remember_me: 'Remember me', login_forgot_password: 'Forgot password?',
       login_don_t_have_an_account: 'Don\'t have an account?', login_sign_up_free: 'Sign up free',
       login_or_continue_as: 'Or continue as',
+      login_continue_as_guest: 'Continue as Guest', login_guest_no_signup_needed: 'No sign-up needed — just start exploring',
       // ---- resetpw ----
       resetpw_almost_there: 'Almost there.',
       resetpw_choose_a_new_password_below_to_get_b: 'Choose a new password below to get back into your account.',
@@ -1157,6 +1158,7 @@
       login_remember_me: 'Nikumbuke', login_forgot_password: 'Umesahau nenosiri?',
       login_don_t_have_an_account: 'Huna akaunti?', login_sign_up_free: 'Jiandikishe bure',
       login_or_continue_as: 'Au endelea kama',
+      login_continue_as_guest: 'Endelea kama Mgeni', login_guest_no_signup_needed: 'Hakuna usajili unaohitajika — anza kuvinjari sasa',
       // ---- resetpw ----
       resetpw_almost_there: 'Karibu umefika.',
       resetpw_choose_a_new_password_below_to_get_b: 'Chagua nenosiri jipya hapa chini ili urudi kwenye akaunti yako.',

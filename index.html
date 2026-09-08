@@ -58,6 +58,7 @@
 <link rel="stylesheet" href="css/style.css?v=4">
 <link rel="stylesheet" href="css/responsive.css?v=4">
 <link rel="stylesheet" href="css/animations.css?v=4">
+<link rel="stylesheet" href="css/featured-symbols.css?v=1">
 
 <script type="application/ld+json">
 {
@@ -277,7 +278,8 @@
   </section>
 
   <!-- ============ FEATURED COURSES ============ -->
-  <section class="section bg-primary-soft" aria-labelledby="courses-head">
+  <section class="section section-symbols" aria-labelledby="courses-head">
+    <div class="symbols-canvas" id="symbolsCanvas" aria-hidden="true"></div>
     <div class="container">
       <div class="section-head" data-aos="fade-up">
         <span class="eyebrow"><i class="fa-solid fa-book-open"></i> <span data-i18n="eyebrow_courses">Featured courses</span></span>
@@ -858,6 +860,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/featured-symbols-three.js"></script>
 <script src="js/darkmode.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/search.js"></script>

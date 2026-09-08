@@ -78,6 +78,17 @@
           <button type="submit" class="btn-s21 btn-s21-primary w-100 justify-content-center mb-3" data-i18n="login_log_in">Log In</button>
           <p class="text-center text-soft" style="font-size:.85rem"><span data-i18n="login_don_t_have_an_account">Don't have an account?</span> <a href="register.html" class="fw-bold" data-i18n="login_sign_up_free">Sign up free</a></p>
         </form>
+        <div class="d-flex align-items-center gap-2 my-3" style="font-size:.78rem">
+          <hr class="flex-grow-1 m-0"> <span class="text-soft" data-i18n="login_or_continue_as">Or continue as</span> <hr class="flex-grow-1 m-0">
+        </div>
+        <button type="button" id="guest-login-btn" class="btn-s21-guest-cta">
+          <span class="guest-cta-icon"><i class="fa-solid fa-compass"></i></span>
+          <span class="guest-cta-text">
+            <strong data-i18n="login_continue_as_guest">Continue as Guest</strong>
+            <small data-i18n="login_guest_no_signup_needed">No sign-up needed — just start exploring</small>
+          </span>
+          <i class="fa-solid fa-arrow-right guest-cta-arrow"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -91,5 +102,15 @@
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>
 <script src="js/social-auth.js"></script>
+<script>
+  document.getElementById('guest-login-btn')?.addEventListener('click', function () {
+    try {
+      localStorage.setItem('s21-onboarded', '1');
+      localStorage.removeItem('s21-needs-onboarding');
+      localStorage.setItem('s21-account-type', 'guest');
+    } catch (e) { /* ignore — storage unavailable, still let them through */ }
+    window.location.href = 'index.html';
+  });
+</script>
 </body>
 </html>
