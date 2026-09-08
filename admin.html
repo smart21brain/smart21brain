@@ -98,9 +98,12 @@
         <div class="col-lg-8">
           <!-- Users table -->
           <div class="s21-card p-4 mb-4" id="users" data-aos="fade-up">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-users" style="color:var(--s21-primary)"></i> <span data-i18n="admin_recent_users">Recent users</span></h2>
-              <a href="#" class="text-soft" style="font-size:.85rem" data-i18n="dash_view_all">View all</a>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-soft" style="font-size:.8rem" id="admin-users-count"></span>
+                <div class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="admin-users-search" placeholder="Search name or email…"></div>
+              </div>
             </div>
             <div class="table-responsive">
               <table class="table dash-table mb-0">

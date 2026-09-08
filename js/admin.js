@@ -215,10 +215,73 @@
     }
 
     const ROLE_LABELS = { user: 'Student', teacher: 'Teacher', parent: 'Parent', admin: 'Admin' };
+    function initials(name) {
+      return (name || '').trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase() || '?';
+    }
+    let allUsers = [];
+
+    function renderUsersTable(list) {
+      const tbody = document.getElementById('admin-users-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = list.length ? list.map((u) => `
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <div class="user-avatar role-${u.role}">${escapeHtml(initials(u.name))}</div>
+              <div>
+                <div class="fw-bold" style="font-size:.88rem">${escapeHtml(u.name)}</div>
+                <div class="text-soft" style="font-size:.78rem">${escapeHtml(u.email)}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <select class="role-select role-${u.role}" data-user-role="${u.id}">
+              ${Object.entries(ROLE_LABELS).map(([value, label]) =>
+                `<option value="${value}" ${u.role === value ? 'selected' : ''}>${label}</option>`).join('')}
+            </select>
+          </td>
+          <td class="text-soft" style="font-size:.85rem">${escapeHtml(new Date(u.created_at + 'Z').toLocaleDateString())}</td>
+        </tr>`).join('') : '<tr><td colspan="3" class="text-soft text-center py-4" style="font-size:.85rem">No users match your search.</td></tr>';
+
+      tbody.querySelectorAll('[data-user-role]').forEach((select) => {
+        select.addEventListener('change', async () => {
+          const id = select.dataset.userRole;
+          const previousOption = Array.from(select.options).find((o) => o.defaultSelected);
+          const previous = previousOption?.value;
+          const avatar = select.closest('tr')?.querySelector('.user-avatar');
+          select.className = `role-select role-${select.value}`; // optimistic — reverted below on failure
+          if (avatar) avatar.className = `user-avatar role-${select.value}`;
+          try {
+            const res = await fetch(`/api/users/${id}/role`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ role: select.value }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Could not update role.');
+            say(`✅ Role updated to ${ROLE_LABELS[select.value]}.`);
+            const target = allUsers.find((u) => String(u.id) === String(id));
+            if (target) target.role = select.value;
+            if (previousOption) previousOption.defaultSelected = false;
+            select.querySelector(`option[value="${select.value}"]`).defaultSelected = true;
+          } catch (err) {
+            say('❌ ' + err.message, true);
+            if (previous) {
+              select.value = previous;
+              select.className = `role-select role-${previous}`;
+              if (avatar) avatar.className = `user-avatar role-${previous}`;
+            }
+          }
+        });
+      });
+    }
+
     async function loadUsers() {
       const tbody = document.getElementById('admin-users-tbody');
       try {
         const { users } = await (await fetch('/api/users', { credentials: 'include' })).json();
+        allUsers = users;
 
         // Stat cards: real counts by role, computed from the same response
         // that fills the table below — no extra request needed.
@@ -231,42 +294,21 @@
         setStat('stat-parents', counts.parent);
         const lastUpdated = document.getElementById('admin-last-updated');
         if (lastUpdated) lastUpdated.textContent = `Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        const countLabel = document.getElementById('admin-users-count');
+        if (countLabel) countLabel.textContent = `${users.length.toLocaleString()} total`;
 
         if (!tbody) return;
-        tbody.innerHTML = users.length ? users.map((u) => `
-          <tr>
-            <td>${escapeHtml(u.name)}<div class="text-soft" style="font-size:.75rem">${escapeHtml(u.email)}</div></td>
-            <td>
-              <select class="form-select form-select-sm" style="width:auto" data-user-role="${u.id}">
-                ${Object.entries(ROLE_LABELS).map(([value, label]) =>
-                  `<option value="${value}" ${u.role === value ? 'selected' : ''}>${label}</option>`).join('')}
-              </select>
-            </td>
-            <td class="text-soft" style="font-size:.85rem">${escapeHtml(new Date(u.created_at + 'Z').toLocaleDateString())}</td>
-          </tr>`).join('') : '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">No users yet.</td></tr>';
-
-        tbody.querySelectorAll('[data-user-role]').forEach((select) => {
-          select.addEventListener('change', async () => {
-            const id = select.dataset.userRole;
-            const previous = Array.from(select.options).find((o) => o.defaultSelected)?.value;
-            try {
-              const res = await fetch(`/api/users/${id}/role`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ role: select.value }),
-              });
-              const data = await res.json().catch(() => ({}));
-              if (!res.ok) throw new Error(data.error || 'Could not update role.');
-              say(`✅ Role updated to ${ROLE_LABELS[select.value]}.`);
-            } catch (err) {
-              say('❌ ' + err.message, true);
-              if (previous) select.value = previous; // revert the dropdown on failure
-            }
-          });
-        });
+        renderUsersTable(allUsers);
       } catch { if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">Couldn\'t load users.</td></tr>'; }
     }
+
+    document.getElementById('admin-users-search')?.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const filtered = q
+        ? allUsers.filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
+        : allUsers;
+      renderUsersTable(filtered);
+    });
 
     function row(title, subtitle, deleteUrl, reload) {
       return `

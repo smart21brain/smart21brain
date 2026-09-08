@@ -1103,8 +1103,12 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 /* ---- Teacher / Parent dashboard extras ---- */
 .dash-table { font-size: .88rem; }
 .dash-table th { color: var(--s21-text-soft); font-weight: 700; font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--s21-border); padding-bottom: .6rem; }
-.dash-table td { padding: .8rem 0; border-bottom: 1px solid var(--s21-border); vertical-align: middle; }
+.dash-table td { padding: .7rem .4rem; border-bottom: 1px solid var(--s21-border); vertical-align: middle; }
 .dash-table tr:last-child td { border-bottom: none; }
+.dash-table tbody tr { transition: background-color .15s var(--ease); }
+.dash-table tbody tr:hover td { background-color: var(--s21-bg); }
+.dash-table tbody tr td:first-child { border-radius: 10px 0 0 10px; }
+.dash-table tbody tr td:last-child { border-radius: 0 10px 10px 0; }
 .status-chip { font-size: .72rem; font-weight: 700; padding: .25rem .65rem; border-radius: var(--radius-pill); }
 .status-chip.active { background: var(--s21-primary-light); color: var(--s21-primary); }
 .status-chip.pending { background: var(--s21-secondary-tint); color: #A66A00; }
@@ -1205,6 +1209,41 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
   margin-bottom: .7rem;
 }
 .moderation-row img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+
+.admin-search {
+  position: relative; display: flex; align-items: center;
+}
+.admin-search i {
+  position: absolute; left: .7rem; font-size: .8rem; color: var(--s21-text-soft); pointer-events: none;
+}
+.admin-search input {
+  border: 1px solid var(--s21-border); background: var(--s21-bg);
+  border-radius: var(--radius-pill); padding: .4rem .8rem .4rem 2rem;
+  font-size: .82rem; width: 190px; color: var(--s21-text);
+}
+.admin-search input:focus { outline: 2px solid var(--s21-primary); outline-offset: 1px; }
+
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: .78rem;
+}
+.user-avatar.role-user { background: var(--s21-primary-light); color: var(--s21-primary); }
+.user-avatar.role-teacher { background: var(--s21-accent-tint); color: var(--s21-accent); }
+.user-avatar.role-parent { background: var(--s21-secondary-tint); color: #A66A00; }
+.user-avatar.role-admin { background: var(--s21-text); color: var(--s21-white); }
+
+.role-select {
+  border: none; font-weight: 700; font-size: .78rem;
+  border-radius: var(--radius-pill); padding: .35rem 1.7rem .35rem .8rem;
+  cursor: pointer; appearance: none;
+  background-repeat: no-repeat; background-position: right .6rem center; background-size: .6rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235B6470' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.role-select.role-user { background-color: var(--s21-primary-light); color: var(--s21-primary); }
+.role-select.role-teacher { background-color: var(--s21-accent-tint); color: var(--s21-accent); }
+.role-select.role-parent { background-color: var(--s21-secondary-tint); color: #A66A00; }
+.role-select.role-admin { background-color: var(--s21-text); color: var(--s21-white); }
 @media (max-width: 991.98px) {
   .admin-sidebar { display: none; }
   .admin-content { padding: 1.2rem; }
