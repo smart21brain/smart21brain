@@ -101,7 +101,7 @@ won't touch production until you deploy or run commands with `--remote`).
 | Dashboard stats | ✅ real name, real avg quiz score, real recent activity |
 | **Stationery OS** (`stationery-app.html`) | ✅ full Universal Order Engine — POS, orders, inventory, customers, finance, reports, employees/roles, all backed by D1 (`/api/stationery/*`) |
 | Stationery OS: Photo Studio, PDF/Image Tools | ✅ real, 100% client-side (canvas + pdf-lib/pdf.js/Tesseract.js) — no server processing needed |
-| Stationery OS: ChopaAI, Online Services, Machine Center, Academy | ✅ real — ChopaAI via Workers AI; the rest backed by D1 |
+| Stationery OS: Smart21brain AI, Online Services, Machine Center, Academy | ✅ real — Smart21brain AI via Workers AI; the rest backed by D1 |
 
 ## Project layout
 

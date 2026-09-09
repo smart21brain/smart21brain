@@ -23,7 +23,7 @@
       { route: 'onlineservices', icon: 'fa-passport', label: 'Online Services' },
       { route: 'machines', icon: 'fa-print', label: 'Machine Center' },
       { route: 'academy', icon: 'fa-graduation-cap', label: 'Academy' },
-      { route: 'chopaai', icon: 'fa-robot', label: 'ChopaAI' },
+      { route: 'chopaai', icon: 'fa-robot', label: 'Smart21brain AI' },
     ]},
     { group: 'Admin', items: [
       { route: 'employees', icon: 'fa-users-gear', label: 'Employees' },
@@ -70,7 +70,7 @@
           <i class="fa-solid fa-bell"></i>
           <span class="badge-dot" id="stnNotifBadge" style="display:none;position:absolute;top:-4px;right:-4px"></span>
         </button>
-        <button class="stn-icon-btn" id="stnChopaBtn" title="Ask ChopaAI"><i class="fa-solid fa-robot"></i></button>
+        <button class="stn-icon-btn" id="stnChopaBtn" title="Ask Smart21brain AI"><i class="fa-solid fa-robot"></i></button>
       </div>`;
   }
 
@@ -116,7 +116,7 @@
     dashboard: 'Dashboard', pos: 'Point of Sale', orders: 'Orders', customers: 'Customers',
     inventory: 'Inventory', finance: 'Finance', reports: 'Reports', photostudio: 'Photo Studio',
     pdftools: 'PDF & Image Tools', onlineservices: 'Online Services (TRA / BRELA / NIDA / Passport / Visa / TIN)',
-    machines: 'Machine Center', academy: 'Academy', chopaai: 'ChopaAI', employees: 'Employees',
+    machines: 'Machine Center', academy: 'Academy', chopaai: 'Smart21brain AI', employees: 'Employees',
     settings: 'Settings & Pricing', security: 'Security & Backup',
   };
 

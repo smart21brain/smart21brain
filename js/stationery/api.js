@@ -40,6 +40,21 @@
     upload: (path, formData) => request('POST', path, formData, true),
   };
 
+  // ---------------- Lazy script loading ----------------
+  // Heavy tool libraries (PDF/photo export) are NOT loaded on every page
+  // view — only the module that actually needs one pulls it in, on
+  // first use, and only once.
+  STN.loadScripts = function (urls) {
+    return Promise.all(urls.map((src) => new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) return resolve();
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('Failed to load ' + src));
+      document.body.appendChild(s);
+    })));
+  };
+
   // ---------------- Toast ----------------
   STN.toast = function (message, type) {
     let stack = document.getElementById('stnToastStack');

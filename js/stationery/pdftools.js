@@ -40,10 +40,26 @@
     a.href = url; a.download = filename; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  function checkLibs(...libs) {
-    const missing = libs.filter((l) => !window[l]);
-    if (missing.length) { STN.toast(`Still loading tool libraries (${missing.join(', ')}) — try again in a moment.`, 'error'); return false; }
-    return true;
+  const LIB_URLS = {
+    PDFLib: 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
+    pdfjsLib: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    JSZip: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+    Tesseract: 'https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/6.0.1/tesseract.min.js',
+  };
+  async function checkLibs(...names) {
+    const missing = names.filter((n) => !window[n]);
+    if (!missing.length) return true;
+    STN.toast(`Loading ${missing.join(', ')}…`);
+    try {
+      await STN.loadScripts(missing.map((n) => LIB_URLS[n]));
+      if (missing.includes('pdfjsLib')) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+      return true;
+    } catch (e) {
+      STN.toast('Could not load a required library — check your connection and try again.', 'error');
+      return false;
+    }
   }
 
   function openTool(id) {
@@ -114,7 +130,7 @@
   };
 
   async function pdfToPageCanvases(arrayBuffer, scale) {
-    if (!checkLibs('pdfjsLib')) return [];
+    if (!(await checkLibs('pdfjsLib'))) return [];
     const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const canvases = [];
     for (let i = 1; i <= pdf.numPages; i++) {
@@ -149,7 +165,7 @@
 
   const HANDLERS = {
     async merge(files) {
-      if (!checkLibs('PDFLib')) return;
+      if (!(await checkLibs('PDFLib'))) return;
       const { PDFDocument } = window.PDFLib;
       const out = await PDFDocument.create();
       for (const file of files) {
@@ -164,7 +180,7 @@
     },
 
     async split(files) {
-      if (!checkLibs('PDFLib', 'JSZip')) return;
+      if (!(await checkLibs('PDFLib', 'JSZip'))) return;
       const { PDFDocument } = window.PDFLib;
       const bytes = await files[0].arrayBuffer();
       const src = await PDFDocument.load(bytes);
@@ -182,7 +198,7 @@
     },
 
     async rotate(files) {
-      if (!checkLibs('PDFLib')) return;
+      if (!(await checkLibs('PDFLib'))) return;
       const { PDFDocument, degrees } = window.PDFLib;
       const deg = Number(document.getElementById('stnRotateDeg').value);
       const bytes = await files[0].arrayBuffer();
@@ -194,7 +210,7 @@
     },
 
     async compress(files) {
-      if (!checkLibs('PDFLib', 'pdfjsLib')) return;
+      if (!(await checkLibs('PDFLib', 'pdfjsLib'))) return;
       const quality = Number(document.getElementById('stnQuality').value) / 100;
       const bytes = await files[0].arrayBuffer();
       const canvases = await pdfToPageCanvases(bytes, 1.5);
@@ -213,7 +229,7 @@
     },
 
     async jpg2pdf(files) {
-      if (!checkLibs('PDFLib')) return;
+      if (!(await checkLibs('PDFLib'))) return;
       const { PDFDocument } = window.PDFLib;
       const out = await PDFDocument.create();
       for (const file of files) {
@@ -235,7 +251,7 @@
         STN.toast('JPG downloaded.');
         return;
       }
-      if (!checkLibs('JSZip')) return;
+      if (!(await checkLibs('JSZip'))) return;
       const zip = new window.JSZip();
       for (let i = 0; i < canvases.length; i++) {
         const dataUrl = canvases[i].toDataURL('image/jpeg', 0.92);
@@ -247,7 +263,7 @@
     },
 
     async watermark(files) {
-      if (!checkLibs('PDFLib')) return;
+      if (!(await checkLibs('PDFLib'))) return;
       const { PDFDocument, rgb, degrees } = window.PDFLib;
       const text = document.getElementById('stnWmText').value || 'COPY';
       const bytes = await files[0].arrayBuffer();
@@ -266,7 +282,7 @@
     },
 
     async pagenumbers(files) {
-      if (!checkLibs('PDFLib')) return;
+      if (!(await checkLibs('PDFLib'))) return;
       const { PDFDocument, rgb } = window.PDFLib;
       const bytes = await files[0].arrayBuffer();
       const doc = await PDFDocument.load(bytes);
@@ -282,7 +298,7 @@
     },
 
     async ocr(files) {
-      if (!checkLibs('Tesseract')) return;
+      if (!(await checkLibs('Tesseract'))) return;
       const lang = document.getElementById('stnOcrLang').value;
       const progressEl = document.getElementById('stnOcrProgress');
       const file = files[0];

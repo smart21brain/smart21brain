@@ -1,7 +1,7 @@
 import { json, badRequest } from '../../lib/auth.js';
 import { getStationeryContext } from '../../lib/stationery-auth.js';
 
-const SYSTEM_BASE = `You are ChopaAI, the in-app assistant for a Tanzanian/East-African stationery, printing and photo-studio shop running on smart21brain Stationery OS. Be concise, practical and friendly. Reply in the same language the operator writes in (English or Kiswahili). Never claim to submit anything to a government system — you only guide the operator through paperwork.`;
+const SYSTEM_BASE = `You are Smart21brain AI, the in-app assistant for a Tanzanian/East-African stationery, printing and photo-studio shop running on smart21brain Stationery OS. Be concise, practical and friendly. Reply in the same language the operator writes in (English or Kiswahili). Never claim to submit anything to a government system — you only guide the operator through paperwork.`;
 
 async function runModel(env, systemPrompt, userPrompt) {
   if (!env.AI || typeof env.AI.run !== 'function') {

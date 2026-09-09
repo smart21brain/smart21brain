@@ -378,7 +378,11 @@
 
   async function exportPdf() {
     if (!st.img) return STN.toast('Upload a photo first.', 'error');
-    if (!window.jspdf) return STN.toast('PDF library did not load — check your connection and retry.', 'error');
+    if (!window.jspdf) {
+      STN.toast('Loading PDF export…');
+      try { await STN.loadScripts(['https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js']); }
+      catch (e) { return STN.toast('Could not load the PDF library — check your connection and retry.', 'error'); }
+    }
     const photoCanvas = renderExportCanvas();
     const count = Number(document.getElementById('stnLayoutCount').value);
     const finalCanvas = count > 1 ? renderA4Sheet(photoCanvas, count) : photoCanvas;

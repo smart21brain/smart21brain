@@ -17,10 +17,10 @@
     root.innerHTML = `
       <div class="stn-grid" style="grid-template-columns: 1fr 240px">
         <div class="stn-card">
-          <div class="stn-card-head"><h3><i class="fa-solid fa-robot text-emerald me-1"></i>ChopaAI</h3></div>
+          <div class="stn-card-head"><h3><i class="fa-solid fa-robot text-emerald me-1"></i>Smart21brain AI</h3></div>
           <div class="stn-chat-log" id="stnChatLog"></div>
           <div class="d-flex gap-2 mt-3">
-            <input class="stn-input" id="stnChatInput" placeholder="Ask ChopaAI anything about your shop…">
+            <input class="stn-input" id="stnChatInput" placeholder="Ask Smart21brain AI anything about your shop…">
             <button class="stn-btn stn-btn-primary" id="stnChatSend"><i class="fa-solid fa-paper-plane"></i></button>
           </div>
         </div>

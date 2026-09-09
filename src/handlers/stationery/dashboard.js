@@ -74,7 +74,7 @@ async function buildInsight(env, stats) {
     const prompt = `Business snapshot for today: sales=${stats.sales_today} ${stats.currency}, orders=${stats.orders_today}, expenses=${stats.expenses_today} ${stats.currency}, low-stock items=${stats.low_stock_count}. In one short, friendly sentence, give the shop owner a useful business insight or tip based on these numbers. No greeting, no markdown.`;
     const result = await env.AI.run(env.AI_MODEL || '@cf/meta/llama-3.1-8b-instruct', {
       messages: [
-        { role: 'system', content: 'You are ChopaAI, a concise business assistant for a stationery/printing shop.' },
+        { role: 'system', content: 'You are Smart21brain AI, a concise business assistant for a stationery/printing shop.' },
         { role: 'user', content: prompt },
       ],
     });

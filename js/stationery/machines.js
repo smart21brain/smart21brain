@@ -31,7 +31,7 @@
     const c = m.content;
     box.innerHTML = `
       <div class="stn-card">
-        <div class="stn-card-head"><h3>${STN.esc(m.name)}</h3><button class="stn-btn stn-btn-outline stn-btn-sm" id="stnAskChopaMachine"><i class="fa-solid fa-robot"></i> Ask ChopaAI</button></div>
+        <div class="stn-card-head"><h3>${STN.esc(m.name)}</h3><button class="stn-btn stn-btn-outline stn-btn-sm" id="stnAskChopaMachine"><i class="fa-solid fa-robot"></i> Ask Smart21brain AI</button></div>
         <div class="stn-grid stn-grid-2">
           ${SECTIONS.map(([key, label, icon]) => `
             <div class="stn-card stn-card-tight" style="background:var(--stn-bg-soft)">
