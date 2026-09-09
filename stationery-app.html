@@ -47,10 +47,21 @@
   // pdf.js, jsPDF, JSZip, Tesseract.js) only the moment they're actually
   // used — see STN.loadScripts() in js/stationery/api.js — so this page
   // stays light for everyone using POS, Orders, Inventory, etc.
+  //
+  // NOTE: this page intentionally does NOT register a service worker.
+  // An earlier version did, for offline app-shell caching, but its fetch
+  // handler had a bug that could make the page fail to load entirely
+  // (ERR_FAILED) once installed. stationery-sw.js now exists only to
+  // clean up and unregister itself in any browser that already
+  // installed the old one — see that file for details.
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('stationery-sw.js').catch(() => {});
-    });
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => {
+        if (reg.active && /stationery-sw\.js/.test(reg.active.scriptURL)) {
+          reg.update();
+        }
+      });
+    }).catch(() => {});
   }
 </script>
 <script src="js/cookie-consent.js"></script>

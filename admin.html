@@ -115,38 +115,18 @@
             </div>
           </div>
 
-          <!-- Moderation queue -->
+          <!-- Recent content activity (live feed — this platform has no
+               separate approve/reject workflow: games, quizzes, posts,
+               materials and videos publish immediately when created, so
+               this shows what actually just happened rather than a fake
+               pending queue). -->
           <div class="s21-card p-4" id="moderation" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h2 class="h5 mb-0"><i class="fa-solid fa-shield-halved" style="color:var(--s21-accent)"></i> <span data-i18n="admin_content_moderation_queue">Content moderation queue</span></h2>
-              <span class="badge-pill pink" data-i18n="admin_6_pending">6 pending</span>
+              <h2 class="h5 mb-0"><i class="fa-solid fa-shield-halved" style="color:var(--s21-accent)"></i> Recent content activity</h2>
+              <span class="badge-pill pink" id="admin-activity-count"></span>
             </div>
-
-            <div class="moderation-row">
-              <img src="https://images.unsplash.com/photo-1587613864411-cf9a1e079bbe?w=150&q=60&auto=format&fit=crop" alt="" loading="lazy">
-              <div class="flex-grow-1">
-                <div class="fw-bold" style="font-size:.9rem" data-i18n="admin_new_video_intro_to_python_loops">New video: "Intro to Python Loops"</div>
-                <div class="text-soft" style="font-size:.78rem" data-i18n="admin_submitted_by_ms_zawadi_mushi_coding">Submitted by Ms. Zawadi Mushi · Coding</div>
-              </div>
-              <button class="btn-s21 btn-s21-primary" style="padding:.4rem .9rem;font-size:.78rem"><i class="fa-solid fa-check"></i> <span data-i18n="admin_approve">Approve</span></button>
-              <button class="btn-s21 btn-s21-outline" style="padding:.4rem .9rem;font-size:.78rem"><i class="fa-solid fa-xmark"></i> <span data-i18n="admin_reject">Reject</span></button>
-            </div>
-            <div class="moderation-row">
-              <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&q=60&auto=format&fit=crop" alt="" loading="lazy">
-              <div class="flex-grow-1">
-                <div class="fw-bold" style="font-size:.9rem" data-i18n="admin_new_book_legends_of_the_rift_valley">New book: "Legends of the Rift Valley"</div>
-                <div class="text-soft" style="font-size:.78rem" data-i18n="admin_submitted_by_grace_mwangi_stories">Submitted by Grace Mwangi · Stories</div>
-              </div>
-              <button class="btn-s21 btn-s21-primary" style="padding:.4rem .9rem;font-size:.78rem"><i class="fa-solid fa-check"></i> <span data-i18n="admin_approve">Approve</span></button>
-              <button class="btn-s21 btn-s21-outline" style="padding:.4rem .9rem;font-size:.78rem"><i class="fa-solid fa-xmark"></i> <span data-i18n="admin_reject">Reject</span></button>
-            </div>
-            <div class="moderation-row">
-              <img src="https://i.pravatar.cc/150?img=15" alt="" loading="lazy" style="border-radius:50%">
-              <div class="flex-grow-1">
-                <div class="fw-bold" style="font-size:.9rem" data-i18n="admin_reported_comment_on_how_volcanoes_wo">Reported comment on "How Volcanoes Work"</div>
-                <div class="text-soft" style="font-size:.78rem" data-i18n="admin_flagged_by_3_users_awaiting_review">Flagged by 3 users · awaiting review</div>
-              </div>
-              <button class="btn-s21 btn-s21-outline" style="padding:.4rem .9rem;font-size:.78rem"><i class="fa-solid fa-eye"></i> <span data-i18n="admin_review">Review</span></button>
+            <div id="admin-activity-list" class="d-flex flex-column gap-2">
+              <p class="text-soft" style="font-size:.85rem">Loading…</p>
             </div>
           </div>
         </div>
@@ -155,28 +135,29 @@
           <div class="s21-card p-4 mb-4" id="payments" data-aos="fade-up">
             <h3 class="h6 mb-3"><i class="fa-solid fa-credit-card" style="color:var(--s21-primary)"></i> <span data-i18n="admin_payments_subscriptions">Payments &amp; subscriptions</span></h3>
             <ul class="list-unstyled d-flex flex-column gap-2" style="font-size:.85rem">
-              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_premium_subscribers">Premium subscribers</span><span class="fw-bold">6,204</span></li>
-              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_school_accounts">School accounts</span><span class="fw-bold">18</span></li>
-              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_failed_payments_7d">Failed payments (7d)</span><span class="fw-bold">12</span></li>
-              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_refund_requests">Refund requests</span><span class="fw-bold">3</span></li>
+              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_premium_subscribers">Premium subscribers</span><span class="fw-bold">—</span></li>
+              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_school_accounts">School accounts</span><span class="fw-bold">—</span></li>
+              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_failed_payments_7d">Failed payments (7d)</span><span class="fw-bold">—</span></li>
+              <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_refund_requests">Refund requests</span><span class="fw-bold">—</span></li>
             </ul>
-            <p class="text-soft mt-3 mb-0" style="font-size:.76rem" data-i18n="admin_connect_stripe_paypal_mobile_money_o">Connect Stripe/PayPal/Mobile Money on the backend — never expose secret keys here.</p>
+            <p class="text-soft mt-3 mb-0" style="font-size:.76rem" data-i18n="admin_connect_stripe_paypal_mobile_money_o">No payment provider is connected yet, so there's nothing real to show here. Wire up Stripe/PayPal/Mobile Money on the backend — never expose secret keys client-side — and these numbers can come alive too.</p>
           </div>
 
           <div class="s21-card p-4" id="settings" data-aos="fade-up" data-aos-delay="60">
             <h3 class="h6 mb-3"><i class="fa-solid fa-gear" style="color:var(--s21-text-soft)"></i> <span data-i18n="admin_platform_settings">Platform settings</span></h3>
             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
               <span style="font-size:.85rem" data-i18n="admin_require_content_review_before_publis">Require content review before publish</span>
-              <label class="s21-switch"><input type="checkbox" checked><span class="slider"></span></label>
+              <label class="s21-switch"><input type="checkbox" data-setting="require_content_review" disabled><span class="slider"></span></label>
             </div>
             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
               <span style="font-size:.85rem" data-i18n="admin_allow_public_comments">Allow public comments</span>
-              <label class="s21-switch"><input type="checkbox"><span class="slider"></span></label>
+              <label class="s21-switch"><input type="checkbox" data-setting="allow_public_comments" disabled><span class="slider"></span></label>
             </div>
             <div class="d-flex justify-content-between align-items-center py-2">
               <span style="font-size:.85rem" data-i18n="admin_maintenance_mode">Maintenance mode</span>
-              <label class="s21-switch"><input type="checkbox"><span class="slider"></span></label>
+              <label class="s21-switch"><input type="checkbox" data-setting="maintenance_mode" disabled><span class="slider"></span></label>
             </div>
+            <p class="text-soft mt-3 mb-0" style="font-size:.76rem" id="admin-settings-feedback"></p>
           </div>
         </div>
       </div>

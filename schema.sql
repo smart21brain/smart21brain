@@ -45,6 +45,20 @@ CREATE TABLE IF NOT EXISTS oauth_accounts (
 CREATE INDEX IF NOT EXISTS idx_oauth_accounts_user ON oauth_accounts(user_id);
 
 -- ---------------------------------------------------------------------
+-- Site settings (admin console toggles) — simple key/value store so new
+-- switches can be added without another migration.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT NOT NULL,                          -- stored as 'true' / 'false'
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT OR IGNORE INTO site_settings (key, value) VALUES
+('require_content_review', 'true'),
+('allow_public_comments', 'false'),
+('maintenance_mode', 'false');
+
+-- ---------------------------------------------------------------------
 -- Newsletter subscriptions
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (

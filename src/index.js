@@ -15,6 +15,7 @@ import * as account from './handlers/account.js';
 import * as activity from './handlers/activity.js';
 import * as google from './handlers/google.js';
 import * as stats from './handlers/stats.js';
+import * as settings from './handlers/settings.js';
 import { getSessionUser } from './lib/auth.js';
 
 // ---- Stationery OS ----
@@ -100,6 +101,10 @@ router.put('/api/users/:id/role', users.updateUserRole);
 
 // ---- Dashboard ----
 router.get('/api/dashboard', getDashboard);
+
+// ---- Site settings (admin console) ----
+router.get('/api/settings', settings.getSettings);
+router.put('/api/settings', settings.updateSettings);
 
 // ==================== Stationery OS ====================
 // ---- Business & staff ----

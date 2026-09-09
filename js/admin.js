@@ -342,11 +342,94 @@
       });
     }
 
+    // ---- Recent content activity feed ----
+    // There's no separate moderation/approval workflow in this app —
+    // games, quizzes, posts, materials and videos go live the moment
+    // they're created — so this pulls the real lists and shows the
+    // newest items across all of them, instead of a fake pending queue.
+    function timeAgo(iso) {
+      const then = new Date(iso + 'Z').getTime();
+      const mins = Math.round((Date.now() - then) / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hours = Math.round(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      return `${Math.round(hours / 24)}d ago`;
+    }
+
+    async function loadActivity() {
+      const list = document.getElementById('admin-activity-list');
+      const countEl = document.getElementById('admin-activity-count');
+      if (!list) return;
+      try {
+        const [games, quizzes, posts, materials, videos] = await Promise.all([
+          fetch('/api/games', { credentials: 'include' }).then((r) => r.json()).then((d) => d.games || []),
+          fetch('/api/quizzes', { credentials: 'include' }).then((r) => r.json()).then((d) => d.quizzes || []),
+          fetch('/api/blog', { credentials: 'include' }).then((r) => r.json()).then((d) => d.posts || []),
+          fetch('/api/materials', { credentials: 'include' }).then((r) => r.json()).then((d) => d.materials || []),
+          fetch('/api/videos', { credentials: 'include' }).then((r) => r.json()).then((d) => d.videos || []),
+        ]);
+        const items = [
+          ...games.map((g) => ({ title: g.title, type: 'Game', icon: 'fa-gamepad', created_at: g.created_at })),
+          ...quizzes.map((q) => ({ title: q.title, type: 'Quiz', icon: 'fa-circle-question', created_at: q.created_at })),
+          ...posts.map((p) => ({ title: p.title, type: 'Blog post', icon: 'fa-newspaper', created_at: p.created_at })),
+          ...materials.map((m) => ({ title: m.title, type: 'Material', icon: 'fa-file-lines', created_at: m.created_at })),
+          ...videos.map((v) => ({ title: v.title, type: 'Video', icon: 'fa-video', created_at: v.created_at })),
+        ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+
+        countEl.textContent = items.length ? `${items.length} recent` : '';
+        list.innerHTML = items.length ? items.map((it) => `
+          <div class="moderation-row">
+            <div class="flex-grow-1 d-flex align-items-center gap-2">
+              <i class="fa-solid ${it.icon}" style="color:var(--s21-primary);width:1.2rem;text-align:center"></i>
+              <div>
+                <div class="fw-bold" style="font-size:.9rem">${escapeHtml(it.title)}</div>
+                <div class="text-soft" style="font-size:.78rem">${it.type} · ${timeAgo(it.created_at)}</div>
+              </div>
+            </div>
+          </div>`).join('') : '<p class="text-soft" style="font-size:.85rem">Nothing published yet.</p>';
+      } catch {
+        list.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load recent activity.</p>';
+      }
+    }
+
+    // ---- Platform settings toggles ----
+    async function loadSettings() {
+      const toggles = document.querySelectorAll('[data-setting]');
+      if (!toggles.length) return;
+      try {
+        const { settings } = await (await fetch('/api/settings', { credentials: 'include' })).json();
+        toggles.forEach((input) => {
+          input.checked = !!settings[input.dataset.setting];
+          input.disabled = false;
+        });
+      } catch {
+        const fb = document.getElementById('admin-settings-feedback');
+        if (fb) fb.textContent = "Couldn't load current settings.";
+      }
+    }
+
+    document.querySelectorAll('[data-setting]').forEach((input) => {
+      input.addEventListener('change', async () => {
+        const fb = document.getElementById('admin-settings-feedback');
+        const previous = !input.checked; // value before this toggle
+        try {
+          await postJSON('/api/settings', { [input.dataset.setting]: input.checked });
+          if (fb) { fb.style.color = 'var(--s21-primary)'; fb.textContent = '✅ Setting saved.'; }
+        } catch (err) {
+          input.checked = previous;
+          if (fb) { fb.style.color = 'var(--s21-accent)'; fb.textContent = '❌ ' + err.message; }
+        }
+      });
+    });
+
     loadGames();
     loadQuizzes();
     loadBlog();
     loadMaterials();
     loadVideos();
     loadUsers();
+    loadActivity();
+    loadSettings();
   });
 })();
