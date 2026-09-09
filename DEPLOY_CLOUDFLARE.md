@@ -26,20 +26,26 @@ wrangler d1 create smart21brain-db
 This prints a `database_id` — copy it into `wrangler.toml`, replacing
 `REPLACE_WITH_YOUR_D1_DATABASE_ID`.
 
-Then apply the schema (creates tables + a seed admin account):
+Then apply the schema (creates tables + a seed admin account, including
+all Stationery OS tables and seed data — presets, machine library,
+academy courses, service requirement templates):
 
 ```bash
 wrangler d1 execute smart21brain-db --file=./schema.sql --remote
 ```
 
-## 2. Create the R2 bucket
+## 2. Create the R2 buckets
 
 ```bash
 wrangler r2 bucket create smart21brain-materials
+wrangler r2 bucket create smart21brain-stationery-files
 ```
 
-The binding name (`MATERIALS`) is already set in `wrangler.toml` — no
-further config needed unless you rename the bucket.
+The binding names (`MATERIALS`, `STATIONERY_FILES`) are already set in
+`wrangler.toml` — no further config needed unless you rename a bucket.
+`STATIONERY_FILES` is optional: the Photo Studio and PDF/Image tools
+work entirely client-side without it — it only backs the future
+"documents vault" upload endpoints (`/api/stationery/files`).
 
 ## 3. Deploy the Worker
 
@@ -93,6 +99,9 @@ won't touch production until you deploy or run commands with `--remote`).
 | Admin: upload learning materials | ✅ `admin.html` → `/api/materials` (stored in R2) |
 | Public pages reading live data | ✅ `games.html`, `quiz.html`, `blog.html`, `blog-post.html`, `dashboard.html` all pull from the API, with graceful fallback to demo content if the API isn't reachable |
 | Dashboard stats | ✅ real name, real avg quiz score, real recent activity |
+| **Stationery OS** (`stationery-app.html`) | ✅ full Universal Order Engine — POS, orders, inventory, customers, finance, reports, employees/roles, all backed by D1 (`/api/stationery/*`) |
+| Stationery OS: Photo Studio, PDF/Image Tools | ✅ real, 100% client-side (canvas + pdf-lib/pdf.js/Tesseract.js) — no server processing needed |
+| Stationery OS: ChopaAI, Online Services, Machine Center, Academy | ✅ real — ChopaAI via Workers AI; the rest backed by D1 |
 
 ## Project layout
 
@@ -105,9 +114,18 @@ smart21brain/
 │   ├── index.js            ← Worker entry: routes /api/*, else serves assets
 │   ├── router.js           ← tiny path/method router
 │   ├── lib/auth.js         ← password hashing, sessions, cookies, helpers
-│   └── handlers/           ← one file per resource (auth, games, quizzes, blog, materials, dashboard)
+│   ├── lib/stationery-auth.js ← Stationery OS: business/role context, permissions, audit log
+│   ├── handlers/           ← one file per resource (auth, games, quizzes, blog, materials, dashboard)
+│   └── handlers/stationery/  ← Stationery OS: business, customers, services, inventory, orders,
+│                               finance, dashboard, reports, photostudio, files, onlineservices,
+│                               machines, academy, chopaai, security
 ├── index.html, *.html      ← the static site (served as Worker assets)
+├── stationery.html          ← Stationery OS marketing/overview page
+├── stationery-app.html      ← Stationery OS app shell (the actual working app, login-gated)
+├── stationery-manifest.json, stationery-sw.js ← Stationery OS PWA manifest + service worker
 ├── css/, js/, images/      ← static assets
+├── js/stationery/           ← Stationery OS frontend modules (one file per screen)
+├── css/stationery-app.css   ← Stationery OS design system (dark slate + emerald/cyan)
 ```
 
 ## API reference (all under `/api`)
@@ -124,3 +142,22 @@ smart21brain/
 - `GET  /api/materials` · `POST /api/materials` (admin, multipart file upload)
 - `GET  /api/materials/:id` (streams the file) · `DELETE /api/materials/:id` (admin)
 - `GET  /api/dashboard` (signed-in user's stats)
+
+### Stationery OS (all under `/api/stationery`, any signed-in user — role checked per action)
+
+- `GET  /context` — current business, role, memberships (auto-provisions a starter business on first visit)
+- `PUT  /business` (owner) · `GET/POST /staff` · `PUT /staff/:id` (owner/manager)
+- `GET/POST /customers` · `GET/PUT/DELETE /customers/:id`
+- `GET/POST /services` · `PUT/DELETE /services/:id` (pricing system)
+- `GET/POST /inventory` · `PUT/DELETE /inventory/:id` · `POST /inventory/:id/adjust` · `GET /inventory/:id/history`
+- `GET/POST /orders` · `GET /orders/:id` · `PUT /orders/:id/status` · `POST /orders/:id/payments` · `GET /orders/:id/receipt`
+- `GET/POST /finance/expenses` · `DELETE /finance/expenses/:id` · `GET /finance/cashbook` · `GET /finance/debts` · `GET /finance/summary`
+- `GET  /dashboard` · `GET /reports?range=daily|weekly|monthly`
+- `GET/POST /photo-presets` · `DELETE /photo-presets/:id`
+- `POST /files` (multipart upload to R2) · `GET/DELETE /files/:key`
+- `GET  /online-services/templates` · `GET/POST /online-services` · `PUT /online-services/:id`
+- `GET/POST /machines` · `DELETE /machines/:id`
+- `GET  /courses` · `GET /courses/:id` · `POST /courses/:id/progress`
+- `POST /chopaai` `{prompt, mode}` — mode: general|machine|photo|business|sales_summary
+- `GET  /notifications` · `PUT /notifications/:id/read` · `PUT /notifications/read-all`
+- `GET  /audit-log` (owner) · `GET /backup/export` (owner) · `POST /backup/restore` (owner)

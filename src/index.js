@@ -17,6 +17,23 @@ import * as google from './handlers/google.js';
 import * as stats from './handlers/stats.js';
 import { getSessionUser } from './lib/auth.js';
 
+// ---- Stationery OS ----
+import * as stnBusiness from './handlers/stationery/business.js';
+import * as stnCustomers from './handlers/stationery/customers.js';
+import * as stnServices from './handlers/stationery/services.js';
+import * as stnInventory from './handlers/stationery/inventory.js';
+import * as stnOrders from './handlers/stationery/orders.js';
+import * as stnFinance from './handlers/stationery/finance.js';
+import * as stnDashboard from './handlers/stationery/dashboard.js';
+import * as stnReports from './handlers/stationery/reports.js';
+import * as stnPhotoStudio from './handlers/stationery/photostudio.js';
+import * as stnFiles from './handlers/stationery/files.js';
+import * as stnOnlineServices from './handlers/stationery/onlineservices.js';
+import * as stnMachines from './handlers/stationery/machines.js';
+import * as stnAcademy from './handlers/stationery/academy.js';
+import * as stnChopaAI from './handlers/stationery/chopaai.js';
+import * as stnSecurity from './handlers/stationery/security.js';
+
 const router = new Router();
 
 // ---- Auth ----
@@ -84,6 +101,92 @@ router.put('/api/users/:id/role', users.updateUserRole);
 // ---- Dashboard ----
 router.get('/api/dashboard', getDashboard);
 
+// ==================== Stationery OS ====================
+// ---- Business & staff ----
+router.get('/api/stationery/context', stnBusiness.getContext);
+router.put('/api/stationery/business', stnBusiness.updateBusiness);
+router.get('/api/stationery/staff', stnBusiness.listStaff);
+router.post('/api/stationery/staff', stnBusiness.addStaff);
+router.put('/api/stationery/staff/:id', stnBusiness.updateStaffRole);
+
+// ---- Customers ----
+router.get('/api/stationery/customers', stnCustomers.listCustomers);
+router.post('/api/stationery/customers', stnCustomers.createCustomer);
+router.get('/api/stationery/customers/:id', stnCustomers.getCustomer);
+router.put('/api/stationery/customers/:id', stnCustomers.updateCustomer);
+router.delete('/api/stationery/customers/:id', stnCustomers.deleteCustomer);
+
+// ---- Pricing (services) ----
+router.get('/api/stationery/services', stnServices.listServices);
+router.post('/api/stationery/services', stnServices.createService);
+router.put('/api/stationery/services/:id', stnServices.updateService);
+router.delete('/api/stationery/services/:id', stnServices.deleteService);
+
+// ---- Inventory ----
+router.get('/api/stationery/inventory', stnInventory.listInventory);
+router.post('/api/stationery/inventory', stnInventory.createItem);
+router.put('/api/stationery/inventory/:id', stnInventory.updateItem);
+router.delete('/api/stationery/inventory/:id', stnInventory.deleteItem);
+router.post('/api/stationery/inventory/:id/adjust', stnInventory.adjustStock);
+router.get('/api/stationery/inventory/:id/history', stnInventory.stockHistory);
+
+// ---- Universal Order Engine ----
+router.get('/api/stationery/orders', stnOrders.listOrders);
+router.post('/api/stationery/orders', stnOrders.createOrder);
+router.get('/api/stationery/orders/:id', stnOrders.getOrder);
+router.put('/api/stationery/orders/:id/status', stnOrders.updateOrderStatus);
+router.post('/api/stationery/orders/:id/payments', stnOrders.addPayment);
+router.get('/api/stationery/orders/:id/receipt', stnOrders.getReceipt);
+
+// ---- Finance ----
+router.get('/api/stationery/finance/expenses', stnFinance.listExpenses);
+router.post('/api/stationery/finance/expenses', stnFinance.createExpense);
+router.delete('/api/stationery/finance/expenses/:id', stnFinance.deleteExpense);
+router.get('/api/stationery/finance/cashbook', stnFinance.cashbook);
+router.get('/api/stationery/finance/debts', stnFinance.debts);
+router.get('/api/stationery/finance/summary', stnFinance.summary);
+
+// ---- Dashboard & reports ----
+router.get('/api/stationery/dashboard', stnDashboard.getDashboard);
+router.get('/api/stationery/reports', stnReports.getReport);
+
+// ---- Photo Studio ----
+router.get('/api/stationery/photo-presets', stnPhotoStudio.listPresets);
+router.post('/api/stationery/photo-presets', stnPhotoStudio.createPreset);
+router.delete('/api/stationery/photo-presets/:id', stnPhotoStudio.deletePreset);
+
+// ---- Document vault (R2) — used by Photo Studio & PDF/Image tools ----
+router.post('/api/stationery/files', stnFiles.uploadFile);
+router.get('/api/stationery/files/:key', stnFiles.getFile);
+router.delete('/api/stationery/files/:key', stnFiles.deleteFile);
+
+// ---- Online Services (guided checklist center) ----
+router.get('/api/stationery/online-services/templates', stnOnlineServices.getTemplates);
+router.get('/api/stationery/online-services', stnOnlineServices.listRequests);
+router.post('/api/stationery/online-services', stnOnlineServices.createRequest);
+router.put('/api/stationery/online-services/:id', stnOnlineServices.updateRequest);
+
+// ---- Machine Center ----
+router.get('/api/stationery/machines', stnMachines.listMachines);
+router.post('/api/stationery/machines', stnMachines.createMachine);
+router.delete('/api/stationery/machines/:id', stnMachines.deleteMachine);
+
+// ---- Academy LMS ----
+router.get('/api/stationery/courses', stnAcademy.listCourses);
+router.get('/api/stationery/courses/:id', stnAcademy.getCourse);
+router.post('/api/stationery/courses/:id/progress', stnAcademy.updateProgress);
+
+// ---- ChopaAI ----
+router.post('/api/stationery/chopaai', stnChopaAI.ask);
+
+// ---- Notifications, audit, backup ----
+router.get('/api/stationery/notifications', stnSecurity.listNotifications);
+router.put('/api/stationery/notifications/:id/read', stnSecurity.markRead);
+router.put('/api/stationery/notifications/read-all', stnSecurity.markAllRead);
+router.get('/api/stationery/audit-log', stnSecurity.listAuditLog);
+router.get('/api/stationery/backup/export', stnSecurity.exportBackup);
+router.post('/api/stationery/backup/restore', stnSecurity.restoreBackup);
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -104,6 +207,11 @@ export default {
       '/parents': ['parent', 'admin'],
       '/profile.html': ['user', 'admin', 'teacher', 'parent'],
       '/profile': ['user', 'admin', 'teacher', 'parent'],
+      // Stationery OS is a separate, role-scoped app (Owner/Manager/
+      // Operator/Designer/Accountant) layered on top of *any* signed-in
+      // smart21brain account — see src/lib/stationery-auth.js.
+      '/stationery-app.html': ['user', 'admin', 'teacher', 'parent'],
+      '/stationery-app': ['user', 'admin', 'teacher', 'parent'],
     };
 
     const allowedRoles = protectedPages[normalizedPath];

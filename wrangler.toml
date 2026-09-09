@@ -39,6 +39,19 @@ database_id = "8d1eb316-d826-419b-93c6-e1a90f014571"
 binding = "MATERIALS"
 bucket_name = "smart21brain-materials"
 
-# Workers AI binding used by /api/ai-assistant.
+# R2 bucket for Stationery OS (job files, photo studio exports, documents
+# vault, business logos). Create it with:
+#   wrangler r2 bucket create smart21brain-stationery-files
+[[r2_buckets]]
+binding = "STATIONERY_FILES"
+bucket_name = "smart21brain-stationery-files"
+
+# Workers AI binding used by /api/ai-assistant and /api/stationery/chopaai.
 [ai]
 binding = "AI"
+
+# Optional: override the default text model used by both AI assistants
+# (default: @cf/meta/llama-3.1-8b-instruct). Check the current Workers AI
+# model catalog before changing this: https://developers.cloudflare.com/workers-ai/models/
+# [vars]
+# AI_MODEL = "@cf/meta/llama-3.1-8b-instruct"
