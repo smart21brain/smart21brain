@@ -15,7 +15,142 @@
 <link rel="stylesheet" href="css/style.css?v=9">
 <link rel="stylesheet" href="css/responsive.css?v=5">
 <link rel="stylesheet" href="css/animations.css?v=4">
+<style>
+  /* ---- YouTube-Studio-style video uploader ---- */
+  .yts-dropzone {
+    border: 2px dashed var(--s21-border);
+    border-radius: var(--radius-md);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: var(--s21-bg);
+    transition: border-color .2s var(--ease), background .2s var(--ease);
+    cursor: pointer;
+  }
+  .yts-dropzone:hover, .yts-dropzone.yts-dragover {
+    border-color: var(--s21-primary);
+    background: var(--s21-primary-light);
+  }
+  .yts-dropzone-icon {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: var(--s21-primary-light);
+    color: var(--s21-primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    margin: 0 auto 1rem;
+  }
 
+  .yts-modal-overlay {
+    position: fixed; inset: 0; z-index: 1080;
+    background: rgba(0,0,0,.6);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.25rem;
+  }
+  .yts-modal {
+    width: 100%; max-width: 860px; max-height: 92vh;
+    background: var(--s21-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow-hover);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .yts-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--s21-border);
+  }
+  .yts-modal-progress { height: 3px; background: var(--s21-border); }
+  .yts-modal-progress-bar {
+    height: 100%; width: 0%;
+    background: var(--s21-primary);
+    transition: width .2s linear;
+  }
+  .yts-modal-steps {
+    display: flex; gap: 1.5rem;
+    padding: .9rem 1.4rem 0;
+  }
+  .yts-step {
+    background: none; border: none; padding: 0 0 .8rem;
+    font-size: .85rem; font-weight: 700;
+    color: var(--s21-text-soft);
+    display: flex; align-items: center; gap: .5rem;
+    border-bottom: 2px solid transparent;
+  }
+  .yts-step.active { color: var(--s21-primary); border-bottom-color: var(--s21-primary); }
+  .yts-step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--s21-border); color: var(--s21-text);
+    font-size: .72rem; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .yts-step.active .yts-step-num { background: var(--s21-primary); color: #fff; }
+
+  .yts-modal-body { padding: 1.4rem; overflow-y: auto; flex: 1; }
+
+  .yts-thumb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; }
+  .yts-thumb {
+    position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden;
+    border: 2px solid var(--s21-border); cursor: pointer; background: #000;
+  }
+  .yts-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .yts-thumb.selected { border-color: var(--s21-primary); box-shadow: 0 0 0 2px color-mix(in srgb, var(--s21-primary) 35%, transparent); }
+  .yts-thumb.selected::after {
+    content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--s21-primary); color: #fff; font-size: .6rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .yts-thumb-upload {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .3rem; color: var(--s21-text-soft); font-size: .7rem; text-align: center; padding: .4rem;
+  }
+  .yts-thumb-upload i { font-size: 1.1rem; }
+
+  .yts-preview-box {
+    border-radius: 10px; overflow: hidden; background: #000; border: 1px solid var(--s21-border);
+    aspect-ratio: 16/9;
+  }
+  .yts-preview-box video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+  .yts-preview-meta { font-size: .8rem; margin-top: .8rem; display: flex; flex-direction: column; gap: .45rem; }
+  .yts-preview-meta > div > span:last-child { font-weight: 600; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .yts-visibility-list { display: flex; flex-direction: column; gap: .7rem; }
+  .yts-visibility-option {
+    display: flex; align-items: flex-start; gap: .8rem;
+    border: 1px solid var(--s21-border); border-radius: 10px; padding: .9rem 1rem;
+    cursor: pointer; transition: border-color .2s var(--ease);
+  }
+  .yts-visibility-option:has(input:checked) { border-color: var(--s21-primary); background: var(--s21-primary-light); }
+  .yts-visibility-option input { margin-top: .2rem; }
+
+  .yts-modal-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.4rem; border-top: 1px solid var(--s21-border);
+  }
+
+  .yts-done { padding: 3rem 1.5rem; text-align: center; }
+  .yts-done i { font-size: 3rem; color: var(--s21-primary); }
+
+  .yts-table-wrap { overflow-x: auto; }
+  .yts-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .yts-table th {
+    text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--s21-text-soft); padding: .6rem .5rem; border-bottom: 1px solid var(--s21-border);
+  }
+  .yts-table td { padding: .7rem .5rem; border-bottom: 1px solid var(--s21-border); vertical-align: middle; }
+  .yts-video-cell { display: flex; align-items: center; gap: .8rem; }
+  .yts-video-thumb {
+    width: 100px; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: var(--s21-bg);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--s21-text-soft);
+    border: 1px solid var(--s21-border);
+  }
+  .yts-video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .yts-video-title { font-weight: 700; font-size: .86rem; }
+  .yts-video-desc { color: var(--s21-text-soft); font-size: .76rem; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .yts-badge {
+    display: inline-block; font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    padding: .18rem .5rem; border-radius: var(--radius-pill);
+    background: var(--s21-primary-light); color: var(--s21-primary); margin: 0 .2rem .2rem 0;
+  }
+</style>
 </head>
 <body>
 <a href="#main" class="skip-link" data-i18n="blog_skip_to_main_content">Skip to main content</a>
@@ -260,32 +395,27 @@
                 </form>
               </div>
 
-              <!-- Post Video -->
+              <!-- Post Video — YouTube-Studio-style uploader -->
               <div class="tab-pane fade" id="cm-video">
-                <form id="admin-video-form" class="row g-3">
+                <div class="yts-dropzone" id="yts-dropzone">
+                  <input type="file" id="yts-file-input" accept="video/mp4,video/webm,video/ogg" hidden>
+                  <div class="yts-dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                  <h3 class="h6 mb-1">Drag and drop video files to upload</h3>
+                  <p class="text-soft mb-3" style="font-size:.85rem">Your video stays unpublished until you choose where it should show.</p>
+                  <button type="button" class="btn-s21 btn-s21-primary" id="yts-select-btn">Select files</button>
+                  <p class="text-soft mt-3 mb-2" style="font-size:.72rem">MP4, WebM or OGG · up to 100MB.</p>
+                  <button type="button" class="btn-s21 btn-s21-outline" id="yts-url-toggle" style="font-size:.78rem;padding:.4rem .9rem">
+                    <i class="fa-solid fa-link"></i> Or paste a YouTube/Vimeo/CDN link instead
+                  </button>
+                </div>
+
+                <!-- Lightweight fallback for externally-hosted videos -->
+                <form id="admin-video-url-form" class="row g-3 mt-3 d-none">
                   <div class="col-md-6"><label class="form-label">Title</label><input class="form-control s21-input" name="title" required></div>
                   <div class="col-md-6"><label class="form-label">Subject</label><input class="form-control s21-input" name="subject" placeholder="e.g. Science"></div>
                   <div class="col-12"><label class="form-label">Description</label><input class="form-control s21-input" name="description"></div>
-
-                  <div class="col-12">
-                    <label class="form-label d-block">Source</label>
-                    <div class="d-flex gap-3">
-                      <label class="d-flex align-items-center gap-2"><input type="radio" name="source" value="file" checked> Upload a file</label>
-                      <label class="d-flex align-items-center gap-2"><input type="radio" name="source" value="url"> External URL (YouTube, Vimeo, CDN link…)</label>
-                    </div>
-                  </div>
-
-                  <div class="col-12" id="video-source-file">
-                    <label class="form-label">Video file (MP4/WebM/OGG, max 100MB)</label>
-                    <input class="form-control s21-input" type="file" name="file" accept="video/mp4,video/webm,video/ogg">
-                  </div>
-                  <div class="col-12 d-none" id="video-source-url">
-                    <label class="form-label">Video URL</label>
-                    <input class="form-control s21-input" type="url" name="external_url" placeholder="https://…">
-                  </div>
-
+                  <div class="col-12"><label class="form-label">Video URL</label><input class="form-control s21-input" type="url" name="external_url" placeholder="https://…" required></div>
                   <div class="col-12"><label class="form-label">Thumbnail URL (optional)</label><input class="form-control s21-input" type="url" name="thumbnail_url" placeholder="https://…"></div>
-
                   <div class="col-12">
                     <label class="form-label d-block">Show on</label>
                     <div class="d-flex flex-wrap gap-3">
@@ -294,9 +424,7 @@
                       <label class="d-flex align-items-center gap-2"><input type="checkbox" name="placements" value="courses"> Courses</label>
                       <label class="d-flex align-items-center gap-2"><input type="checkbox" name="placements" value="kids"> Kids Zone</label>
                     </div>
-                    <div class="form-text" style="font-size:.78rem">Pick every page this video should appear on — you can select more than one.</div>
                   </div>
-
                   <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Post Video</button></div>
                 </form>
               </div>
@@ -343,13 +471,116 @@
               <div class="tab-pane fade" id="mg-quizzes"><div id="mg-quizzes-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-blog"><div id="mg-blog-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-materials"><div id="mg-materials-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
-              <div class="tab-pane fade" id="mg-videos"><div id="mg-videos-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
+              <div class="tab-pane fade" id="mg-videos">
+                <div class="yts-table-wrap">
+                  <table class="yts-table">
+                    <thead><tr><th>Video</th><th>Visibility</th><th>Date</th><th></th></tr></thead>
+                    <tbody id="mg-videos-list"><tr><td colspan="4" class="text-soft" style="font-size:.85rem">Loading…</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
               <div class="tab-pane fade" id="mg-books"><div id="mg-books-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
             </div>
           </div>
         </div>
       </div>
       </section>
+    </div>
+  </div>
+
+  <!-- YouTube-Studio-style upload modal -->
+  <div class="yts-modal-overlay d-none" id="yts-modal-overlay">
+    <div class="yts-modal">
+      <div class="yts-modal-header">
+        <div>
+          <div class="fw-bold" id="yts-modal-filename">Uploading video</div>
+          <div class="text-soft" style="font-size:.78rem" id="yts-modal-status">Starting upload…</div>
+        </div>
+        <button type="button" class="icon-btn" id="yts-modal-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="yts-modal-progress"><div class="yts-modal-progress-bar" id="yts-modal-progress-bar"></div></div>
+
+      <div class="yts-modal-steps" id="yts-modal-steps">
+        <button type="button" class="yts-step active" data-step="details"><span class="yts-step-num">1</span> Details</button>
+        <button type="button" class="yts-step" data-step="visibility"><span class="yts-step-num">2</span> Visibility</button>
+      </div>
+
+      <div class="yts-modal-body">
+        <!-- Step 1: Details -->
+        <div class="yts-step-pane" data-pane="details">
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <label class="form-label">Title</label>
+              <input class="form-control s21-input mb-1" id="yts-title" maxlength="100" required>
+              <div class="text-soft text-end mb-3" style="font-size:.7rem" id="yts-title-count">0/100</div>
+
+              <label class="form-label">Description</label>
+              <textarea class="form-control s21-input mb-3" id="yts-description" rows="4" placeholder="Tell viewers about your video"></textarea>
+
+              <label class="form-label">Subject</label>
+              <input class="form-control s21-input mb-3" id="yts-subject" placeholder="e.g. Science">
+
+              <label class="form-label d-block">Thumbnail</label>
+              <p class="text-soft mb-2" style="font-size:.78rem">Pick one of the auto-generated frames, or upload your own.</p>
+              <div class="yts-thumb-grid" id="yts-thumb-grid">
+                <label class="yts-thumb yts-thumb-upload" id="yts-thumb-upload-tile">
+                  <input type="file" accept="image/*" id="yts-thumb-file-input" hidden>
+                  <i class="fa-solid fa-upload"></i>
+                  <span>Upload</span>
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="yts-preview-box"><video id="yts-preview-video" muted playsinline></video></div>
+              <div class="yts-preview-meta">
+                <div class="d-flex justify-content-between"><span class="text-soft">Filename</span><span id="yts-meta-filename">—</span></div>
+                <div class="d-flex justify-content-between"><span class="text-soft">File size</span><span id="yts-meta-size">—</span></div>
+                <div class="d-flex justify-content-between"><span class="text-soft">Duration</span><span id="yts-meta-duration">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Visibility -->
+        <div class="yts-step-pane d-none" data-pane="visibility">
+          <p class="text-soft mb-3" style="font-size:.85rem">Choose where this video should appear. You can select more than one.</p>
+          <div class="yts-visibility-list">
+            <label class="yts-visibility-option">
+              <input type="checkbox" name="yts-placement" value="videohub" checked>
+              <div><div class="fw-bold" style="font-size:.9rem">Video Hub</div><div class="text-soft" style="font-size:.78rem">Shows in the main video library.</div></div>
+            </label>
+            <label class="yts-visibility-option">
+              <input type="checkbox" name="yts-placement" value="cartoons">
+              <div><div class="fw-bold" style="font-size:.9rem">Cartoons</div><div class="text-soft" style="font-size:.78rem">Shows on the Cartoons page for younger viewers.</div></div>
+            </label>
+            <label class="yts-visibility-option">
+              <input type="checkbox" name="yts-placement" value="courses">
+              <div><div class="fw-bold" style="font-size:.9rem">Courses</div><div class="text-soft" style="font-size:.78rem">Groups with other videos on the same subject as a lesson.</div></div>
+            </label>
+            <label class="yts-visibility-option">
+              <input type="checkbox" name="yts-placement" value="kids">
+              <div><div class="fw-bold" style="font-size:.9rem">Kids Zone</div><div class="text-soft" style="font-size:.78rem">Shows in the Kids Zone.</div></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="yts-modal-footer" id="yts-modal-footer">
+        <div class="text-soft" style="font-size:.78rem" id="yts-footer-status"></div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn-s21 btn-s21-outline d-none" id="yts-back-btn">Back</button>
+          <button type="button" class="btn-s21 btn-s21-primary" id="yts-next-btn">Next</button>
+          <button type="button" class="btn-s21 btn-s21-primary d-none" id="yts-publish-btn">Publish</button>
+        </div>
+      </div>
+
+      <!-- Done state -->
+      <div class="yts-done d-none" id="yts-done">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3 class="h5 mt-3 mb-1">Video published</h3>
+        <p class="text-soft mb-3" style="font-size:.85rem">It's now live wherever you selected.</p>
+        <button type="button" class="btn-s21 btn-s21-primary" id="yts-done-close">Close</button>
+      </div>
     </div>
   </div>
 
@@ -445,6 +676,7 @@
 <script src="js/darkmode.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/admin-video-upload.js"></script>
 <script src="js/admin-views.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar-nav.js"></script>

@@ -108,53 +108,37 @@
       }
     });
 
-    // Post Video — toggle file-vs-URL fields, then upload (multipart) or POST JSON
-    const videoForm = document.getElementById('admin-video-form');
-    if (videoForm) {
-      const fileWrap = document.getElementById('video-source-file');
-      const urlWrap = document.getElementById('video-source-url');
-      videoForm.querySelectorAll('input[name="source"]').forEach((radio) => {
-        radio.addEventListener('change', () => {
-          const isFile = videoForm.querySelector('input[name="source"]:checked').value === 'file';
-          fileWrap.classList.toggle('d-none', !isFile);
-          urlWrap.classList.toggle('d-none', isFile);
-        });
-      });
-
-      videoForm.addEventListener('submit', async (e) => {
+    // Post Video (external link fallback) — the file-upload path is handled
+    // by the YouTube-Studio-style uploader in js/admin-video-upload.js, which
+    // dispatches an 's21:video-published' event on success (see below).
+    const videoUrlForm = document.getElementById('admin-video-url-form');
+    if (videoUrlForm) {
+      videoUrlForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const f = new FormData(videoForm);
-        const source = f.get('source');
+        const f = new FormData(videoUrlForm);
+        const external_url = f.get('external_url');
         try {
-          if (source === 'file') {
-            if (!f.get('file') || !f.get('file').size) throw new Error('Choose a video file to upload.');
-            f.delete('source');
-            f.delete('external_url');
-            const res = await fetch('/api/videos', { method: 'POST', credentials: 'include', body: f });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(data.error || 'Upload failed.');
-          } else {
-            const external_url = f.get('external_url');
-            if (!external_url) throw new Error('Paste a video URL.');
-            await postJSON('/api/videos', {
-              title: f.get('title'),
-              subject: f.get('subject') || null,
-              description: f.get('description') || null,
-              external_url,
-              thumbnail_url: f.get('thumbnail_url') || null,
-              placements: f.getAll('placements'),
-            });
-          }
+          if (!external_url) throw new Error('Paste a video URL.');
+          await postJSON('/api/videos', {
+            title: f.get('title'),
+            subject: f.get('subject') || null,
+            description: f.get('description') || null,
+            external_url,
+            thumbnail_url: f.get('thumbnail_url') || null,
+            placements: f.getAll('placements'),
+          });
           say('✅ Video posted — now live wherever you selected.');
-          videoForm.reset();
-          fileWrap.classList.remove('d-none');
-          urlWrap.classList.add('d-none');
+          videoUrlForm.reset();
           loadVideos();
         } catch (err) {
           say('❌ ' + err.message, true);
         }
       });
     }
+    window.addEventListener('s21:video-published', () => {
+      say('✅ Video published — now live wherever you selected.');
+      loadVideos();
+    });
 
     // Add Book
     document.getElementById('admin-book-form')?.addEventListener('submit', async (e) => {
@@ -231,15 +215,31 @@
         wireRowDeletes(el);
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load materials.</p>'; }
     }
+    const PLACEMENT_LABELS = { videohub: 'Video Hub', cartoons: 'Cartoons', courses: 'Courses', kids: 'Kids Zone' };
     async function loadVideos() {
       const el = document.getElementById('mg-videos-list');
       if (!el) return;
       try {
         const { videos } = await (await fetch('/api/videos', { credentials: 'include' })).json();
-        el.innerHTML = videos.length ? videos.map((v) => row(v.title, [v.subject, v.placements.join(', ')].filter(Boolean).join(' · '), `/api/videos/${v.id}`, loadVideos)).join('')
-          : '<p class="text-soft" style="font-size:.85rem">No videos yet.</p>';
+        el.innerHTML = videos.length ? videos.map((v) => `
+          <tr>
+            <td>
+              <div class="yts-video-cell">
+                <div class="yts-video-thumb">${v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="">` : '<i class="fa-solid fa-video"></i>'}</div>
+                <div>
+                  <div class="yts-video-title">${escapeHtml(v.title)}</div>
+                  ${v.description ? `<div class="yts-video-desc">${escapeHtml(v.description)}</div>` : ''}
+                  ${v.subject ? `<div class="text-soft" style="font-size:.74rem">${escapeHtml(v.subject)}</div>` : ''}
+                </div>
+              </div>
+            </td>
+            <td>${(v.placements || []).map((p) => `<span class="yts-badge">${escapeHtml(PLACEMENT_LABELS[p] || p)}</span>`).join('')}</td>
+            <td class="text-soft" style="font-size:.8rem">${v.created_at ? escapeHtml(new Date(v.created_at + 'Z').toLocaleDateString()) : '—'}</td>
+            <td><button class="btn-s21 btn-s21-outline" style="padding:.4rem .8rem;font-size:.8rem" data-delete-url="/api/videos/${v.id}"><i class="fa-solid fa-trash"></i></button></td>
+          </tr>`).join('')
+          : '<tr><td colspan="4" class="text-soft" style="font-size:.85rem">No videos yet.</td></tr>';
         wireRowDeletes(el);
-      } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</p>'; }
+      } catch { el.innerHTML = '<tr><td colspan="4" class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</td></tr>'; }
     }
     async function loadBooks() {
       const el = document.getElementById('mg-books-list');
