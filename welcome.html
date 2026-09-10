@@ -196,11 +196,14 @@
         </p>
         <p class="welcome-greeting" id="welcome-greeting">You're logged in. Where would you like to go?</p>
         <div class="welcome-actions">
-          <a href="dashboard.html" id="welcome-go-dashboard" class="btn-s21 btn-s21-primary" title="Go to Dashboard">
-            <i class="fa-solid fa-rocket"></i> Enter into Universe
-          </a>
           <a href="index.html" class="btn-s21 btn-s21-outline">
             <i class="fa-solid fa-house"></i> Smart21Brain Home
+          </a>
+          <a href="dashboard.html" id="welcome-go-dashboard-secondary" class="btn-s21 btn-s21-outline" title="Go to Dashboard">
+            <i class="fa-solid fa-gauge"></i> Enter Dashboard
+          </a>
+          <a href="dashboard.html" id="welcome-go-dashboard" class="btn-s21 btn-s21-primary" title="Go to Dashboard">
+            <i class="fa-solid fa-rocket"></i> Enter into Universe
           </a>
         </div>
       </div>
@@ -223,6 +226,8 @@
       sessionStorage.removeItem('s21-welcome-name');
       if (target) {
         document.getElementById('welcome-go-dashboard').href = target;
+        var secondary = document.getElementById('welcome-go-dashboard-secondary');
+        if (secondary) secondary.href = target;
       }
       if (name) {
         document.getElementById('welcome-greeting').textContent = 'Welcome back, ' + name + '! Where would you like to go?';
