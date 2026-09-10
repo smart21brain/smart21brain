@@ -198,6 +198,64 @@ CREATE TABLE IF NOT EXISTS videos (
 );
 CREATE INDEX IF NOT EXISTS idx_videos_published ON videos(published);
 
+-- Per-user "where did I stop watching" position, so the player can resume
+-- and Videos/Dashboard can show a real "Continue Watching" row.
+CREATE TABLE IF NOT EXISTS video_progress (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id           INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  video_id          INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+  position_seconds  INTEGER NOT NULL DEFAULT 0,
+  completed         INTEGER NOT NULL DEFAULT 0,           -- 0/1 — watched to (near) the end
+  updated_at        TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id, video_id)
+);
+CREATE INDEX IF NOT EXISTS idx_video_progress_user ON video_progress(user_id);
+
+-- ---------------------------------------------------------------------
+-- Digital library — admin-managed books (paginated reader content) +
+-- per-user reading position, mirroring the quizzes/quiz_attempts shape.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS books (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  title       TEXT NOT NULL,
+  slug        TEXT NOT NULL UNIQUE,
+  subject     TEXT,
+  description TEXT,
+  cover_url   TEXT,
+  pages       TEXT NOT NULL,                     -- JSON array: [{heading, text}]
+  published   INTEGER NOT NULL DEFAULT 1,
+  created_by  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS book_progress (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  book_id     INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+  page        INTEGER NOT NULL DEFAULT 0,
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id, book_id)
+);
+CREATE INDEX IF NOT EXISTS idx_book_progress_user ON book_progress(user_id);
+
+-- Seed one real book with the site's original storybook content, so the
+-- Library page has a genuine reader on day one instead of an empty list.
+INSERT OR IGNORE INTO books (title, slug, subject, description, pages, published) VALUES (
+  'The Solar System Storybook',
+  'solar-system-storybook',
+  'science',
+  'A short illustrated story about curiosity, discovery, and the solar system.',
+  '[
+    {"heading":"Chapter 1 — A New Discovery","text":"The sun had barely risen over the savanna when Amara found the strange, glowing stone near the acacia tree. It was smooth, cool to the touch, and pulsed faintly like a heartbeat. She had never seen anything like it in all her nine years exploring these fields with her grandfather."},
+    {"heading":"Chapter 1 — A New Discovery","text":"\"Babu, look what I found!\" she called, running toward the old man sitting beneath the tree''s wide shade. He took the stone carefully, turning it over in his weathered hands, and his eyes widened with something between wonder and worry."},
+    {"heading":"Chapter 2 — The Old Map","text":"That evening, Babu pulled a rolled parchment from beneath his bed — a map older than the village itself, marked with symbols Amara had never seen. \"This stone,\" he said slowly, \"belongs to a story I have been waiting to tell you.\""},
+    {"heading":"Chapter 2 — The Old Map","text":"He traced a path across the map with his finger, from the baobab forest to the river bend, ending at a symbol shaped like a rising sun. \"Every twenty-one years, the brain-light appears to remind us that curiosity is the beginning of everything worth knowing.\""},
+    {"heading":"Chapter 3 — Into the Forest","text":"The next morning, with her satchel packed and the stone wrapped safely in cloth, Amara set off along the path from the map. The forest was louder than she expected — birds calling, leaves rustling, and somewhere far off, the low rumble of the river."},
+    {"heading":"Chapter 3 — Into the Forest","text":"She was not walking alone for long. A small, quick-footed dik-dik crossed her path and seemed to wait for her, glancing back every few steps as though it, too, knew exactly where they were going."}
+  ]',
+  1
+);
+
 -- ---------------------------------------------------------------------
 -- Seed an initial admin so the panel is reachable after first deploy.
 -- ⚠️ Change this password immediately after first login — see README.

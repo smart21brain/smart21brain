@@ -545,6 +545,112 @@ a:hover { color: var(--s21-accent); }
   box-shadow: var(--card-shadow-hover);
 }
 
+/* ---- Popular Subjects section background ---- */
+.section-subjects-bg {
+  position: relative;
+  isolation: isolate;
+  background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=70&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+.section-subjects-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, .6); /* black overlay, kept at lower opacity so the photo still shows through */
+}
+.section-subjects-bg > .container {
+  position: relative;
+  z-index: 1;
+}
+.section-subjects-bg .eyebrow {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3);
+  backdrop-filter: blur(4px);
+}
+.section-subjects-bg .section-head h2 {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
+}
+.section-subjects-bg .btn-s21-outline {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, .5);
+  backdrop-filter: blur(6px);
+}
+.section-subjects-bg .btn-s21-outline:hover {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ---- Educational Games section background ---- */
+.section-games-bg {
+  position: relative;
+  isolation: isolate;
+  background-image: url('https://images.unsplash.com/photo-1550439062-609e1531270e?w=1920&q=70&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+.section-games-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, .6); /* black overlay, kept at lower opacity so the photo still shows through */
+}
+.section-games-bg > .container {
+  position: relative;
+  z-index: 1;
+}
+.section-games-bg .eyebrow {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3);
+  backdrop-filter: blur(4px);
+}
+.section-games-bg .section-head h2 {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
+}
+.section-games-bg .btn-s21-outline {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, .5);
+  backdrop-filter: blur(6px);
+}
+.section-games-bg .btn-s21-outline:hover {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ---- Testimonials ("Loved by families") section background ---- */
+.section-testimonials-bg {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--s21-primary-light);
+  background-image: url('https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1920&q=70&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+.section-testimonials-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* brand light-green tint, kept at lower opacity so the photo still shows through */
+  background: rgba(228, 243, 236, .82);
+}
+.section-testimonials-bg > .container {
+  position: relative;
+  z-index: 1;
+}
+
 .subject-card {
   padding: 1.6rem;
   display: flex; flex-direction: column; gap: .9rem;

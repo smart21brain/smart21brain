@@ -45,7 +45,7 @@
   </div>
   <div class="offcanvas-body d-flex flex-column">
     <span data-guest-nav="mobile" style="display:contents"></span>
-    <nav class="d-flex flex-column gap-1 mb-4 mt-2" data-section-nav>
+    <nav class="d-flex flex-column gap-1 mb-4 mt-2" data-admin-view-nav>
       <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
       <a href="#users" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users me-2"></i> Users</a>
       <a href="#moderation" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-shield-halved me-2"></i> Content moderation</a>
@@ -67,7 +67,7 @@
   <div class="admin-shell" data-role-access="admin">
     <aside class="admin-sidebar">
       <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em" data-i18n="admin_admin">Admin</div>
-      <nav class="d-flex flex-column gap-1" data-section-nav>
+      <nav class="d-flex flex-column gap-1" data-admin-view-nav>
         <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span data-i18n="admin_overview">Overview</span></a>
         <a href="#users" class="nav-link"><i class="fa-solid fa-users"></i> <span data-i18n="admin_users">Users</span></a>
         <a href="#moderation" class="nav-link"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="admin_content_moderation">Content moderation</span></a>
@@ -80,24 +80,28 @@
     <div class="admin-content">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4" data-aos="fade-up">
         <div>
-          <h1 class="h4 mb-1" data-i18n="admin_platform_overview">Platform overview</h1>
+          <h1 class="h4 mb-1" id="admin-view-title" data-i18n="admin_platform_overview">Platform overview</h1>
           <p class="text-soft mb-0" style="font-size:.85rem" id="admin-last-updated">Loading…</p>
         </div>
         <span class="badge-pill"><i class="fa-solid fa-circle" style="font-size:.5rem;color:#2ECC71"></i> Live data</span>
       </div>
 
       <!-- Stat cards -->
-      <div class="row g-3 mb-4" id="overview">
+      <section class="admin-view" data-view="overview" id="overview">
+      <div class="row g-3 mb-4">
         <div class="col-6 col-md-3" data-aos="fade-up"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-users"></i></div><div><div class="stat-num" id="stat-total-users">—</div><div class="text-soft" style="font-size:.8rem">Total users</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-child"></i></div><div><div class="stat-num" id="stat-students">—</div><div class="text-soft" style="font-size:.8rem">Students</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="stat-num" id="stat-teachers">—</div><div class="text-soft" style="font-size:.8rem">Teachers</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-people-roof"></i></div><div><div class="stat-num" id="stat-parents">—</div><div class="text-soft" style="font-size:.8rem">Parents</div></div></div></div>
       </div>
+      <p class="text-soft" style="font-size:.85rem">Use the sidebar on the left to jump to Users, Content moderation, Payments, Settings or Content management — each opens as its own screen.</p>
+      </section>
 
-      <div class="row g-4 align-items-start">
-        <div class="col-lg-8">
+      <section class="admin-view d-none" data-view="users" id="users">
+      <div class="row g-4">
+        <div class="col-12">
           <!-- Users table -->
-          <div class="s21-card p-4 mb-4" id="users" data-aos="fade-up">
+          <div class="s21-card p-4" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-users" style="color:var(--s21-primary)"></i> <span data-i18n="admin_recent_users">Recent users</span></h2>
               <div class="d-flex align-items-center gap-2">
@@ -114,13 +118,19 @@
               </table>
             </div>
           </div>
+        </div>
+      </div>
+      </section>
 
+      <section class="admin-view d-none" data-view="moderation" id="moderation">
+      <div class="row g-4">
+        <div class="col-12">
           <!-- Recent content activity (live feed — this platform has no
                separate approve/reject workflow: games, quizzes, posts,
                materials and videos publish immediately when created, so
                this shows what actually just happened rather than a fake
                pending queue). -->
-          <div class="s21-card p-4" id="moderation" data-aos="fade-up">
+          <div class="s21-card p-4" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-shield-halved" style="color:var(--s21-accent)"></i> Recent content activity</h2>
               <span class="badge-pill pink" id="admin-activity-count"></span>
@@ -130,9 +140,13 @@
             </div>
           </div>
         </div>
+      </div>
+      </section>
 
-        <div class="col-lg-4">
-          <div class="s21-card p-4 mb-4" id="payments" data-aos="fade-up">
+      <section class="admin-view d-none" data-view="payments" id="payments">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="s21-card p-4" data-aos="fade-up">
             <h3 class="h6 mb-3"><i class="fa-solid fa-credit-card" style="color:var(--s21-primary)"></i> <span data-i18n="admin_payments_subscriptions">Payments &amp; subscriptions</span></h3>
             <ul class="list-unstyled d-flex flex-column gap-2" style="font-size:.85rem">
               <li class="d-flex justify-content-between"><span class="text-soft" data-i18n="admin_premium_subscribers">Premium subscribers</span><span class="fw-bold">—</span></li>
@@ -142,8 +156,14 @@
             </ul>
             <p class="text-soft mt-3 mb-0" style="font-size:.76rem" data-i18n="admin_connect_stripe_paypal_mobile_money_o">No payment provider is connected yet, so there's nothing real to show here. Wire up Stripe/PayPal/Mobile Money on the backend — never expose secret keys client-side — and these numbers can come alive too.</p>
           </div>
+        </div>
+      </div>
+      </section>
 
-          <div class="s21-card p-4" id="settings" data-aos="fade-up" data-aos-delay="60">
+      <section class="admin-view d-none" data-view="settings" id="settings">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="s21-card p-4" data-aos="fade-up">
             <h3 class="h6 mb-3"><i class="fa-solid fa-gear" style="color:var(--s21-text-soft)"></i> <span data-i18n="admin_platform_settings">Platform settings</span></h3>
             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
               <span style="font-size:.85rem" data-i18n="admin_require_content_review_before_publis">Require content review before publish</span>
@@ -161,11 +181,26 @@
           </div>
         </div>
       </div>
+      </section>
 
-      <div class="row g-3 mt-1">
+      <section class="admin-view d-none" data-view="content-manager" id="content-manager">
+      <div class="row g-3">
         <div class="col-12">
-          <div class="s21-card p-4" id="content-manager" data-aos="fade-up">
+          <div class="s21-card p-4" data-aos="fade-up">
             <h2 class="h5 mb-3"><i class="fa-solid fa-layer-group" style="color:var(--s21-primary)"></i> Content management</h2>
+
+            <div class="p-3 mb-4 rounded-3 d-flex gap-3 align-items-start" style="background:var(--s21-primary-light)">
+              <i class="fa-solid fa-lightbulb mt-1" style="color:var(--s21-primary)"></i>
+              <div style="font-size:.85rem">
+                <strong>Want more content on the site? Here's how to add it:</strong>
+                <ul class="mb-0 mt-1 ps-3">
+                  <li><strong>More games</strong> — use the <em>Add Game</em> tab below. Each one publishes straight to the Games page, no review step.</li>
+                  <li><strong>More videos</strong> — use <em>Post Video</em>: upload a file or paste a YouTube/Vimeo/CDN link, then tick where it should show.</li>
+                  <li><strong>More courses</strong> — there's no separate course form: a course is simply a group of videos on the same subject. Post a video and tick <strong>Courses</strong> under "Show on" so it appears on the Courses page — repeat for each lesson in the course.</li>
+                  <li><strong>More blog posts</strong> — use <em>Add Blog Post</em>, write the content, and hit Publish.</li>
+                </ul>
+              </div>
+            </div>
 
             <ul class="nav nav-pills mb-3 flex-wrap gap-2" id="cm-tabs" role="tablist">
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline active" data-bs-toggle="pill" data-bs-target="#cm-game" type="button">Add Game</button></li>
@@ -173,6 +208,7 @@
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-blog" type="button">Add Blog Post</button></li>
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-material" type="button">Upload Material</button></li>
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-video" type="button">Post Video</button></li>
+              <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-book" type="button">Add Book</button></li>
             </ul>
 
             <div class="tab-content">
@@ -264,6 +300,23 @@
                   <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Post Video</button></div>
                 </form>
               </div>
+
+              <!-- Add Book -->
+              <div class="tab-pane fade" id="cm-book">
+                <form id="admin-book-form" class="row g-3">
+                  <div class="col-md-6"><label class="form-label">Title</label><input class="form-control s21-input" name="title" required></div>
+                  <div class="col-md-6"><label class="form-label">Subject</label><input class="form-control s21-input" name="subject" placeholder="e.g. Science"></div>
+                  <div class="col-12"><label class="form-label">Description</label><input class="form-control s21-input" name="description"></div>
+                  <div class="col-12"><label class="form-label">Cover image URL (optional)</label><input class="form-control s21-input" type="url" name="cover_url" placeholder="https://…"></div>
+                  <div class="col-12">
+                    <label class="form-label">Pages (JSON array)</label>
+                    <textarea class="form-control s21-input" name="pages" rows="6" required
+                      placeholder='[{"heading":"Chapter 1","text":"Once upon a time…"}]'></textarea>
+                    <div class="form-text">Each page needs: heading (optional), text.</div>
+                  </div>
+                  <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Publish Book</button></div>
+                </form>
+              </div>
             </div>
 
             <div id="cm-feedback" class="mt-3" style="font-size:.9rem"></div>
@@ -282,6 +335,7 @@
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-blog" type="button">Blog Posts</button></li>
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-materials" type="button">Materials</button></li>
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-videos" type="button">Videos</button></li>
+              <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-books" type="button">Books</button></li>
             </ul>
 
             <div class="tab-content">
@@ -290,10 +344,12 @@
               <div class="tab-pane fade" id="mg-blog"><div id="mg-blog-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-materials"><div id="mg-materials-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-videos"><div id="mg-videos-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
+              <div class="tab-pane fade" id="mg-books"><div id="mg-books-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
             </div>
           </div>
         </div>
       </div>
+      </section>
     </div>
   </div>
 
@@ -389,6 +445,7 @@
 <script src="js/darkmode.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/admin-views.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar-nav.js"></script>
 <script src="js/i18n.js"></script>

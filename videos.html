@@ -90,7 +90,7 @@
 
 <main id="main">
   <!-- Page header -->
-  <section class="hero hero-plain" style="padding:3rem 0 2.2rem">
+  <section class="hero" style="background-image:url('https://images.unsplash.com/photo-1610484826967-09c5720778c7?w=1800&q=75&auto=format&fit=crop');min-height:0;padding:3rem 0 2.2rem">
     <div class="container">
       <nav aria-label="breadcrumb" style="font-size:.85rem">
         <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.6)">
@@ -108,6 +108,12 @@
         <div class="s21-search-panel" role="listbox"></div>
       </form>
     </div>
+  </section>
+
+  <!-- Continue Watching (signed-in viewers with in-progress videos only) -->
+  <section class="container mt-4" id="continue-watching-section" style="display:none">
+    <h2 class="h5 mb-3"><i class="fa-solid fa-clock-rotate-left" style="color:var(--s21-primary)"></i> Continue Watching</h2>
+    <div class="row g-4" id="continue-watching-grid"></div>
   </section>
 
   <!-- Filters -->
@@ -399,6 +405,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script src="js/darkmode.js"></script>
+<script src="js/live-data.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>

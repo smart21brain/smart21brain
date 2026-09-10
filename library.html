@@ -81,7 +81,7 @@
 
 <main id="main">
 
-  <section class="hero hero-plain" style="padding:3rem 0 2.2rem">
+  <section class="hero" style="background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1800&q=75&auto=format&fit=crop');min-height:0;padding:3rem 0 2.2rem">
     <div class="container">
       <nav aria-label="breadcrumb" style="font-size:.85rem">
         <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.6)">
@@ -262,6 +262,10 @@
     </div>
   </section>
 
+  <section class="container mt-5" id="live-books-section" style="display:none">
+    <h2 class="h4 mb-3"><i class="fa-solid fa-rss" style="color:var(--s21-primary)"></i> More books from the community</h2>
+    <div class="row g-4" id="live-books-grid"></div>
+  </section>
 
   <script>
     document.querySelectorAll('[data-book-filter]').forEach((btn) => {
@@ -369,6 +373,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script src="js/darkmode.js"></script>
+<script src="js/live-data.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>

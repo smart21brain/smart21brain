@@ -156,6 +156,34 @@
       });
     }
 
+    // Add Book
+    document.getElementById('admin-book-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      let pages;
+      try {
+        pages = JSON.parse(f.get('pages'));
+        if (!Array.isArray(pages) || pages.length === 0) throw new Error();
+      } catch {
+        say('❌ Pages must be valid JSON — an array of {heading, text}.', true);
+        return;
+      }
+      try {
+        await postJSON('/api/books', {
+          title: f.get('title'),
+          subject: f.get('subject') || null,
+          description: f.get('description') || null,
+          cover_url: f.get('cover_url') || null,
+          pages,
+        });
+        say('✅ Book published.');
+        e.target.reset();
+        loadBooks();
+      } catch (err) {
+        say('❌ ' + err.message, true);
+      }
+    });
+
     // ---- Manage existing content: list + delete ----
     async function del(url) {
       const res = await fetch(url, { method: 'DELETE', credentials: 'include' });
@@ -212,6 +240,16 @@
           : '<p class="text-soft" style="font-size:.85rem">No videos yet.</p>';
         wireRowDeletes(el);
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load videos.</p>'; }
+    }
+    async function loadBooks() {
+      const el = document.getElementById('mg-books-list');
+      if (!el) return;
+      try {
+        const { books } = await (await fetch('/api/books', { credentials: 'include' })).json();
+        el.innerHTML = books.length ? books.map((b) => row(b.title, [b.subject, `${b.page_count} page${b.page_count === 1 ? '' : 's'}`].filter(Boolean).join(' · '), `/api/books/${b.id}`, loadBooks)).join('')
+          : '<p class="text-soft" style="font-size:.85rem">No books yet.</p>';
+        wireRowDeletes(el);
+      } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load books.</p>'; }
     }
 
     const ROLE_LABELS = { user: 'Student', teacher: 'Teacher', parent: 'Parent', admin: 'Admin' };
@@ -334,7 +372,7 @@
           try {
             await del(btn.dataset.deleteUrl);
             say('✅ Deleted.');
-            loadGames(); loadQuizzes(); loadBlog(); loadMaterials(); loadVideos();
+            loadGames(); loadQuizzes(); loadBlog(); loadMaterials(); loadVideos(); loadBooks();
           } catch (err) {
             say('❌ ' + err.message, true);
           }
@@ -362,12 +400,13 @@
       const countEl = document.getElementById('admin-activity-count');
       if (!list) return;
       try {
-        const [games, quizzes, posts, materials, videos] = await Promise.all([
+        const [games, quizzes, posts, materials, videos, books] = await Promise.all([
           fetch('/api/games', { credentials: 'include' }).then((r) => r.json()).then((d) => d.games || []),
           fetch('/api/quizzes', { credentials: 'include' }).then((r) => r.json()).then((d) => d.quizzes || []),
           fetch('/api/blog', { credentials: 'include' }).then((r) => r.json()).then((d) => d.posts || []),
           fetch('/api/materials', { credentials: 'include' }).then((r) => r.json()).then((d) => d.materials || []),
           fetch('/api/videos', { credentials: 'include' }).then((r) => r.json()).then((d) => d.videos || []),
+          fetch('/api/books', { credentials: 'include' }).then((r) => r.json()).then((d) => d.books || []),
         ]);
         const items = [
           ...games.map((g) => ({ title: g.title, type: 'Game', icon: 'fa-gamepad', created_at: g.created_at })),
@@ -375,6 +414,7 @@
           ...posts.map((p) => ({ title: p.title, type: 'Blog post', icon: 'fa-newspaper', created_at: p.created_at })),
           ...materials.map((m) => ({ title: m.title, type: 'Material', icon: 'fa-file-lines', created_at: m.created_at })),
           ...videos.map((v) => ({ title: v.title, type: 'Video', icon: 'fa-video', created_at: v.created_at })),
+          ...books.map((b) => ({ title: b.title, type: 'Book', icon: 'fa-book', created_at: b.created_at })),
         ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
 
         countEl.textContent = items.length ? `${items.length} recent` : '';
@@ -428,6 +468,7 @@
     loadBlog();
     loadMaterials();
     loadVideos();
+    loadBooks();
     loadUsers();
     loadActivity();
     loadSettings();

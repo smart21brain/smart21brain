@@ -5,6 +5,7 @@ import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import * as videos from './handlers/videos.js';
+import * as books from './handlers/books.js';
 import * as users from './handlers/users.js';
 import { getDashboard } from './handlers/dashboard.js';
 import * as newsletter from './handlers/newsletter.js';
@@ -88,12 +89,26 @@ router.get('/api/materials/:id', materials.getMaterial);
 router.delete('/api/materials/:id', materials.deleteMaterial);
 
 // ---- Videos (R2 file upload or external URL; admin-only writes) ----
+// NOTE: '/continue-watching' must be registered before '/:id' — routes
+// match in registration order and ':id' would otherwise swallow it.
 router.get('/api/videos', videos.listVideos);
 router.post('/api/videos', videos.createVideo);
+router.get('/api/videos/continue-watching', videos.continueWatching);
 router.get('/api/videos/:id', videos.getVideo);
 router.put('/api/videos/:id', videos.updateVideo);
 router.delete('/api/videos/:id', videos.deleteVideo);
 router.get('/api/videos/:id/stream', videos.streamVideo);
+router.get('/api/videos/:id/progress', videos.getProgress);
+router.put('/api/videos/:id/progress', videos.saveProgress);
+
+// ---- Books (digital library; :id accepts a numeric id OR a slug) ----
+router.get('/api/books', books.listBooks);
+router.post('/api/books', books.createBook);
+router.get('/api/books/:id', books.getBook);
+router.put('/api/books/:id', books.updateBook);
+router.delete('/api/books/:id', books.deleteBook);
+router.get('/api/books/:id/progress', books.getProgress);
+router.put('/api/books/:id/progress', books.saveProgress);
 
 // ---- Users (admin-only: list + change role) ----
 router.get('/api/users', users.listUsers);

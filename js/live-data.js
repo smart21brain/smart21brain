@@ -114,6 +114,126 @@
   window.S21_loadLiveQuiz = loadLiveQuiz;
   window.S21_submitQuizAttempt = submitQuizAttempt;
 
+  // ---- library.html: append live-created books below the curated ones ----
+  async function wireLibraryPage() {
+    const grid = document.getElementById('live-books-grid');
+    const section = document.getElementById('live-books-section');
+    if (!grid || !section) return;
+    try {
+      const { books } = await getJSON('/api/books');
+      if (!books || books.length === 0) return;
+      grid.innerHTML = books.map((b) => `
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+          <a href="book.html?slug=${encodeURIComponent(b.slug)}" class="text-reset text-decoration-none">
+            <div class="s21-card book-card">
+              <div class="body">
+                <h3 class="h6 mb-1">${esc(b.title)}</h3>
+                ${b.subject ? `<span class="text-soft" style="font-size:.78rem">${esc(b.subject)}</span>` : ''}
+                ${b.description ? `<p class="text-soft mt-1" style="font-size:.8rem">${esc(b.description)}</p>` : ''}
+                <div class="text-soft mt-1" style="font-size:.76rem">${b.page_count} page${b.page_count === 1 ? '' : 's'}</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      `).join('');
+      section.style.display = '';
+    } catch (e) { /* API not reachable yet — leave static content as-is */ }
+  }
+
+  // ---- book.html: load a real book by ?slug=, fall back to the built-in
+  // demo story if there's no slug or the API isn't reachable. Also syncs
+  // reading position to /api/books/:id/progress for signed-in readers. ----
+  async function loadLiveBook() {
+    const slug = new URLSearchParams(location.search).get('slug');
+    if (!slug) return null;
+    try {
+      const { book } = await getJSON(`/api/books/${encodeURIComponent(slug)}`);
+      return book || null;
+    } catch (e) {
+      return null;
+    }
+  }
+  async function getBookProgress(bookId) {
+    if (!bookId) return null;
+    try {
+      const data = await getJSON(`/api/books/${bookId}/progress`);
+      return typeof data.page === 'number' ? data.page : null;
+    } catch (e) {
+      return null; // not signed in, no saved progress yet, or API unreachable
+    }
+  }
+  async function saveBookProgress(bookId, page) {
+    if (!bookId) return;
+    try {
+      await fetch(`/api/books/${bookId}/progress`, {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page }),
+      });
+    } catch (e) { /* not signed in, or API unreachable — position just won't sync */ }
+  }
+  window.S21_loadLiveBook = loadLiveBook;
+  window.S21_getBookProgress = getBookProgress;
+  window.S21_saveBookProgress = saveBookProgress;
+
+  // ---- video.html: resume + save watch position for signed-in viewers ----
+  async function getVideoProgress(videoId) {
+    if (!videoId) return null;
+    try {
+      return await getJSON(`/api/videos/${videoId}/progress`);
+    } catch (e) {
+      return null;
+    }
+  }
+  async function saveVideoProgress(videoId, positionSeconds) {
+    if (!videoId) return;
+    try {
+      await fetch(`/api/videos/${videoId}/progress`, {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ position_seconds: Math.floor(positionSeconds) }),
+      });
+    } catch (e) { /* not signed in, or API unreachable — position just won't sync */ }
+  }
+  window.S21_getVideoProgress = getVideoProgress;
+  window.S21_saveVideoProgress = saveVideoProgress;
+
+  // ---- videos.html: real "Continue Watching" row for signed-in viewers ----
+  async function wireContinueWatching() {
+    const grid = document.getElementById('continue-watching-grid');
+    const section = document.getElementById('continue-watching-section');
+    if (!grid || !section) return;
+    try {
+      const { videos } = await getJSON('/api/videos/continue-watching');
+      if (!videos || videos.length === 0) return;
+      function fmt(sec) {
+        const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+        return `${m}:${String(s).padStart(2, '0')}`;
+      }
+      grid.innerHTML = videos.map((v) => {
+        const pct = v.duration_seconds ? Math.min(100, Math.round((v.position_seconds / v.duration_seconds) * 100)) : 0;
+        const thumb = v.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&q=70&auto=format&fit=crop';
+        return `
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+          <a href="video.html?id=${v.id}" class="text-reset text-decoration-none">
+            <div class="s21-card media-card">
+              <div class="thumb-wrap">
+                <img src="${esc(thumb)}" alt="${esc(v.title)}" loading="lazy">
+                <span class="play-btn"><span><i class="fa-solid fa-play"></i></span></span>
+              </div>
+              <div class="body">
+                <h3 class="h6 mb-1">${esc(v.title)}</h3>
+                <div class="progress" style="height:5px"><div class="progress-bar" style="width:${pct}%"></div></div>
+                <div class="text-soft mt-1" style="font-size:.76rem">${fmt(v.position_seconds)} watched</div>
+              </div>
+            </div>
+          </a>
+        </div>`;
+      }).join('');
+      section.style.display = '';
+    } catch (e) { /* not signed in, no progress yet, or API unreachable */ }
+  }
+
   // ---- dashboard.html: real name + real avg quiz score + recent activity ----
   async function wireDashboardPage() {
     const welcomeName = document.querySelector('[data-i18n="dash_welcome_back_amara"]');
@@ -197,6 +317,8 @@
     wireGamesPage();
     wireBlogListPage();
     wireBlogPostPage();
+    wireLibraryPage();
+    wireContinueWatching();
     wireDashboardPage();
     wireHomeStats();
   });

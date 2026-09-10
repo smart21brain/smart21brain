@@ -145,5 +145,32 @@
     });
     const autoplayToggle = $('player-autoplay-toggle');
     if (autoplayToggle) autoplayToggle.checked = localStorage.getItem('s21-autoplay-next') !== '0';
+
+    // ---- Real watch-progress sync (resume + save) for signed-in viewers ----
+    // Works for both the demo video and a real ?id=... video — the id in
+    // the URL is all that's needed; loadRequestedVideo() (inline script,
+    // below) independently swaps in the real source for admin-posted videos.
+    const videoId = new URLSearchParams(location.search).get('id');
+    if (videoId && window.S21_getVideoProgress) {
+      window.S21_getVideoProgress(videoId).then((progress) => {
+        if (!progress || progress.completed || progress.position_seconds <= 5) return;
+        const resume = () => {
+          if (video.duration && progress.position_seconds < video.duration - 5) {
+            video.currentTime = progress.position_seconds;
+          }
+        };
+        if (video.readyState >= 1) resume();
+        video.addEventListener('loadedmetadata', resume); // also fires again if the source is swapped in later
+      });
+
+      let lastSavedAt = 0;
+      video.addEventListener('timeupdate', () => {
+        if (video.currentTime - lastSavedAt < 5) return; // throttle to ~every 5s of playback
+        lastSavedAt = video.currentTime;
+        window.S21_saveVideoProgress?.(videoId, video.currentTime);
+      });
+      video.addEventListener('pause', () => window.S21_saveVideoProgress?.(videoId, video.currentTime));
+      video.addEventListener('ended', () => window.S21_saveVideoProgress?.(videoId, video.duration || video.currentTime));
+    }
   });
 })();

@@ -183,6 +183,70 @@ export async function streamVideo({ request, params, env }) {
   return new Response(object.body, { headers });
 }
 
+// ---- Watch progress (signed-in viewers only) ----
+
+// A video counts as "completed" once the viewer has reached ~92% of the
+// way through — leaving room for outro/credits without requiring the
+// exact last second, which timeupdate events rarely land on precisely.
+const COMPLETION_RATIO = 0.92;
+
+export async function getProgress({ request, params, env }) {
+  const user = await getSessionUser(request, env.DB);
+  if (!user) return unauthorized();
+
+  const row = await env.DB.prepare(
+    'SELECT position_seconds, completed, updated_at FROM video_progress WHERE user_id = ? AND video_id = ?'
+  ).bind(user.id, params.id).first();
+  return json({
+    position_seconds: row ? row.position_seconds : 0,
+    completed: row ? !!row.completed : false,
+  });
+}
+
+export async function saveProgress({ request, params, env }) {
+  const user = await getSessionUser(request, env.DB);
+  if (!user) return unauthorized();
+
+  const video = await env.DB.prepare('SELECT duration_seconds FROM videos WHERE id = ?').bind(params.id).first();
+  if (!video) return notFound();
+
+  const body = await request.json().catch(() => null);
+  const position = Number(body?.position_seconds);
+  if (!Number.isFinite(position) || position < 0) return badRequest('A non-negative position_seconds is required.');
+
+  const duration = Number(video.duration_seconds) || 0;
+  const completed = duration > 0 && position >= duration * COMPLETION_RATIO ? 1 : 0;
+
+  await env.DB.prepare(
+    `INSERT INTO video_progress (user_id, video_id, position_seconds, completed, updated_at)
+     VALUES (?, ?, ?, ?, datetime('now'))
+     ON CONFLICT(user_id, video_id) DO UPDATE SET
+       position_seconds = excluded.position_seconds,
+       completed = MAX(video_progress.completed, excluded.completed),
+       updated_at = excluded.updated_at`
+  ).bind(user.id, params.id, Math.floor(position), completed).run();
+
+  return json({ ok: true, completed: !!completed });
+}
+
+// "Continue Watching" row: the viewer's most recently-updated in-progress
+// videos (started, not yet completed), newest first.
+export async function continueWatching({ request, env }) {
+  const user = await getSessionUser(request, env.DB);
+  if (!user) return unauthorized();
+
+  const { results } = await env.DB.prepare(
+    `SELECT v.id, v.title, v.subject, v.thumbnail_url, v.duration_seconds,
+            p.position_seconds, p.updated_at
+     FROM video_progress p
+     JOIN videos v ON v.id = p.video_id
+     WHERE p.user_id = ? AND p.completed = 0 AND v.published = 1
+     ORDER BY p.updated_at DESC
+     LIMIT 8`
+  ).bind(user.id).all();
+  return json({ videos: results });
+}
+
 function parseRange(rangeHeader) {
   const match = /bytes=(\d+)-(\d*)/.exec(rangeHeader);
   if (!match) return undefined;
