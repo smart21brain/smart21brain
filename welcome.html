@@ -21,22 +21,26 @@
     padding: 2rem 1.25rem;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(
-      120deg,
-      color-mix(in srgb, var(--s21-primary) 22%, var(--s21-bg) 78%),
-      color-mix(in srgb, var(--s21-secondary) 18%, var(--s21-bg) 82%),
-      color-mix(in srgb, var(--s21-primary) 22%, var(--s21-bg) 78%)
-    );
-    background-size: 300% 300%;
-    animation: welcomeGradientShift 18s ease-in-out infinite;
+    isolation: isolate;
+    background:
+      radial-gradient(1100px 620px at 15% -10%, rgba(123, 97, 255, .16), transparent 60%),
+      radial-gradient(900px 560px at 100% 10%, rgba(11, 110, 79, .22), transparent 55%),
+      radial-gradient(1000px 700px at 50% 115%, rgba(239, 71, 111, .14), transparent 55%),
+      linear-gradient(180deg, #05060a 0%, #0A0D14 45%, #05060a 100%);
   }
-  @keyframes welcomeGradientShift {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  .welcome-planets-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .welcome-planets-canvas canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
   @media (prefers-reduced-motion: reduce) {
-    .welcome-shell { animation: none; }
+    .welcome-planets-canvas { opacity: .65; }
   }
   .welcome-card {
     width: 100%;
@@ -50,6 +54,8 @@
     grid-template-columns: 1.1fr 1fr;
     gap: 2rem;
     align-items: stretch;
+    position: relative;
+    z-index: 1;
   }
   .welcome-videos {
     display: flex;
@@ -162,6 +168,7 @@
 <body class="p-0">
 <main id="main">
   <div class="welcome-shell">
+    <div class="welcome-planets-canvas" id="welcomePlanetsCanvas" aria-hidden="true"></div>
     <div class="welcome-card" data-aos="fade-up">
 
       <div class="welcome-videos">
@@ -223,6 +230,8 @@
     } catch (e) { /* sessionStorage unavailable — fall back to dashboard.html */ }
   })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/welcome-planets-three.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/darkmode.js"></script>
 </body>
