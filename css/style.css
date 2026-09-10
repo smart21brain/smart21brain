@@ -275,8 +275,7 @@ a:hover { color: var(--s21-accent); }
 
 /* ---- Navbar ---- */
 .s21-navbar {
-  position: sticky;
-  top: 0;
+  position: static;
   z-index: 1000;
   background: var(--glass-bg);
   backdrop-filter: blur(14px);
@@ -406,6 +405,53 @@ a:hover { color: var(--s21-accent); }
 /* Game detail pages: same plain-hero green wash, with a photo behind it */
 .hero.hero-plain.hero-game-bg {
   background-image: url('https://images.unsplash.com/photo-1632934607230-4dc4c0f5b0f6?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+/* Per-game themed hero photos. The green wash above (.hero.hero-plain::before)
+   still sits on top of every one of these, so the "shadow" stays green. */
+.hero.hero-plain.hero-game-bg-humanbody {
+  background-image: url('https://images.unsplash.com/photo-1716996236828-18583f5abe5d?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-animals {
+  background-image: url('https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-brain {
+  background-image: url('https://images.unsplash.com/photo-1730804518415-75297e8d2a41?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-maze {
+  background-image: url('https://images.unsplash.com/photo-1534517284575-ce1520e615e3?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-math {
+  background-image: url('https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-shapes {
+  background-image: url('https://images.unsplash.com/photo-1710244182004-1c708b3f146d?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-solar {
+  background-image: url('https://images.unsplash.com/photo-1711560217836-f42ac4a11a4f?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-plant {
+  background-image: url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
+.hero.hero-plain.hero-game-bg-books {
+  background-image: url('https://images.unsplash.com/photo-1550399105-c4db5fb85c18?w=1800&q=75&auto=format&fit=crop') !important;
   background-size: cover;
   background-position: center;
 }

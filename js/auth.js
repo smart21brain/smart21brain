@@ -66,16 +66,21 @@
           try {
             localStorage.setItem('s21-onboarded', '1');
             localStorage.removeItem('s21-needs-onboarding');
+            // Hand the real destination (role-specific dashboard) and the
+            // user's name off to welcome.html, which is a one-time stop
+            // between login and the dashboard for every role, admin included.
+            sessionStorage.setItem('s21-welcome-dashboard', targetPage);
+            if (user && user.name) sessionStorage.setItem('s21-welcome-name', user.name);
           } catch (storageError) { /* continue if storage is unavailable */ }
           const welcomeMessage = role === 'admin'
-            ? 'Welcome back, Admin! Redirecting to the admin dashboard…'
+            ? 'Welcome back, Admin!'
             : role === 'teacher'
-              ? 'Welcome back, Teacher! Redirecting to your teacher dashboard…'
+              ? 'Welcome back, Teacher!'
               : role === 'parent'
-                ? 'Welcome back, Parent! Redirecting to your parent dashboard…'
-                : 'Welcome back! Redirecting to your dashboard…';
+                ? 'Welcome back, Parent!'
+                : 'Welcome back!';
           window.S21_toast?.(t('runtime_welcome_back_toast', welcomeMessage));
-          setTimeout(() => { window.location.href = targetPage; }, 700);
+          setTimeout(() => { window.location.href = 'welcome.html'; }, 700);
         })
         .catch((err) => {
           restore();

@@ -83,8 +83,12 @@
           try {
             localStorage.setItem('s21-onboarded', '1');
             if (data.isNewUser) localStorage.setItem('s21-needs-onboarding', '1');
+            if (!data.isNewUser) {
+              sessionStorage.setItem('s21-welcome-dashboard', 'dashboard.html');
+              if (data.user && data.user.name) sessionStorage.setItem('s21-welcome-name', data.user.name);
+            }
           } catch (storageError) { /* continue if storage is unavailable */ }
-          window.location.href = data.isNewUser ? 'onboarding.html' : 'dashboard.html';
+          window.location.href = data.isNewUser ? 'onboarding.html' : 'welcome.html';
         } catch (error) {
           showNotice(btn, 'login_google_not_connected', error.message || 'Google sign-in failed.');
         } finally { btn.disabled = false; }
