@@ -403,6 +403,12 @@ a:hover { color: var(--s21-accent); }
 .hero.hero-plain::before {
   background: radial-gradient(120% 100% at 15% 0%, #0E8060 0%, var(--s21-primary) 45%, var(--s21-primary-dark) 100%);
 }
+/* Game detail pages: same plain-hero green wash, with a photo behind it */
+.hero.hero-plain.hero-game-bg {
+  background-image: url('https://images.unsplash.com/photo-1632934607230-4dc4c0f5b0f6?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
 
 .hero-badge {
   background: rgba(255,255,255,.12);
@@ -558,7 +564,7 @@ a:hover { color: var(--s21-accent); }
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(0, 0, 0, .6); /* black overlay, kept at lower opacity so the photo still shows through */
+  background: rgba(90, 10, 20, .68); /* wine-red overlay, kept translucent so the photo still shows through */
 }
 .section-subjects-bg > .container {
   position: relative;
@@ -600,7 +606,7 @@ a:hover { color: var(--s21-accent); }
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(0, 0, 0, .6); /* black overlay, kept at lower opacity so the photo still shows through */
+  background: rgba(219, 39, 119, .62); /* pink overlay, kept translucent so the photo still shows through */
 }
 .section-games-bg > .container {
   position: relative;
@@ -643,12 +649,22 @@ a:hover { color: var(--s21-accent); }
   position: absolute;
   inset: 0;
   z-index: 0;
-  /* brand light-green tint, kept at lower opacity so the photo still shows through */
-  background: rgba(228, 243, 236, .82);
+  /* red overlay, kept translucent so the photo still shows through */
+  background: rgba(200, 30, 30, .62);
 }
 .section-testimonials-bg > .container {
   position: relative;
   z-index: 1;
+}
+.section-testimonials-bg .eyebrow {
+  background: rgba(255, 255, 255, .18);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3);
+  backdrop-filter: blur(4px);
+}
+.section-testimonials-bg .section-head h2 {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .45);
 }
 
 .subject-card {
