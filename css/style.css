@@ -455,6 +455,11 @@ a:hover { color: var(--s21-accent); }
   background-size: cover;
   background-position: center;
 }
+.hero.hero-plain.hero-game-bg-cartoons {
+  background-image: url('https://images.unsplash.com/photo-1698340350386-e90b8673030f?w=1800&q=75&auto=format&fit=crop') !important;
+  background-size: cover;
+  background-position: center;
+}
 
 .hero-badge {
   background: rgba(255,255,255,.12);
