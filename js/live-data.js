@@ -123,9 +123,9 @@
       const { books } = await getJSON('/api/books');
       if (!books || books.length === 0) return;
       grid.innerHTML = books.map((b) => `
-        <div class="col-sm-6 col-lg-4 col-xl-3">
+        <div class="col-6 col-md-4 col-lg-3">
           <a href="book.html?slug=${encodeURIComponent(b.slug)}" class="text-reset text-decoration-none">
-            <div class="s21-card book-card">
+            <div class="s21-card book-card" data-category="${esc((b.subject || '').toLowerCase().trim().replace(/\s+/g, '-'))}">
               <div class="body">
                 <h3 class="h6 mb-1">${esc(b.title)}</h3>
                 ${b.subject ? `<span class="text-soft" style="font-size:.78rem">${esc(b.subject)}</span>` : ''}

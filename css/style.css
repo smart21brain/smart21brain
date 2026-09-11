@@ -295,7 +295,7 @@ a:hover { color: var(--s21-accent); }
 }
 .s21-logo .mark {
   width: 40px; height: 40px;
-  border-radius: 12px;
+  border-radius: 50%;
   background: linear-gradient(135deg, var(--s21-primary), var(--s21-primary-dark));
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 14px rgba(11,110,79,.35);
@@ -857,6 +857,9 @@ a:hover { color: var(--s21-accent); }
 }
 .fab:hover { transform: scale(1.08); }
 .fab.whatsapp { background: #25D366; }
+.fab.facebook { background: #1877F2; }
+.fab.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.fab.tiktok { background: #010101; }
 .fab.ai { background: linear-gradient(135deg, var(--s21-accent), #FF7A9C); }
 .fab.top {
   background: #2ECC71; width: 44px; height: 44px; font-size: 1rem;
@@ -1034,6 +1037,11 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 #s21-ai-panel .ai-head {
   background: var(--s21-primary); color: #fff; padding: 1rem 1.2rem;
   display: flex; align-items: center; justify-content: space-between;
+}
+.ai-head-logo {
+  width: 22px; height: 22px; border-radius: 50%;
+  object-fit: cover; margin-right: .4rem; flex-shrink: 0;
+  vertical-align: middle; border: 1.5px solid rgba(255,255,255,.6);
 }
 #s21-ai-panel .ai-log { flex: 1; overflow-y: auto; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .6rem; }
 .ai-bubble { padding: .6rem .9rem; border-radius: 14px; font-size: .88rem; max-width: 85%; }
@@ -1803,4 +1811,61 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 @media (max-width: 575.98px) {
   .s21-cookie-notice-inner { flex-direction: column; align-items: flex-start; text-align: left; }
   .s21-cookie-notice-btn { width: 100%; justify-content: center; }
+}
+
+/* Mobile menu toggler (three-bar / hamburger icon) — force white on every page */
+.navbar-toggler {
+  color: #ffffff !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 .2rem rgba(255, 255, 255, .5);
+}
+.navbar-toggler i.fa-bars,
+.navbar-toggler .fa-bars {
+  color: #ffffff !important;
+}
+
+/* Mobile top-bar quick actions (language + dark/light mode) — always visible next to the hamburger icon */
+.s21-mobile-actions { margin-left: auto; }
+.icon-btn-sm { width: 36px; height: 36px; }
+
+/* Hamburger (offcanvas) menu panel — brand green background, white text/icons */
+#mobileNav.offcanvas {
+  background: var(--s21-primary);
+  color: #ffffff;
+}
+#mobileNav .offcanvas-header {
+  border-bottom: 1px solid rgba(255, 255, 255, .18);
+}
+#mobileNav .offcanvas-header h5,
+#mobileNav #mobileNavLabel {
+  color: #ffffff;
+}
+#mobileNav .btn-close {
+  filter: brightness(0) invert(1);
+  opacity: .9;
+}
+#mobileNav .s21-nav-link {
+  color: #ffffff;
+}
+#mobileNav .s21-nav-link:hover,
+#mobileNav .s21-nav-link.active {
+  background: rgba(255, 255, 255, .16);
+  color: #ffffff;
+}
+#mobileNav .btn-s21-outline {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .55);
+  background: transparent;
+}
+#mobileNav .btn-s21-outline:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+  background: rgba(255, 255, 255, .12);
+}
+#mobileNav .btn-s21-primary {
+  background: var(--s21-secondary);
+  color: #3D2B00;
 }

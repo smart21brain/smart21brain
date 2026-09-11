@@ -162,6 +162,10 @@
       Smart<span class="brand-21">21</span>Brain
     </a>
     <span class="admin-console-badge d-none d-sm-inline-flex">Admin console</span>
+    <div class="d-flex d-lg-none align-items-center gap-2 s21-mobile-actions">
+      <button class="icon-btn icon-btn-sm" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.68rem">SW</button>
+      <button class="icon-btn icon-btn-sm" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+    </div>
     <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open menu"><i class="fa-solid fa-bars fa-lg"></i></button>
     <div class="d-none d-lg-flex align-items-center gap-2 ms-auto">
       <a href="index.html" class="icon-btn" aria-label="View public site" title="View public site"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
@@ -189,8 +193,6 @@
       <a href="#content-manager" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-layer-group me-2"></i> Content</a>
     </nav>
     <div class="mt-auto d-flex flex-column gap-2">
-      <button class="btn-s21 btn-s21-outline w-100" data-lang-toggle><i class="fa-solid fa-globe me-1"></i> <span data-lang-toggle-label>Kiswahili</span></button>
-      <button class="btn-s21 btn-s21-outline w-100" data-theme-toggle><i class="fa-solid fa-moon me-1"></i> <span data-theme-toggle-label>Dark Mode</span></button>
       <a href="index.html" class="btn-s21 btn-s21-outline w-100"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View public site</a>
       <a href="login.html" data-logout class="btn-s21 btn-s21-primary w-100"><i class="fa-solid fa-right-from-bracket me-1"></i> Log out</a>
     </div>
@@ -433,7 +435,18 @@
               <div class="tab-pane fade" id="cm-book">
                 <form id="admin-book-form" class="row g-3">
                   <div class="col-md-6"><label class="form-label">Title</label><input class="form-control s21-input" name="title" required></div>
-                  <div class="col-md-6"><label class="form-label">Subject</label><input class="form-control s21-input" name="subject" placeholder="e.g. Science"></div>
+                  <div class="col-md-6"><label class="form-label">Category</label>
+                    <select class="form-control s21-input" name="subject" required>
+                      <option value="" selected disabled>Select a category…</option>
+                      <option value="Religion">Religion</option>
+                      <option value="Psychology">Psychology</option>
+                      <option value="Philosophy">Philosophy</option>
+                      <option value="Science">Science</option>
+                      <option value="Art">Art</option>
+                      <option value="Technology">Technology</option>
+                      <option value="Computer">Computer</option>
+                    </select>
+                  </div>
                   <div class="col-12"><label class="form-label">Description</label><input class="form-control s21-input" name="description"></div>
                   <div class="col-12"><label class="form-label">Cover image URL (optional)</label><input class="form-control s21-input" type="url" name="cover_url" placeholder="https://…"></div>
                   <div class="col-12">
@@ -656,11 +669,14 @@
     <img src="images/logo/coool.png" alt="Study Buddy AI assistant — Smart21Brain logo" loading="lazy">
   </button>
   <a class="fab whatsapp" href="https://wa.me/255000000000" aria-label="Chat on WhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i></a>
+  <a class="fab facebook" href="#" aria-label="Follow us on Facebook" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i></a>
+  <a class="fab instagram" href="#" aria-label="Follow us on Instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a>
+  <a class="fab tiktok" href="#" aria-label="Follow us on TikTok" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i></a>
 </div>
 
 <div id="s21-ai-panel" aria-hidden="true">
   <div class="ai-head">
-    <span class="fw-bold"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> <span data-i18n="blog_study_buddy">Study Buddy</span></span>
+    <span class="fw-bold"><img src="images/logo/coool.png" alt="Smart21Brain logo" class="ai-head-logo"> <span data-i18n="blog_study_buddy">Study Buddy</span></span>
     <button type="button" data-ai-close aria-label="Close assistant" style="background:none;border:none;color:#fff"><i class="fa-solid fa-xmark"></i></button>
   </div>
   <div class="ai-log"><div class="ai-bubble ai-bubble-ai" data-i18n="blog_hi_ask_me_to_explain_a_topic_or_sugg">Hi! Ask me to explain a topic or suggest a video or book to try next.</div></div>

@@ -117,16 +117,18 @@
   }
   .welcome-tagline {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: .15rem;
+    justify-content: center;
+    gap: .35rem;
     margin: 0;
   }
   .welcome-tagline span {
-    display: block;
+    display: inline-block;
     font-weight: 800;
     font-size: 1.15rem;
-    letter-spacing: .06em;
+    letter-spacing: .02em;
     text-transform: uppercase;
     line-height: 1.3;
   }
@@ -189,10 +191,10 @@
           Smart<span class="brand-21">21</span>Brain
         </a>
         <p class="welcome-tagline">
-          <span>Learn</span>
-          <span>Play</span>
-          <span>Explore</span>
-          <span>Grow</span>
+          <span>Learn,</span>
+          <span>Play,</span>
+          <span>Explore,</span>
+          <span>Grow.</span>
         </p>
         <p class="welcome-greeting" id="welcome-greeting">You're logged in. Where would you like to go?</p>
         <div class="welcome-actions">
