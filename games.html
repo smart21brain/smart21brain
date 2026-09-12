@@ -84,42 +84,48 @@
 
 <main id="main">
 
-  <section class="s21hero-video" id="gamesHero">
-    <video id="gamesHeroVideo" class="s21hero-video__media" src="videos/games-hero-scrub.mp4" muted playsinline preload="auto"></video>
-    <div class="s21hero-video__scrim" aria-hidden="true"></div>
-    <div class="s21hero-video__content container">
-      <h1 class="visually-hidden" data-i18n="games_smart21brain_games">Smart21Brain Games</h1>
-      <nav aria-label="breadcrumb" class="s21hero-video__crumb">
-        <a href="index.html" data-i18n="book_home">Home</a><span class="sep">/</span><span aria-current="page" data-i18n="nav_games">Games</span>
-      </nav>
+  <section class="hero hero-plain s21hero-video" id="gamesHero">
+    <div class="container s21hero-video__grid">
+      <div class="s21hero-video__text">
+        <h1 class="visually-hidden" data-i18n="games_smart21brain_games">Smart21Brain Games</h1>
+        <nav aria-label="breadcrumb" class="s21hero-video__crumb">
+          <a href="index.html" data-i18n="book_home">Home</a><span class="sep">/</span><span aria-current="page" data-i18n="nav_games">Games</span>
+        </nav>
 
-      <p class="s21hero-video__intro" aria-hidden="true">
-        Hey there, meet Robo,<br>
-        Smart21Brain's friendly guide to every game on the site
-      </p>
+        <p class="s21hero-video__intro" aria-hidden="true">
+          Hey there, meet Robo,<br>
+          Smart21Brain's friendly guide to every game on the site
+        </p>
 
-      <p class="s21hero-video__type" id="gamesHeroType" role="status">
-        <span id="gamesHeroTypeText" data-text="Glad you stopped by! Learning here feels like play. So, which adventure are we starting today?"></span><span class="s21hero-video__cursor" id="gamesHeroCursor"></span>
-      </p>
+        <p class="s21hero-video__type" id="gamesHeroType" role="status">
+          <span id="gamesHeroTypeText" data-text="Glad you stopped by! Learning here feels like play. So, which adventure are we starting today?"></span><span class="s21hero-video__cursor" id="gamesHeroCursor"></span>
+        </p>
 
-      <div class="s21hero-video__pills" id="gamesHeroPills">
-        <a href="#gamesGrid" class="s21hero-pill s21hero-pill--white">Browse all games</a>
-        <a href="game.html" class="s21hero-pill s21hero-pill--white">Play a quick game</a>
-        <a href="contact.html" class="s21hero-pill s21hero-pill--white">Ask us anything</a>
-        <a href="about.html" class="s21hero-pill s21hero-pill--white">See how it works</a>
-        <button type="button" class="s21hero-pill s21hero-pill--outline" id="gamesHeroCopyEmail" data-email="hello@smart21brain.com">
-          Reach us: <span class="s21hero-pill__email">hello@smart21brain.com</span>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="1" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1"/><rect x="4" y="1" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1"/></svg>
-        </button>
+        <div class="s21hero-video__pills" id="gamesHeroPills">
+          <a href="#gamesGrid" class="s21hero-pill s21hero-pill--white">Browse all games</a>
+          <a href="game.html" class="s21hero-pill s21hero-pill--white">Play a quick game</a>
+          <a href="contact.html" class="s21hero-pill s21hero-pill--white">Ask us anything</a>
+          <a href="about.html" class="s21hero-pill s21hero-pill--white">See how it works</a>
+          <button type="button" class="s21hero-pill s21hero-pill--outline" id="gamesHeroCopyEmail" data-email="hello@smart21brain.com">
+            Reach us: <span class="s21hero-pill__email">hello@smart21brain.com</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="1" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1"/><rect x="4" y="1" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1"/></svg>
+          </button>
+        </div>
+
+        <form class="hero-search s21-search-wrap mt-4" role="search" aria-label="Search games" style="max-width:520px">
+          <i class="fa-solid fa-magnifying-glass text-soft ms-1" aria-hidden="true"></i>
+          <input type="search" placeholder="Search games…" data-i18n-placeholder="games_ph_search_games" aria-label="Search games">
+          <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
+          <div class="s21-search-panel" role="listbox"></div>
+        </form>
       </div>
 
-      <form class="hero-search s21-search-wrap mt-4" role="search" aria-label="Search games" style="max-width:640px">
-        <i class="fa-solid fa-magnifying-glass text-soft ms-1" aria-hidden="true"></i>
-        <input type="search" placeholder="Search games…" data-i18n-placeholder="games_ph_search_games" aria-label="Search games">
-        <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="s21-search-panel" role="listbox"></div>
-      </form>
+      <div class="s21hero-video__figure" aria-hidden="true">
+        <div class="s21hero-video__glow"></div>
+        <video id="gamesHeroVideo" class="s21hero-video__media" src="videos/games-hero-girl.webm" poster="images/illustrations/games-hero-girl-poster.png" muted playsinline preload="auto"></video>
+      </div>
     </div>
+
   </section>
 
   

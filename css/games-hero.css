@@ -1,65 +1,49 @@
 /* ============================================================
    Smart21Brain — Games hub hero
-   Full-screen, mouse-scrubbed video hero (sits below the existing
-   site header — see .s21-navbar — so nothing here overrides nav).
+   Two-column hero: copy on the left, an alpha-keyed video of the
+   Smart21Brain mascot on the right, standing directly in front of
+   the site's existing brand gradient (.hero.hero-plain) — no boxed
+   background of her own. Mouse movement gently "spins" her by
+   scrubbing the clip; a rAF easing loop keeps that scrub smooth
+   instead of jumping between frames.
    ============================================================ */
 
-.s21hero-video {
-  position: relative;
-  overflow: hidden;
-  height: 92vh;
-  min-height: 560px;
-  max-height: 900px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 1.25rem 3rem;
-  color: #fff;
-  isolation: isolate;
-}
-@media (min-width: 576px) {
-  .s21hero-video { padding-left: 2rem; padding-right: 2rem; }
+.hero.hero-plain.s21hero-video {
+  padding: 3rem 0 2.5rem;
 }
 @media (min-width: 768px) {
-  .s21hero-video {
-    justify-content: center;
-    padding: 0 2.5rem;
+  .hero.hero-plain.s21hero-video {
+    min-height: 82vh;
+    display: flex;
+    align-items: center;
+    padding: 6rem 0 3rem;
   }
 }
 
-.s21hero-video__media {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 70% center;
-  z-index: 0;
-  background: var(--s21-primary-dark);
-}
-
-/* Same brand-tinted wash used on the other photo/video heroes, so text
-   stays legible over any frame of the clip. */
-.s21hero-video__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(115deg, rgba(6,20,15,.92) 8%, rgba(8,45,33,.72) 45%, rgba(11,110,79,.42) 78%, rgba(8,45,33,.32) 100%);
-  pointer-events: none;
-}
-.s21hero-video__scrim::after {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.10) 1.5px, transparent 1.5px);
-  background-size: 26px 26px;
-  opacity: .5;
-}
-
-.s21hero-video__content {
+.s21hero-video__grid {
   position: relative;
   z-index: 2;
-  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.25rem;
+}
+@media (min-width: 768px) {
+  .s21hero-video__grid {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
+.s21hero-video__text {
   width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .s21hero-video__text { flex: 1 1 480px; text-align: left; }
 }
 
 .s21hero-video__crumb {
@@ -70,7 +54,7 @@
 .s21hero-video__crumb a:hover { color: #fff; }
 .s21hero-video__crumb .sep { color: rgba(255,255,255,.45); margin: 0 .4rem; }
 
-/* Blurred intro label — decorative, read by the typewriter line instead */
+/* Blurred intro label — decorative, the typewriter line carries the real copy */
 .s21hero-video__intro {
   pointer-events: none;
   user-select: none;
@@ -108,10 +92,14 @@
 .s21hero-video__pills {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: .25rem 0;
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity .4s ease, transform .4s ease;
+  transition: opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1);
+}
+@media (min-width: 768px) {
+  .s21hero-video__pills { justify-content: flex-start; }
 }
 .s21hero-video__pills.is-visible {
   opacity: 1;
@@ -163,7 +151,61 @@
 }
 .s21hero-pill--outline svg { flex-shrink: 0; }
 
+/* ---------- Figure: the mascot herself, in front of the hero background ---------- */
+.s21hero-video__figure {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  justify-content: center;
+  animation: s21hero-figure-in .9s cubic-bezier(.22,1,.36,1) both;
+  animation-delay: .15s;
+}
+@media (min-width: 768px) {
+  .s21hero-video__figure { flex: 0 1 380px; max-width: 380px; }
+}
+@keyframes s21hero-figure-in {
+  from { opacity: 0; transform: translateY(28px) scale(.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (min-width: 768px) {
+  @keyframes s21hero-figure-in {
+    from { opacity: 0; transform: translateX(36px) scale(.94); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+}
+
+/* Soft grounding shadow so she reads as standing in the scene, not pasted on it */
+.s21hero-video__glow {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  width: 62%;
+  height: 10%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.38) 0%, rgba(0,0,0,0) 72%);
+  filter: blur(2px);
+  z-index: 1;
+}
+
+.s21hero-video__media {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 22px 28px rgba(0,0,0,.32));
+  animation: s21hero-float 4.6s ease-in-out infinite;
+  animation-delay: 1.05s;
+}
+@keyframes s21hero-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .s21hero-video__cursor { animation: none; opacity: 1; }
   .s21hero-video__pills { transition: none; }
+  .s21hero-video__figure { animation: none; opacity: 1; transform: none; }
+  .s21hero-video__media { animation: none; }
 }
