@@ -193,7 +193,11 @@
   z-index: 2;
   display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 16 / 9;
+  background-image: url('../images/illustrations/games-hero-girl-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 500% 500%;
+  background-position: 0% 0%;
   filter: drop-shadow(0 22px 28px rgba(0,0,0,.32));
   animation: s21hero-float 4.6s ease-in-out infinite;
   animation-delay: 1.05s;

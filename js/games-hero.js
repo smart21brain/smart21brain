@@ -1,56 +1,59 @@
 /* Smart21Brain — games-hero.js
-   Powers the Games hub hero: an eased, mouse-scrubbed mascot clip,
+   Powers the Games hub hero: a mouse-scrubbed mascot sprite flipbook,
    a typewriter line, and a delayed fade-in for the action pills.
-   Vanilla JS port of a React/Tailwind hero spec — same behaviour,
-   no build step. */
+
+   The mascot is a 5x5 sprite sheet (25 frames) rather than a video:
+   background-video seeking — especially on an alpha/transparent
+   WebM — is unreliable across browsers (Safari has no VP9-alpha
+   support at all, and even Chromium can fail to honour currentTime
+   seeks on alpha video). Swapping background-position on a plain
+   PNG sprite has none of those failure modes and needs no
+   "is it ready yet" handshake at all. */
 (function () {
   const hero = document.getElementById('gamesHero');
   if (!hero) return;
 
-  /* ---------- Mouse-scrub video, eased with requestAnimationFrame ----------
-     Raw currentTime jumps feel jerky on a short clip, so instead of
-     seeking straight to the target frame we ease a "rendered" time
-     toward it every animation frame — a smooth, weighted catch-up
-     rather than a snap. */
-  const video = document.getElementById('gamesHeroVideo');
+  /* ---------- Mouse-scrub sprite, eased with requestAnimationFrame ---------- */
+  const sprite = document.getElementById('gamesHeroSprite');
   const figure = document.querySelector('.s21hero-video__figure');
-  if (video && figure) {
+  if (sprite && figure) {
+    const COLS = 5;
+    const ROWS = 5;
+    const TOTAL = COLS * ROWS;
     const SENSITIVITY = 0.8;
-    const EASE = 0.12;
+    const EASE = 0.14;
+
     let prevX = null;
-    let targetTime = 0;
-    let renderedTime = 0;
-    let ready = false;
-    let rafId = null;
+    let targetFrame = 0;
+    let renderedFrame = 0;
+    let lastDrawn = -1;
 
     const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-    const loop = () => {
-      if (ready && video.duration) {
-        renderedTime += (targetTime - renderedTime) * EASE;
-        if (Math.abs(targetTime - renderedTime) < 0.005) renderedTime = targetTime;
-        if (Math.abs(video.currentTime - renderedTime) > 0.008) {
-          try { video.currentTime = renderedTime; } catch (e) { /* no-op */ }
-        }
-      }
-      rafId = requestAnimationFrame(loop);
+    const draw = (idx) => {
+      if (idx === lastDrawn) return;
+      lastDrawn = idx;
+      const col = idx % COLS;
+      const row = Math.floor(idx / COLS);
+      const x = COLS > 1 ? (col / (COLS - 1)) * 100 : 0;
+      const y = ROWS > 1 ? (row / (ROWS - 1)) * 100 : 0;
+      sprite.style.backgroundPosition = x + '% ' + y + '%';
     };
 
-    video.addEventListener('loadedmetadata', () => {
-      ready = true;
-      targetTime = 0;
-      renderedTime = 0;
-      try { video.currentTime = 0; } catch (e) { /* no-op */ }
-      if (!rafId) rafId = requestAnimationFrame(loop);
-    });
+    const loop = () => {
+      renderedFrame += (targetFrame - renderedFrame) * EASE;
+      if (Math.abs(targetFrame - renderedFrame) < 0.02) renderedFrame = targetFrame;
+      draw(Math.round(clamp(renderedFrame, 0, TOTAL - 1)));
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 
     const scrub = (clientX) => {
-      if (!ready || !video.duration) { prevX = clientX; return; }
       if (prevX === null) { prevX = clientX; return; }
       const delta = clientX - prevX;
       prevX = clientX;
-      const offset = (delta / window.innerWidth) * SENSITIVITY * video.duration;
-      targetTime = clamp(targetTime + offset, 0, video.duration);
+      const offset = (delta / window.innerWidth) * SENSITIVITY * (TOTAL - 1);
+      targetFrame = clamp(targetFrame + offset, 0, TOTAL - 1);
     };
 
     figure.addEventListener('mousemove', (e) => scrub(e.clientX));
