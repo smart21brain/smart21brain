@@ -13,7 +13,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=10">
 <link rel="stylesheet" href="css/responsive.css?v=5">
 <link rel="stylesheet" href="css/animations.css?v=4">
 <style>
@@ -130,13 +130,11 @@
   .yts-done { padding: 3rem 1.5rem; text-align: center; }
   .yts-done i { font-size: 3rem; color: var(--s21-primary); }
 
+  /* Base .yts-table-wrap / .yts-table look (border, header tint, zebra rows)
+     now lives in css/style.css alongside .dash-table so both admin tables
+     share one consistent, non-white styling. Only overflow behavior stays
+     here since this table sits inside a scrollable modal. */
   .yts-table-wrap { overflow-x: auto; }
-  .yts-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-  .yts-table th {
-    text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
-    color: var(--s21-text-soft); padding: .6rem .5rem; border-bottom: 1px solid var(--s21-border);
-  }
-  .yts-table td { padding: .7rem .5rem; border-bottom: 1px solid var(--s21-border); vertical-align: middle; }
   .yts-video-cell { display: flex; align-items: center; gap: .8rem; }
   .yts-video-thumb {
     width: 100px; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: var(--s21-bg);
