@@ -136,9 +136,22 @@
       }, true);
     }
 
-    /* Sticky navbar shadow on scroll */
+    /* Fixed navbar: keep it pinned to the top and never hide it on
+       scroll. We just measure its real height so the page content
+       below gets pushed down by exactly that much (no gap, no overlap),
+       and re-measure whenever the layout might change size. */
     const navbar = document.querySelector('.s21-navbar');
     const backToTop = document.querySelector('.fab.top');
+    const syncNavbarHeight = () => {
+      if (!navbar) return;
+      document.documentElement.style.setProperty('--s21-navbar-h', `${navbar.offsetHeight}px`);
+    };
+    if (navbar) {
+      syncNavbarHeight();
+      window.addEventListener('resize', syncNavbarHeight);
+      window.addEventListener('load', syncNavbarHeight);
+      if (window.ResizeObserver) new ResizeObserver(syncNavbarHeight).observe(navbar);
+    }
     const updateScrollActions = () => {
       const y = window.scrollY;
       if (navbar) navbar.style.boxShadow = y > 12 ? '0 6px 20px rgba(0,0,0,.08)' : 'none';

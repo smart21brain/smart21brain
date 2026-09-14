@@ -273,16 +273,29 @@ a:hover { color: var(--s21-accent); }
   .btn-s21-guest-cta { animation: none; }
 }
 
-/* ---- Navbar ---- */
+/* ---- Navbar ----
+   Fixed (not sticky) so it always stays put at the very top of the
+   viewport and never scrolls away or hides — main.js measures its
+   height and pushes the page content down by that amount via the
+   --s21-navbar-h variable below. */
 .s21-navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1000;
   background: var(--glass-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--glass-border);
   padding: .7rem 0;
+}
+
+/* Fallback spacing (used before JS measures the real height, and if JS
+   is disabled) — kept close to the navbar's natural height. */
+body {
+  padding-top: var(--s21-navbar-h, 78px);
 }
 
 .s21-logo {

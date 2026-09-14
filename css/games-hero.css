@@ -1,12 +1,18 @@
 /* ============================================================
    Smart21Brain — Games hub hero
    Two-column hero: copy on the left, an alpha-keyed video of the
-   Smart21Brain mascot on the right, standing directly in front of
-   the site's existing brand gradient (.hero.hero-plain) — no boxed
-   background of her own. Mouse movement gently "spins" her by
-   scrubbing the clip; a rAF easing loop keeps that scrub smooth
-   instead of jumping between frames.
+   Smart21Brain mascot on the right. The hero's own backdrop is a
+   full-bleed looping video (.hero-bg-video) instead of the flat
+   brand gradient other .hero-plain sections use — just a thin dark
+   wash on top (below) so the white copy stays readable over it.
+   Mouse movement gently "spins" the mascot by scrubbing the clip;
+   a rAF easing loop keeps that scrub smooth instead of jumping
+   between frames.
    ============================================================ */
+
+.hero.hero-plain.s21hero-video.hero-game-bg::before {
+  background: linear-gradient(115deg, rgba(6,20,15,.72) 10%, rgba(8,45,33,.5) 45%, rgba(8,45,33,.35) 100%);
+}
 
 .hero.hero-plain.s21hero-video {
   padding: 3rem 0 2.5rem;
