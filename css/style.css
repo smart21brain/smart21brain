@@ -119,7 +119,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
 
 body {
   font-family: var(--font-body);
@@ -275,7 +275,8 @@ a:hover { color: var(--s21-accent); }
 
 /* ---- Navbar ---- */
 .s21-navbar {
-  position: static;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   background: var(--glass-bg);
   backdrop-filter: blur(14px);
@@ -402,11 +403,18 @@ a:hover { color: var(--s21-accent); }
 .hero.hero-plain::before {
   background: radial-gradient(120% 100% at 15% 0%, #0E8060 0%, var(--s21-primary) 45%, var(--s21-primary-dark) 100%);
 }
-/* Game detail pages: same plain-hero green wash, with a photo behind it */
+/* Game detail pages: same plain-hero green wash, now with a background video instead of a photo */
 .hero.hero-plain.hero-game-bg {
-  background-image: url('https://images.unsplash.com/photo-1632934607230-4dc4c0f5b0f6?w=1800&q=75&auto=format&fit=crop') !important;
-  background-size: cover;
-  background-position: center;
+  background-image: none !important;
+}
+.hero-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  pointer-events: none;
 }
 /* Per-game themed hero photos. The green wash above (.hero.hero-plain::before)
    still sits on top of every one of these, so the "shadow" stays green. */
@@ -1263,12 +1271,12 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
   position: absolute; right: .9rem; top: 50%; transform: translateY(-50%);
   background: none; border: none; color: var(--s21-text-soft);
 }
-.form-control.s21-input {
+.form-control.s21-input, .form-select.s21-input {
   border-radius: var(--radius-md);
   border: 1.5px solid var(--s21-border);
   padding: .7rem 1rem;
 }
-.form-control.s21-input:focus {
+.form-control.s21-input:focus, .form-select.s21-input:focus {
   border-color: var(--s21-primary);
   box-shadow: 0 0 0 3px var(--s21-primary-light);
 }

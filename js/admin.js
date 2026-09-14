@@ -340,13 +340,33 @@
       } catch { if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-soft" style="font-size:.85rem">Couldn\'t load users.</td></tr>'; }
     }
 
-    document.getElementById('admin-users-search')?.addEventListener('input', (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      const filtered = q
-        ? allUsers.filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
-        : allUsers;
+    function applyUserFilters() {
+      const q = document.getElementById('admin-users-search')?.value.trim().toLowerCase() || '';
+      const role = document.getElementById('admin-users-role-filter')?.value || '';
+      let filtered = allUsers;
+      if (role) filtered = filtered.filter((u) => u.role === role);
+      if (q) filtered = filtered.filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
       renderUsersTable(filtered);
+    }
+    document.getElementById('admin-users-search')?.addEventListener('input', applyUserFilters);
+    document.getElementById('admin-users-role-filter')?.addEventListener('change', applyUserFilters);
+
+    document.getElementById('admin-export-users-btn')?.addEventListener('click', () => {
+      const rows = [['Name', 'Email', 'Role', 'Joined']];
+      allUsers.forEach((u) => rows.push([u.name, u.email, ROLE_LABELS[u.role] || u.role, new Date(u.created_at + 'Z').toLocaleDateString()]));
+      downloadCsv(rows, 'smart21brain-users.csv');
     });
+
+    function downloadCsv(rows, filename) {
+      const csv = rows.map((r) => r.map((cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+    window.S21AdminDownloadCsv = downloadCsv; // shared with admin-analytics.js
 
     function row(title, subtitle, deleteUrl, reload) {
       return `

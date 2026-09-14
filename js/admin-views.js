@@ -6,6 +6,7 @@
 (function () {
   const TITLES = {
     overview: 'Platform overview',
+    analytics: 'Analytics',
     users: 'Users',
     moderation: 'Content moderation',
     payments: 'Payments & subscriptions',

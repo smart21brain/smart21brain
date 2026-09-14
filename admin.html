@@ -12,6 +12,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="css/style.css?v=9">
 <link rel="stylesheet" href="css/responsive.css?v=5">
 <link rel="stylesheet" href="css/animations.css?v=4">
@@ -186,6 +187,7 @@
     <span data-guest-nav="mobile" style="display:contents"></span>
     <nav class="d-flex flex-column gap-1 mb-4 mt-2" data-admin-view-nav>
       <a href="#overview" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-gauge me-2"></i> Overview</a>
+      <a href="#analytics" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-chart-line me-2"></i> Analytics</a>
       <a href="#users" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users me-2"></i> Users</a>
       <a href="#moderation" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-shield-halved me-2"></i> Content moderation</a>
       <a href="#payments" class="nav-link s21-nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-credit-card me-2"></i> Payments</a>
@@ -206,6 +208,7 @@
       <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em" data-i18n="admin_admin">Admin</div>
       <nav class="d-flex flex-column gap-1" data-admin-view-nav>
         <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span data-i18n="admin_overview">Overview</span></a>
+        <a href="#analytics" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analytics</a>
         <a href="#users" class="nav-link"><i class="fa-solid fa-users"></i> <span data-i18n="admin_users">Users</span></a>
         <a href="#moderation" class="nav-link"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="admin_content_moderation">Content moderation</span></a>
         <a href="#payments" class="nav-link"><i class="fa-solid fa-credit-card"></i> <span data-i18n="admin_payments">Payments</span></a>
@@ -225,13 +228,74 @@
 
       <!-- Stat cards -->
       <section class="admin-view" data-view="overview" id="overview">
-      <div class="row g-3 mb-4">
+      <div class="row g-3 mb-3">
         <div class="col-6 col-md-3" data-aos="fade-up"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-users"></i></div><div><div class="stat-num" id="stat-total-users">—</div><div class="text-soft" style="font-size:.8rem">Total users</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-child"></i></div><div><div class="stat-num" id="stat-students">—</div><div class="text-soft" style="font-size:.8rem">Students</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="stat-num" id="stat-teachers">—</div><div class="text-soft" style="font-size:.8rem">Teachers</div></div></div></div>
         <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-people-roof"></i></div><div><div class="stat-num" id="stat-parents">—</div><div class="text-soft" style="font-size:.8rem">Parents</div></div></div></div>
       </div>
-      <p class="text-soft" style="font-size:.85rem">Use the sidebar on the left to jump to Users, Content moderation, Payments, Settings or Content management — each opens as its own screen.</p>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3" data-aos="fade-up"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-layer-group"></i></div><div><div class="stat-num" id="stat-total-content">—</div><div class="text-soft" style="font-size:.8rem">Total content items</div></div></div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-arrow-trend-up"></i></div><div><div class="stat-num" id="stat-new-week">—</div><div class="text-soft" style="font-size:.8rem">New this week</div></div></div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-fire"></i></div><div><div class="stat-num" id="stat-busiest-type" style="font-size:1.05rem">—</div><div class="text-soft" style="font-size:.8rem">Most-published type</div></div></div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180">
+          <a href="#analytics" class="s21-card dash-stat-card d-flex flex-column align-items-center justify-content-center h-100 text-decoration-none" style="color:var(--s21-primary)">
+            <i class="fa-solid fa-chart-line mb-2" style="font-size:1.3rem"></i>
+            <div class="fw-bold" style="font-size:.85rem">View full analytics</div>
+          </a>
+        </div>
+      </div>
+      <p class="text-soft" style="font-size:.85rem">Use the sidebar on the left to jump to Analytics, Users, Content moderation, Payments, Settings or Content management — each opens as its own screen.</p>
+      </section>
+
+      <section class="admin-view d-none" data-view="analytics" id="analytics">
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3" data-aos="fade-up"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-layer-group"></i></div><div><div class="stat-num" id="an-stat-total-content">—</div><div class="text-soft" style="font-size:.8rem">Total content items</div></div></div></div>
+          <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FFF6E0;color:#A66A00"><i class="fa-solid fa-arrow-trend-up"></i></div><div><div class="stat-num" id="an-stat-content-week">—</div><div class="text-soft" style="font-size:.8rem">Content published this week</div></div></div></div>
+          <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-user-plus"></i></div><div><div class="stat-num" id="an-stat-users-week">—</div><div class="text-soft" style="font-size:.8rem">New users this week</div></div></div></div>
+          <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180"><div class="s21-card dash-stat-card"><div class="stat-icon" style="background:#FDECF1;color:var(--s21-accent)"><i class="fa-solid fa-fire"></i></div><div><div class="stat-num" id="an-stat-busiest" style="font-size:1.05rem">—</div><div class="text-soft" style="font-size:.8rem">Most-published type</div></div></div></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-lg-8">
+            <div class="s21-card p-4 h-100" data-aos="fade-up">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h3 class="h6 mb-0"><i class="fa-solid fa-chart-line" style="color:var(--s21-primary)"></i> Growth — last 30 days</h3>
+                <span class="text-soft" style="font-size:.76rem">Cumulative users &amp; content</span>
+              </div>
+              <div style="position:relative;height:260px"><canvas id="chart-growth" role="img" aria-label="Cumulative users and content items over the last 30 days"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="s21-card p-4 h-100" data-aos="fade-up" data-aos-delay="60">
+              <h3 class="h6 mb-3"><i class="fa-solid fa-chart-pie" style="color:var(--s21-accent)"></i> Content mix</h3>
+              <div style="position:relative;height:220px"><canvas id="chart-content-mix" role="img" aria-label="Breakdown of content items by type"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <div class="s21-card p-4 h-100" data-aos="fade-up">
+              <h3 class="h6 mb-3"><i class="fa-solid fa-user-group" style="color:var(--s21-primary)"></i> Users by role</h3>
+              <div style="position:relative;height:220px"><canvas id="chart-user-roles" role="img" aria-label="Breakdown of users by role"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="s21-card p-4 h-100" data-aos="fade-up" data-aos-delay="60">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h3 class="h6 mb-0"><i class="fa-solid fa-table-list" style="color:var(--s21-primary)"></i> Content breakdown</h3>
+                <button class="btn-s21 btn-s21-outline" style="padding:.4rem .9rem;font-size:.78rem" id="admin-export-content-btn"><i class="fa-solid fa-file-arrow-down"></i> Export CSV</button>
+              </div>
+              <div class="table-responsive">
+                <table class="table dash-table mb-0">
+                  <thead><tr><th>Type</th><th>Count</th><th>Share</th></tr></thead>
+                  <tbody id="an-content-table"><tr><td colspan="3" class="text-soft" style="font-size:.85rem">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="admin-view d-none" data-view="users" id="users">
@@ -241,9 +305,17 @@
           <div class="s21-card p-4" data-aos="fade-up">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
               <h2 class="h5 mb-0"><i class="fa-solid fa-users" style="color:var(--s21-primary)"></i> <span data-i18n="admin_recent_users">Recent users</span></h2>
-              <div class="d-flex align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
                 <span class="text-soft" style="font-size:.8rem" id="admin-users-count"></span>
+                <select class="form-select s21-input" id="admin-users-role-filter" style="width:auto;font-size:.82rem;padding:.4rem 1.9rem .4rem .8rem">
+                  <option value="">All roles</option>
+                  <option value="user">Students</option>
+                  <option value="teacher">Teachers</option>
+                  <option value="parent">Parents</option>
+                  <option value="admin">Admins</option>
+                </select>
                 <div class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="admin-users-search" placeholder="Search name or email…"></div>
+                <button class="btn-s21 btn-s21-outline" style="padding:.4rem .9rem;font-size:.78rem" id="admin-export-users-btn"><i class="fa-solid fa-file-arrow-down"></i> Export CSV</button>
               </div>
             </div>
             <div class="table-responsive">
@@ -692,6 +764,7 @@
 <script src="js/darkmode.js"></script>
 <script src="js/polish-animations.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/admin-analytics.js"></script>
 <script src="js/admin-video-upload.js"></script>
 <script src="js/admin-views.js"></script>
 <script src="js/auth.js"></script>
