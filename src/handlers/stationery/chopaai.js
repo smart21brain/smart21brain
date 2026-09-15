@@ -3,17 +3,25 @@ import { getStationeryContext } from '../../lib/stationery-auth.js';
 
 const SYSTEM_BASE = `You are Smart21brain AI, the in-app assistant for a Tanzanian/East-African stationery, printing and photo-studio shop running on smart21brain Stationery OS. Be concise, practical and friendly. Reply in the same language the operator writes in (English or Kiswahili). Never claim to submit anything to a government system — you only guide the operator through paperwork.`;
 
+// See src/handlers/assistant.js for why this isn't llama-3.1-8b-instruct
+// anymore (Cloudflare retired it on 2026-05-30).
+const DEFAULT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+
 async function runModel(env, systemPrompt, userPrompt) {
   if (!env.AI || typeof env.AI.run !== 'function') {
     return 'AI service is not configured for this deployment yet — ask an admin to enable the Workers AI binding.';
   }
-  const result = await env.AI.run(env.AI_MODEL || '@cf/meta/llama-3.1-8b-instruct', {
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
-    ],
-  });
-  return result?.response?.trim() || 'I could not generate a useful answer just now — please try rephrasing.';
+  try {
+    const result = await env.AI.run(env.AI_MODEL || DEFAULT_MODEL, {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
+    return result?.response?.trim() || 'I could not generate a useful answer just now — please try rephrasing.';
+  } catch (err) {
+    return 'The assistant is temporarily unavailable — please try again in a moment.';
+  }
 }
 
 export async function ask({ request, env }) {

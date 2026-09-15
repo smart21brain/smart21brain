@@ -50,8 +50,10 @@ bucket_name = "smart21brain-stationery-files"
 [ai]
 binding = "AI"
 
-# Optional: override the default text model used by both AI assistants
-# (default: @cf/meta/llama-3.1-8b-instruct). Check the current Workers AI
-# model catalog before changing this: https://developers.cloudflare.com/workers-ai/models/
+# Optional: override the default text model used by all three AI call sites
+# (default: @cf/meta/llama-3.3-70b-instruct-fp8-fast). The previous default,
+# @cf/meta/llama-3.1-8b-instruct, was retired by Cloudflare on 2026-05-30 --
+# check the current Workers AI model catalog before changing this again:
+# https://developers.cloudflare.com/workers-ai/models/
 # [vars]
-# AI_MODEL = "@cf/meta/llama-3.1-8b-instruct"
+# AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
