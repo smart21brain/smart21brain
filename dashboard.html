@@ -135,7 +135,7 @@
         <div class="col-6 col-md-3" data-aos="fade-up">
           <div class="s21-card dash-stat-card">
             <div class="stat-icon" style="background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-book-open"></i></div>
-            <div class="stat-num">4</div>
+            <div class="stat-num" id="dash-stat-courses">0</div>
             <div class="text-soft" style="font-size:.8rem" data-i18n="dash_courses_in_progress">Courses in progress</div>
           </div>
         </div>
@@ -170,30 +170,9 @@
             <h2 class="h5 mb-0"><i class="fa-solid fa-rotate" style="color:var(--s21-primary)"></i> <span data-i18n="head_continue">Continue learning</span></h2>
             <a href="courses.html" class="text-soft" style="font-size:.85rem" data-i18n="dash_view_all">View all</a>
           </div>
-          <div class="row g-3 mb-4">
-            <div class="col-md-6" data-aos="fade-up">
-              <a href="course.html" class="text-reset text-decoration-none">
-                <div class="s21-card p-3 d-flex gap-3 align-items-center">
-                  <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=200&q=70&auto=format&fit=crop" alt="" width="70" height="70" style="border-radius:12px;object-fit:cover" loading="lazy">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1" data-i18n="dash_fractions_made_fun">Fractions Made Fun</h3>
-                    <div class="progress-s21 mb-1"><span style="width:68%"></span></div>
-                    <span class="text-soft" style="font-size:.76rem" data-i18n="dash_68_complete">68% complete</span>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div class="col-md-6" data-aos="fade-up" data-aos-delay="60">
-              <a href="course.html" class="text-reset text-decoration-none">
-                <div class="s21-card p-3 d-flex gap-3 align-items-center">
-                  <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=200&q=70&auto=format&fit=crop" alt="" width="70" height="70" style="border-radius:12px;object-fit:cover" loading="lazy">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1" data-i18n="dash_human_body_explorers">Human Body Explorers</h3>
-                    <div class="progress-s21 mb-1"><span style="width:35%"></span></div>
-                    <span class="text-soft" style="font-size:.76rem" data-i18n="dash_35_complete">35% complete</span>
-                  </div>
-                </div>
-              </a>
+          <div class="row g-3 mb-4" id="dash-continue-learning-list">
+            <div class="col-12">
+              <p class="text-soft" style="font-size:.85rem" id="dash-continue-learning-empty">Loading your courses…</p>
             </div>
           </div>
 

@@ -403,7 +403,7 @@
                 <ul class="mb-0 mt-1 ps-3">
                   <li><strong>More games</strong> — use the <em>Add Game</em> tab below. Each one publishes straight to the Games page, no review step.</li>
                   <li><strong>More videos</strong> — use <em>Post Video</em>: upload a file or paste a YouTube/Vimeo/CDN link, then tick where it should show.</li>
-                  <li><strong>More courses</strong> — there's no separate course form: a course is simply a group of videos on the same subject. Post a video and tick <strong>Courses</strong> under "Show on" so it appears on the Courses page — repeat for each lesson in the course.</li>
+                  <li><strong>More courses</strong> — use <em>Add Course</em> below to create the course, then use the curriculum manager underneath the course list to add its lessons.</li>
                   <li><strong>More blog posts</strong> — use <em>Add Blog Post</em>, write the content, and hit Publish.</li>
                 </ul>
               </div>
@@ -411,6 +411,7 @@
 
             <ul class="nav nav-pills mb-3 flex-wrap gap-2" id="cm-tabs" role="tablist">
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline active" data-bs-toggle="pill" data-bs-target="#cm-game" type="button">Add Game</button></li>
+              <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-course" type="button">Add Course</button></li>
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-quiz" type="button">Add Quiz</button></li>
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-blog" type="button">Add Blog Post</button></li>
               <li class="nav-item" role="presentation"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#cm-material" type="button">Upload Material</button></li>
@@ -427,6 +428,56 @@
                   <div class="col-md-3"><label class="form-label">Emoji</label><input class="form-control s21-input" name="emoji" placeholder="🎮" value="🎮"></div>
                   <div class="col-md-9"><label class="form-label">Description</label><input class="form-control s21-input" name="description"></div>
                   <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Create Game</button></div>
+                </form>
+              </div>
+
+              <!-- Add Course -->
+              <div class="tab-pane fade" id="cm-course">
+                <form id="admin-course-form" class="row g-3">
+                  <div class="col-md-6"><label class="form-label">Title</label><input class="form-control s21-input" name="title" required></div>
+                  <div class="col-md-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-control s21-input" name="category_id" id="admin-course-category-select">
+                      <option value="">Uncategorized</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Level</label>
+                    <select class="form-control s21-input" name="level">
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                      <option value="all-levels">All levels</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4"><label class="form-label">Age range</label><input class="form-control s21-input" name="age_range" placeholder="e.g. 7-10"></div>
+                  <div class="col-md-4"><label class="form-label">Language</label><input class="form-control s21-input" name="language" value="English"></div>
+                  <div class="col-md-4">
+                    <label class="form-label">Instructor</label>
+                    <select class="form-control s21-input" name="instructor_id" id="admin-course-instructor-select">
+                      <option value="">Me</option>
+                    </select>
+                    <div class="form-text">Teachers are always listed as the instructor of courses they create.</div>
+                  </div>
+                  <div class="col-12"><label class="form-label">Description</label><textarea class="form-control s21-input" name="description" rows="3"></textarea></div>
+                  <div class="col-12"><label class="form-label">Thumbnail image URL (optional)</label><input class="form-control s21-input" type="url" name="thumbnail_url" placeholder="https://…"></div>
+                  <div class="col-12">
+                    <label class="form-label">What you'll learn (one per line)</label>
+                    <textarea class="form-control s21-input" name="objectives" rows="4" placeholder="Compare and order fractions confidently&#10;Add and subtract simple fractions"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Requirements (one per line, optional)</label>
+                    <textarea class="form-control s21-input" name="requirements" rows="2" placeholder="No prior knowledge needed"></textarea>
+                  </div>
+                  <div class="col-md-3"><label class="form-label">Price (TZS, 0 = free)</label><input class="form-control s21-input" type="number" min="0" step="1" name="price" value="0"></div>
+                  <div class="col-md-3"><label class="form-label">Passing score (%)</label><input class="form-control s21-input" type="number" min="1" max="100" name="passing_score" value="70"></div>
+                  <div class="col-md-6 d-flex align-items-end">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="certificate_enabled" id="admin-course-cert">
+                      <label class="form-check-label" for="admin-course-cert">Issue a certificate on completion</label>
+                    </div>
+                  </div>
+                  <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Create Course</button></div>
                 </form>
               </div>
 
@@ -542,6 +593,7 @@
 
             <ul class="nav nav-pills mb-3 flex-wrap gap-2">
               <li class="nav-item"><button class="btn-s21 btn-s21-outline active" data-bs-toggle="pill" data-bs-target="#mg-games" type="button">Games</button></li>
+              <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-courses" type="button">Courses</button></li>
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-quizzes" type="button">Quizzes</button></li>
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-blog" type="button">Blog Posts</button></li>
               <li class="nav-item"><button class="btn-s21 btn-s21-outline" data-bs-toggle="pill" data-bs-target="#mg-materials" type="button">Materials</button></li>
@@ -551,6 +603,7 @@
 
             <div class="tab-content">
               <div class="tab-pane fade show active" id="mg-games"><div id="mg-games-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
+              <div class="tab-pane fade" id="mg-courses"><div id="mg-courses-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-quizzes"><div id="mg-quizzes-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-blog"><div id="mg-blog-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
               <div class="tab-pane fade" id="mg-materials"><div id="mg-materials-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
@@ -564,6 +617,61 @@
               </div>
               <div class="tab-pane fade" id="mg-books"><div id="mg-books-list" class="d-flex flex-column gap-2"><p class="text-soft" style="font-size:.85rem">Loading…</p></div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-12">
+          <div class="s21-card p-4" data-aos="fade-up">
+            <h2 class="h5 mb-3"><i class="fa-solid fa-list-ol" style="color:var(--s21-primary)"></i> Course curriculum manager</h2>
+            <p class="text-soft" style="font-size:.85rem">Pick a course, then add its lessons in order. A lesson can be plain text, or point at a video/material/quiz you've already uploaded elsewhere in this panel.</p>
+
+            <div class="row g-2 align-items-end mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Course</label>
+                <select class="form-control s21-input" id="admin-curriculum-course-select"><option value="">Select a course…</option></select>
+              </div>
+            </div>
+
+            <div id="admin-curriculum-body" style="display:none">
+              <div id="admin-curriculum-list" class="d-flex flex-column gap-2 mb-4"></div>
+
+              <h3 class="h6 mb-3">Add a lesson</h3>
+              <form id="admin-lesson-form" class="row g-3">
+                <div class="col-md-6"><label class="form-label">Lesson title</label><input class="form-control s21-input" name="title" required></div>
+                <div class="col-md-3">
+                  <label class="form-label">Type</label>
+                  <select class="form-control s21-input" name="content_type" id="admin-lesson-type-select">
+                    <option value="text">Text</option>
+                    <option value="video">Video</option>
+                    <option value="pdf">PDF / material</option>
+                    <option value="quiz">Quiz</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check mt-4 pt-1">
+                    <input class="form-check-input" type="checkbox" name="is_preview" id="admin-lesson-preview">
+                    <label class="form-check-label" for="admin-lesson-preview">Free preview</label>
+                  </div>
+                </div>
+                <div class="col-12" id="admin-lesson-body-wrap"><label class="form-label">Text content</label><textarea class="form-control s21-input" name="body" rows="3"></textarea></div>
+                <div class="col-md-6" id="admin-lesson-video-wrap" style="display:none">
+                  <label class="form-label">Video</label>
+                  <select class="form-control s21-input" name="video_id" id="admin-lesson-video-select"><option value="">Select a video…</option></select>
+                </div>
+                <div class="col-md-6" id="admin-lesson-material-wrap" style="display:none">
+                  <label class="form-label">Material</label>
+                  <select class="form-control s21-input" name="material_id" id="admin-lesson-material-select"><option value="">Select a material…</option></select>
+                </div>
+                <div class="col-md-6" id="admin-lesson-quiz-wrap" style="display:none">
+                  <label class="form-label">Quiz</label>
+                  <select class="form-control s21-input" name="quiz_id" id="admin-lesson-quiz-select"><option value="">Select a quiz…</option></select>
+                </div>
+                <div class="col-12"><button class="btn-s21 btn-s21-primary" type="submit">Add Lesson</button></div>
+              </form>
+            </div>
+            <div id="admin-curriculum-feedback" class="mt-3" style="font-size:.9rem"></div>
           </div>
         </div>
       </div>

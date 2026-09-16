@@ -62,9 +62,48 @@
     `).join('');
   }
 
+  function renderContinueLearning(courses) {
+    const wrap = document.getElementById('dash-continue-learning-list');
+    if (!wrap) return;
+
+    if (!courses.length) {
+      wrap.innerHTML = `<div class="col-12"><p class="text-soft" style="font-size:.85rem">${t('dash_no_courses_yet', "You haven't enrolled in a course yet.")} <a href="courses.html">${t('dash_browse_courses', 'Browse courses')}</a></p></div>`;
+      return;
+    }
+
+    const thumbFallback = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=200&q=70&auto=format&fit=crop';
+    wrap.innerHTML = courses.slice(0, 6).map((c) => `
+      <div class="col-md-6" data-aos="fade-up">
+        <a href="course.html?slug=${encodeURIComponent(c.slug)}" class="text-reset text-decoration-none">
+          <div class="s21-card p-3 d-flex gap-3 align-items-center">
+            <img src="${escapeHtml(c.thumbnail_url || thumbFallback)}" alt="" width="70" height="70" style="border-radius:12px;object-fit:cover" loading="lazy">
+            <div class="flex-grow-1">
+              <h3 class="h6 mb-1">${escapeHtml(c.title)}</h3>
+              <div class="progress-s21 mb-1"><span style="width:${c.progress_percent}%"></span></div>
+              <span class="text-soft" style="font-size:.76rem">${c.payment_status === 'pending' ? t('dash_payment_pending', 'Payment pending') : `${c.progress_percent}% ${t('dash_complete_word', 'complete')}`}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    `).join('');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const avatarImg = document.getElementById('dash-avatar-img');
     const heading = document.getElementById('dash-welcome-heading');
+
+    fetch('/api/courses/my', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const courses = data?.courses || [];
+        const statEl = document.getElementById('dash-stat-courses');
+        if (statEl) statEl.textContent = courses.filter((c) => c.status !== 'completed').length;
+        renderContinueLearning(courses);
+      })
+      .catch(() => {
+        const wrap = document.getElementById('dash-continue-learning-list');
+        if (wrap) wrap.innerHTML = '<div class="col-12"><p class="text-soft" style="font-size:.85rem">Couldn\'t load your courses.</p></div>';
+      });
 
     fetch('/api/dashboard', { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))

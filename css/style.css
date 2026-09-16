@@ -1072,11 +1072,11 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 #s21-ai-panel .ai-log { flex: 1; overflow-y: auto; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .6rem; }
 .ai-bubble { padding: .6rem .9rem; border-radius: 14px; font-size: .88rem; max-width: 85%; }
 .ai-bubble-user { align-self: flex-end; background: var(--s21-primary-light); color: var(--s21-primary-dark); }
-.ai-bubble-ai { align-self: flex-start; background: var(--s21-accent-tint); color: #7A0E33; }
+.ai-bubble-ai { align-self: flex-start; background: var(--s21-accent-tint); color: #fff; }
 #s21-ai-panel form { display: flex; gap: .5rem; padding: .8rem; border-top: 1px solid var(--s21-border); }
 #s21-ai-panel form input { flex: 1; border: 1px solid var(--s21-border); border-radius: var(--radius-pill); padding: .55rem 1rem; font-size: .88rem; }
 #s21-ai-panel form button { border: none; background: var(--s21-accent); color: #fff; width: 40px; border-radius: 50%; }
-.ai-disclaimer { font-size: .72rem; color: var(--s21-text-soft); padding: 0 1.2rem .7rem; }
+.ai-disclaimer { font-size: .72rem; color: #fff; padding: 0 1.2rem .7rem; }
 
 /* ---- Game screen (Addition Race, etc.) ---- */
 .game-panel {

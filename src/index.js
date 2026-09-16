@@ -4,6 +4,8 @@ import * as games from './handlers/games.js';
 import * as quizzes from './handlers/quizzes.js';
 import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
+import * as courses from './handlers/courses.js';
+import * as courseLessons from './handlers/course-lessons.js';
 import * as videos from './handlers/videos.js';
 import * as books from './handlers/books.js';
 import * as users from './handlers/users.js';
@@ -81,6 +83,28 @@ router.post('/api/blog', blog.createPost);
 router.get('/api/blog/:slug', blog.getPost);
 router.put('/api/blog/:slug', blog.updatePost);
 router.delete('/api/blog/:slug', blog.deletePost);
+
+// ---- Courses (core course engine: categories, courses, lessons, enrollment) ----
+router.get('/api/course-categories', courses.listCategories);
+router.post('/api/course-categories', courses.createCategory);
+router.delete('/api/course-categories/:id', courses.deleteCategory);
+
+router.get('/api/courses', courses.listCourses);
+router.post('/api/courses', courses.createCourse);
+// NOTE: '/my' must be registered before '/:id' — routes match in
+// registration order and ':id' would otherwise swallow it.
+router.get('/api/courses/my', courses.myCourses);
+router.get('/api/courses/:id', courses.getCourse);
+router.put('/api/courses/:id', courses.updateCourse);
+router.delete('/api/courses/:id', courses.deleteCourse);
+router.post('/api/courses/:id/enroll', courses.enrollCourse);
+router.get('/api/courses/:id/lessons', courseLessons.listLessons);
+router.post('/api/courses/:id/lessons', courseLessons.createLesson);
+router.put('/api/courses/:id/lessons/:lessonId', courseLessons.updateLesson);
+router.delete('/api/courses/:id/lessons/:lessonId', courseLessons.deleteLesson);
+
+router.get('/api/lessons/:id', courseLessons.getLesson);
+router.post('/api/lessons/:id/complete', courseLessons.completeLesson);
 
 // ---- Materials (R2) ----
 router.get('/api/materials', materials.listMaterials);

@@ -42,6 +42,36 @@
       }
     });
 
+    // Add Course
+    document.getElementById('admin-course-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const objectives = String(f.get('objectives') || '').split('\n').map((s) => s.trim()).filter(Boolean);
+      const requirements = String(f.get('requirements') || '').split('\n').map((s) => s.trim()).filter(Boolean);
+      try {
+        await postJSON('/api/courses', {
+          title: f.get('title'),
+          category_id: f.get('category_id') || null,
+          instructor_id: f.get('instructor_id') || null,
+          level: f.get('level'),
+          age_range: f.get('age_range') || null,
+          language: f.get('language') || 'English',
+          description: f.get('description') || null,
+          thumbnail_url: f.get('thumbnail_url') || null,
+          objectives, requirements,
+          price: Number(f.get('price')) || 0,
+          passing_score: Number(f.get('passing_score')) || 70,
+          certificate_enabled: f.get('certificate_enabled') === 'on',
+        });
+        say('✅ Course created. Add its lessons in the curriculum manager below.');
+        e.target.reset();
+        loadCourses();
+        loadCurriculumCourseOptions();
+      } catch (err) {
+        say('❌ ' + err.message, true);
+      }
+    });
+
     // Add Quiz
     document.getElementById('admin-quiz-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -252,6 +282,142 @@
       } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load books.</p>'; }
     }
 
+    // ---- Courses ----
+    let allCourses = [];
+    let allVideosForLessons = [];
+    let allMaterialsForLessons = [];
+    let allQuizzesForLessons = [];
+
+    async function loadCourseCategories() {
+      try {
+        const { categories } = await (await fetch('/api/course-categories')).json();
+        const select = document.getElementById('admin-course-category-select');
+        if (select) categories.forEach((c) => {
+          const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; select.appendChild(opt);
+        });
+      } catch { /* category select still works empty */ }
+    }
+
+    async function loadCourses() {
+      const el = document.getElementById('mg-courses-list');
+      if (!el) return;
+      try {
+        const { courses } = await (await fetch('/api/courses?sort=new', { credentials: 'include' })).json();
+        allCourses = courses;
+        el.innerHTML = courses.length ? courses.map((c) => row(
+          c.title,
+          [c.category_name, c.is_free ? 'Free' : `TZS ${Number(c.price).toLocaleString()}`, `${c.lesson_count} lesson${c.lesson_count === 1 ? '' : 's'}`, `${c.enrolled_count} enrolled`].filter(Boolean).join(' · '),
+          `/api/courses/${c.id}`, loadCourses
+        )).join('') : '<p class="text-soft" style="font-size:.85rem">No courses yet — use Add Course above.</p>';
+        wireRowDeletes(el);
+      } catch { el.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load courses.</p>'; }
+    }
+
+    async function loadCurriculumCourseOptions() {
+      const select = document.getElementById('admin-curriculum-course-select');
+      if (!select) return;
+      try {
+        const { courses } = await (await fetch('/api/courses?sort=title', { credentials: 'include' })).json();
+        const current = select.value;
+        select.innerHTML = '<option value="">Select a course…</option>' + courses.map((c) => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
+        if (current) select.value = current;
+      } catch { /* leave as-is */ }
+    }
+
+    async function loadLessonMediaOptions() {
+      try {
+        const [{ videos }, { materials }, { quizzes }] = await Promise.all([
+          fetch('/api/videos', { credentials: 'include' }).then((r) => r.json()).catch(() => ({ videos: [] })),
+          fetch('/api/materials', { credentials: 'include' }).then((r) => r.json()).catch(() => ({ materials: [] })),
+          fetch('/api/quizzes', { credentials: 'include' }).then((r) => r.json()).catch(() => ({ quizzes: [] })),
+        ]);
+        allVideosForLessons = videos || [];
+        allMaterialsForLessons = materials || [];
+        allQuizzesForLessons = quizzes || [];
+        const videoSelect = document.getElementById('admin-lesson-video-select');
+        if (videoSelect) videoSelect.innerHTML = '<option value="">Select a video…</option>' + allVideosForLessons.map((v) => `<option value="${v.id}">${escapeHtml(v.title)}</option>`).join('');
+        const materialSelect = document.getElementById('admin-lesson-material-select');
+        if (materialSelect) materialSelect.innerHTML = '<option value="">Select a material…</option>' + allMaterialsForLessons.map((m) => `<option value="${m.id}">${escapeHtml(m.title)}</option>`).join('');
+        const quizSelect = document.getElementById('admin-lesson-quiz-select');
+        if (quizSelect) quizSelect.innerHTML = '<option value="">Select a quiz…</option>' + allQuizzesForLessons.map((q) => `<option value="${q.id}">${escapeHtml(q.title)}</option>`).join('');
+      } catch { /* lesson media selects still work empty */ }
+    }
+
+    const LESSON_ICONS = { video: 'fa-circle-play', pdf: 'fa-file-pdf', quiz: 'fa-circle-question', text: 'fa-book-open' };
+
+    async function loadCurriculum(courseId) {
+      const wrap = document.getElementById('admin-curriculum-body');
+      const list = document.getElementById('admin-curriculum-list');
+      if (!wrap || !list) return;
+      if (!courseId) { wrap.style.display = 'none'; return; }
+      wrap.style.display = '';
+      list.innerHTML = '<p class="text-soft" style="font-size:.85rem">Loading…</p>';
+      try {
+        const { lessons } = await (await fetch(`/api/courses/${courseId}/lessons`, { credentials: 'include' })).json();
+        list.innerHTML = lessons.length ? lessons.map((l, i) => `
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom" data-lesson-id="${l.id}">
+            <span class="text-soft" style="width:20px">${i + 1}.</span>
+            <i class="fa-solid ${LESSON_ICONS[l.content_type] || 'fa-book-open'}" style="color:var(--s21-primary)"></i>
+            <div class="flex-grow-1">
+              <div class="fw-bold" style="font-size:.88rem">${escapeHtml(l.title)}</div>
+              <div class="text-soft" style="font-size:.76rem">${l.content_type}${l.is_preview ? ' · Free preview' : ''}</div>
+            </div>
+            <button type="button" class="btn-s21 btn-s21-outline btn-s21-sm admin-lesson-delete" data-delete-url="/api/courses/${courseId}/lessons/${l.id}" style="padding:.3rem .7rem;font-size:.75rem">Delete</button>
+          </div>
+        `).join('') : '<p class="text-soft" style="font-size:.85rem">No lessons yet — add the first one below.</p>';
+        list.querySelectorAll('.admin-lesson-delete').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Delete this lesson?')) return;
+            try {
+              const res = await fetch(btn.dataset.deleteUrl, { method: 'DELETE', credentials: 'include' });
+              if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Delete failed.');
+              loadCurriculum(courseId);
+              loadCourses();
+            } catch (err) {
+              document.getElementById('admin-curriculum-feedback').textContent = '❌ ' + err.message;
+            }
+          });
+        });
+      } catch {
+        list.innerHTML = '<p class="text-soft" style="font-size:.85rem">Couldn\'t load lessons.</p>';
+      }
+    }
+
+    document.getElementById('admin-curriculum-course-select')?.addEventListener('change', (e) => loadCurriculum(e.target.value));
+
+    document.getElementById('admin-lesson-type-select')?.addEventListener('change', (e) => {
+      const type = e.target.value;
+      document.getElementById('admin-lesson-body-wrap').style.display = type === 'text' ? '' : (type ? 'none' : '');
+      document.getElementById('admin-lesson-video-wrap').style.display = type === 'video' ? '' : 'none';
+      document.getElementById('admin-lesson-material-wrap').style.display = type === 'pdf' ? '' : 'none';
+      document.getElementById('admin-lesson-quiz-wrap').style.display = type === 'quiz' ? '' : 'none';
+    });
+
+    document.getElementById('admin-lesson-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const courseId = document.getElementById('admin-curriculum-course-select')?.value;
+      const feedback = document.getElementById('admin-curriculum-feedback');
+      if (!courseId) { feedback.textContent = '❌ Select a course first.'; return; }
+      const f = new FormData(e.target);
+      try {
+        await postJSON(`/api/courses/${courseId}/lessons`, {
+          title: f.get('title'),
+          content_type: f.get('content_type'),
+          body: f.get('body') || null,
+          video_id: f.get('video_id') || null,
+          material_id: f.get('material_id') || null,
+          quiz_id: f.get('quiz_id') || null,
+          is_preview: f.get('is_preview') === 'on',
+        });
+        feedback.textContent = '✅ Lesson added.';
+        e.target.reset();
+        loadCurriculum(courseId);
+        loadCourses();
+      } catch (err) {
+        feedback.textContent = '❌ ' + err.message;
+      }
+    });
+
     const ROLE_LABELS = { user: 'Student', teacher: 'Teacher', parent: 'Parent', admin: 'Admin' };
     function initials(name) {
       return (name || '').trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase() || '?';
@@ -320,6 +486,13 @@
       try {
         const { users } = await (await fetch('/api/users', { credentials: 'include' })).json();
         allUsers = users;
+
+        const instructorSelect = document.getElementById('admin-course-instructor-select');
+        if (instructorSelect) {
+          instructorSelect.innerHTML = '<option value="">Me</option>' + users
+            .filter((u) => u.role === 'teacher' || u.role === 'admin')
+            .map((u) => `<option value="${u.id}">${escapeHtml(u.name)} (${u.role})</option>`).join('');
+        }
 
         // Stat cards: real counts by role, computed from the same response
         // that fills the table below — no extra request needed.
@@ -392,7 +565,7 @@
           try {
             await del(btn.dataset.deleteUrl);
             say('✅ Deleted.');
-            loadGames(); loadQuizzes(); loadBlog(); loadMaterials(); loadVideos(); loadBooks();
+            loadGames(); loadQuizzes(); loadBlog(); loadMaterials(); loadVideos(); loadBooks(); loadCourses(); loadCurriculumCourseOptions();
           } catch (err) {
             say('❌ ' + err.message, true);
           }
@@ -492,5 +665,9 @@
     loadUsers();
     loadActivity();
     loadSettings();
+    loadCourseCategories();
+    loadCourses();
+    loadCurriculumCourseOptions();
+    loadLessonMediaOptions();
   });
 })();
