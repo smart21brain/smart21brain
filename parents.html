@@ -95,14 +95,17 @@
 
   <div class="admin-shell" data-role-access="parent,admin">
     <aside class="admin-sidebar">
-      <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Parent</div>
+      <div class="admin-sidebar-head">
+        <div class="fw-bold text-soft admin-sidebar-title" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Parent</div>
+        <button type="button" class="admin-sidebar-toggle" data-sidebar-toggle aria-label="Toggle sidebar" aria-expanded="true"><i class="fa-solid fa-bars"></i></button>
+      </div>
       <nav class="d-flex flex-column gap-1" data-section-nav>
-        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> Overview</a>
-        <a href="#children" class="nav-link"><i class="fa-solid fa-child-reaching"></i> Children</a>
-        <a href="#report" class="nav-link"><i class="fa-solid fa-chart-line"></i> Learning report</a>
-        <a href="#screentime" class="nav-link"><i class="fa-solid fa-hourglass-half"></i> Screen time</a>
-        <a href="#subscription" class="nav-link"><i class="fa-solid fa-crown"></i> Subscription</a>
-        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span class="nav-label">Overview</span></a>
+        <a href="#children" class="nav-link"><i class="fa-solid fa-child-reaching"></i> <span class="nav-label">Children</span></a>
+        <a href="#report" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Learning report</span></a>
+        <a href="#screentime" class="nav-link"><i class="fa-solid fa-hourglass-half"></i> <span class="nav-label">Screen time</span></a>
+        <a href="#subscription" class="nav-link"><i class="fa-solid fa-crown"></i> <span class="nav-label">Subscription</span></a>
+        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> <span class="nav-label">Settings</span></a>
       </nav>
     </aside>
 
@@ -389,6 +392,7 @@
 <script src="js/main.js"></script>
 <script src="js/nav-account.js"></script>
 <script src="js/sidebar-nav.js"></script>
+<script src="js/sidebar-collapse.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 <script src="js/cookie-consent.js"></script>

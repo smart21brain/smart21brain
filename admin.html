@@ -203,15 +203,18 @@
 
   <div class="admin-shell" data-role-access="admin">
     <aside class="admin-sidebar">
-      <div class="fw-bold text-soft mb-2" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em" data-i18n="admin_admin">Admin</div>
+      <div class="admin-sidebar-head">
+        <div class="fw-bold text-soft admin-sidebar-title" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em" data-i18n="admin_admin">Admin</div>
+        <button type="button" class="admin-sidebar-toggle" data-sidebar-toggle aria-label="Toggle sidebar" aria-expanded="true"><i class="fa-solid fa-bars"></i></button>
+      </div>
       <nav class="d-flex flex-column gap-1" data-admin-view-nav>
-        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span data-i18n="admin_overview">Overview</span></a>
-        <a href="#analytics" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analytics</a>
-        <a href="#users" class="nav-link"><i class="fa-solid fa-users"></i> <span data-i18n="admin_users">Users</span></a>
-        <a href="#moderation" class="nav-link"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="admin_content_moderation">Content moderation</span></a>
-        <a href="#payments" class="nav-link"><i class="fa-solid fa-credit-card"></i> <span data-i18n="admin_payments">Payments</span></a>
-        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> <span data-i18n="admin_settings">Settings</span></a>
-        <a href="#content-manager" class="nav-link"><i class="fa-solid fa-layer-group"></i> Content</a>
+        <a href="#overview" class="nav-link active"><i class="fa-solid fa-gauge"></i> <span class="nav-label" data-i18n="admin_overview">Overview</span></a>
+        <a href="#analytics" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Analytics</span></a>
+        <a href="#users" class="nav-link"><i class="fa-solid fa-users"></i> <span class="nav-label" data-i18n="admin_users">Users</span></a>
+        <a href="#moderation" class="nav-link"><i class="fa-solid fa-shield-halved"></i> <span class="nav-label" data-i18n="admin_content_moderation">Content moderation</span></a>
+        <a href="#payments" class="nav-link"><i class="fa-solid fa-credit-card"></i> <span class="nav-label" data-i18n="admin_payments">Payments</span></a>
+        <a href="#settings" class="nav-link"><i class="fa-solid fa-gear"></i> <span class="nav-label" data-i18n="admin_settings">Settings</span></a>
+        <a href="#content-manager" class="nav-link"><i class="fa-solid fa-layer-group"></i> <span class="nav-label">Content</span></a>
       </nav>
     </aside>
 
@@ -875,6 +878,7 @@
 <script src="js/admin-views.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar-nav.js"></script>
+<script src="js/sidebar-collapse.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/toast.js"></script>
 <script src="js/search.js"></script>

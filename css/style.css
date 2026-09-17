@@ -1463,16 +1463,47 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
   padding: 1.6rem 1rem;
   position: sticky; top: 76px;
   height: calc(100vh - 76px);
-  overflow-y: auto;
+  overflow-y: auto; overflow-x: hidden;
+  transition: width .35s cubic-bezier(.4,0,.2,1);
 }
+.admin-sidebar-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: .9rem; gap: .5rem;
+}
+.admin-sidebar-title { white-space: nowrap; overflow: hidden; }
+.admin-sidebar-toggle {
+  width: 32px; height: 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; border-radius: 8px;
+  color: var(--s21-text-soft); cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.admin-sidebar-toggle:hover { background: var(--s21-primary-light); color: var(--s21-primary); }
 .admin-sidebar .nav-link {
   display: flex; align-items: center; gap: .7rem;
   padding: .65rem .9rem; border-radius: 10px;
   color: var(--s21-text-soft); font-weight: 600; font-size: .88rem;
+  white-space: nowrap; overflow: hidden;
 }
 .admin-sidebar .nav-link.active, .admin-sidebar .nav-link:hover {
   background: var(--s21-primary-light); color: var(--s21-primary);
 }
+.admin-sidebar .nav-link i {
+  width: 20px; flex-shrink: 0; text-align: center; font-size: .95rem;
+}
+.admin-sidebar .nav-label {
+  opacity: 1; transition: opacity .35s ease .05s;
+}
+/* Collapsed state: narrow icon-only rail, labels fade out — same
+   effect as the responsive-sidebar reference (opacity + pointer-events,
+   eased width transition on the rail itself). */
+.admin-sidebar.is-collapsed { width: 76px; }
+.admin-sidebar.is-collapsed .nav-label,
+.admin-sidebar.is-collapsed .admin-sidebar-title {
+  opacity: 0; pointer-events: none; transition: opacity .15s ease;
+}
+.admin-sidebar.is-collapsed .nav-link { justify-content: center; padding-inline: 0; }
+.admin-sidebar.is-collapsed .admin-sidebar-head { justify-content: center; }
 .admin-content { flex: 1; padding: 1.8rem; min-width: 0; }
 .admin-content .dash-stat-card { text-align: left; display: flex; align-items: center; gap: 1rem; }
 .admin-content .dash-stat-card .stat-icon { margin: 0; flex-shrink: 0; }

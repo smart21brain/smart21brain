@@ -45,11 +45,11 @@
 
 .s21hero-video__text {
   width: 100%;
-  max-width: 560px;
+  max-width: 720px;
   text-align: center;
 }
 @media (min-width: 768px) {
-  .s21hero-video__text { flex: 1 1 480px; text-align: left; }
+  .s21hero-video__text { flex: 1 1 100%; text-align: left; }
 }
 
 .s21hero-video__crumb {
