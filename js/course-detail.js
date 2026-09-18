@@ -83,11 +83,13 @@
     let data;
     try {
       const res = await fetch(`/api/courses/${encodeURIComponent(key)}`, { credentials: 'include' });
-      if (!res.ok) { els.notFound.style.display = ''; return; }
-      data = await res.json();
-    } catch {
-      els.notFound.style.display = '';
-      return;
+      if (res.ok) data = await res.json();
+    } catch { /* fall through to the built-in catalog */ }
+
+    if (!data) {
+      const local = window.S21Courses && window.S21Courses.findBySlug(key);
+      if (!local) { els.notFound.style.display = ''; return; }
+      data = { course: local, lessons: local.lessons || [], enrollment: null };
     }
 
     const { course, lessons, enrollment } = data;

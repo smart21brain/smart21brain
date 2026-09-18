@@ -138,6 +138,7 @@
     </div>
   </section>
 
+  <script src="js/courses-data.js"></script>
   <script>
     (function () {
       const grid = document.getElementById('coursesGrid');
@@ -178,33 +179,59 @@
 
       async function loadCourses() {
         if (!grid) return;
-        grid.innerHTML = '<div class="col-12"><p class="text-soft">Loading courses…</p></div>';
+        const opts = {
+          level: activeLevel,
+          category: categorySelect?.value || '',
+          free: priceSelect?.value || '',
+          sort: sortSelect?.value || 'new',
+          q: searchInput?.value.trim() || '',
+        };
         const params = new URLSearchParams();
-        if (activeLevel !== 'all') params.set('level', activeLevel);
-        if (categorySelect?.value) params.set('category', categorySelect.value);
-        if (priceSelect?.value) params.set('free', priceSelect.value);
-        if (sortSelect?.value) params.set('sort', sortSelect.value);
-        if (searchInput?.value.trim()) params.set('q', searchInput.value.trim());
+        if (opts.level !== 'all') params.set('level', opts.level);
+        if (opts.category) params.set('category', opts.category);
+        if (opts.free) params.set('free', opts.free);
+        if (opts.sort) params.set('sort', opts.sort);
+        if (opts.q) params.set('q', opts.q);
+
+        // Built-in catalog renders first so the page is never empty or errored.
+        let courses = (window.S21Courses ? window.S21Courses.query(opts) : []);
+        render(courses);
+
+        // If a backend is available, its data replaces the built-in catalog.
         try {
-          const { courses } = await (await fetch(`/api/courses?${params.toString()}`)).json();
-          grid.innerHTML = courses.length
-            ? courses.map(courseCard).join('')
-            : '<div class="col-12"><p class="text-soft">No courses match these filters yet.</p></div>';
-        } catch {
-          grid.innerHTML = '<div class="col-12"><p class="text-soft">Couldn\'t load courses right now — try again shortly.</p></div>';
-        }
+          const res = await fetch(`/api/courses?${params.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.courses) && data.courses.length) render(data.courses);
+          }
+        } catch { /* stay on the built-in catalog */ }
+      }
+
+      function render(courses) {
+        grid.innerHTML = courses.length
+          ? courses.map(courseCard).join('')
+          : '<div class="col-12"><p class="text-soft">No courses match these filters yet.</p></div>';
+        if (window.AOS) AOS.refreshHard();
       }
 
       async function loadCategories() {
         if (!categorySelect) return;
-        try {
-          const { categories } = await (await fetch('/api/course-categories')).json();
+        function fill(categories) {
+          categorySelect.querySelectorAll('option[value]:not([value=""])').forEach((o) => o.remove());
           categories.forEach((cat) => {
             const opt = document.createElement('option');
             opt.value = cat.slug; opt.textContent = cat.name;
             categorySelect.appendChild(opt);
           });
-        } catch { /* filter still works without categories */ }
+        }
+        if (window.S21Courses) fill(window.S21Courses.categories);
+        try {
+          const res = await fetch('/api/course-categories');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.categories) && data.categories.length) fill(data.categories);
+          }
+        } catch { /* built-in categories stay */ }
       }
 
       levelButtons.forEach((btn) => {
