@@ -61,7 +61,14 @@
             parent: 'parents.html',
             user: 'dashboard.html',
           };
-          const targetPage = roleMap[role] || 'dashboard.html';
+          // A ?next= page (e.g. the course a learner tried to enrol in)
+          // takes priority over the role dashboard. Same-site paths only.
+          let nextPage = '';
+          try {
+            const raw = new URLSearchParams(window.location.search).get('next') || '';
+            if (raw && !/^[a-z]+:|^\/\//i.test(raw)) nextPage = raw;
+          } catch { /* ignore a malformed query string */ }
+          const targetPage = nextPage || roleMap[role] || 'dashboard.html';
           restore();
           try {
             localStorage.setItem('s21-onboarded', '1');

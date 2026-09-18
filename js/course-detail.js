@@ -89,8 +89,16 @@
     if (!data) {
       const local = window.S21Courses && window.S21Courses.findBySlug(key);
       if (!local) { els.notFound.style.display = ''; return; }
-      data = { course: local, lessons: local.lessons || [], enrollment: null };
+      const P = window.S21Progress;
+      const lessonList = P ? P.applyTo(local.slug, local.lessons) : (local.lessons || []);
+      data = {
+        course: local,
+        lessons: lessonList,
+        enrollment: (P && P.isEnrolled(local.slug)) ? { payment_status: 'active' } : null,
+        local: true,
+      };
     }
+    const isLocal = !!data.local;
 
     const { course, lessons, enrollment } = data;
     els.contentSection.style.display = '';
@@ -157,10 +165,10 @@
       else els.instructorAvatar.style.display = 'none';
     }
 
-    setupCta(course, lessons, enrollment);
+    setupCta(course, lessons, enrollment, isLocal);
   }
 
-  function setupCta(course, lessons, enrollment) {
+  function setupCta(course, lessons, enrollment, isLocal) {
     const btn = els.ctaBtn;
     btn.disabled = false;
 
@@ -192,22 +200,48 @@
       : `<i class="fa-solid fa-cart-shopping"></i> <span>Enroll — TZS ${Number(course.price).toLocaleString()}</span>`;
 
     btn.onclick = async () => {
+      // No backend: enroll in this browser so the lessons unlock right away.
+      if (isLocal) {
+        if (window.S21Progress) window.S21Progress.enroll(course.slug);
+        const first = lessons[0];
+        els.enrollFeedback.style.display = '';
+        els.enrollFeedback.textContent = course.is_free
+          ? 'You\'re enrolled — opening the first lesson…'
+          : 'You\'re enrolled. Contact us to arrange payment for the full course.';
+        if (first) setTimeout(() => { window.location.href = `lesson.html?id=${encodeURIComponent(first.id)}`; }, 700);
+        else setTimeout(() => window.location.reload(), 700);
+        return;
+      }
+
       const user = await whoAmI();
       if (!user) {
+        // Enrolling needs an account — come straight back here afterwards.
+        const back = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `login.html?next=${back}`;
+        return;
+      }
+      const courseKey = course.id || course.slug;
+      if (!courseKey) {
         els.enrollFeedback.style.display = '';
-        els.enrollFeedback.innerHTML = 'Please <a href="login.html">sign in</a> first to enroll.';
+        els.enrollFeedback.textContent = 'This course isn\'t available yet — please try again later.';
         return;
       }
       btn.disabled = true;
       const originalHtml = btn.innerHTML;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Enrolling…</span>';
       try {
-        const res = await fetch(`/api/courses/${course.id}/enroll`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-        const out = await res.json();
+        const res = await fetch(`/api/courses/${encodeURIComponent(courseKey)}/enroll`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        const out = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(out.error || 'Could not enroll');
         els.enrollFeedback.style.display = '';
         els.enrollFeedback.textContent = out.message || 'Enrolled!';
-        setTimeout(() => window.location.reload(), 900);
+        // Free course: go straight into lesson one. Paid: stay and show status.
+        const first = lessons[0];
+        if (out.payment_status !== 'pending' && first) {
+          setTimeout(() => { window.location.href = `lesson.html?id=${encodeURIComponent(first.id)}`; }, 600);
+        } else {
+          setTimeout(() => window.location.reload(), 900);
+        }
       } catch (err) {
         btn.disabled = false;
         btn.innerHTML = originalHtml;

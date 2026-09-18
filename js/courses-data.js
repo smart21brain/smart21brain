@@ -12,12 +12,17 @@
 (function () {
   const IMG = (id) => `https://images.unsplash.com/${id}?w=900&q=75&auto=format&fit=crop`;
 
-  function lessons(list) {
+  /* Lesson ids must be unique across the whole catalog, because lesson.html
+     looks a lesson up by id alone. Composite id = "<course-slug>::<n>". */
+  function lessons(slug, list) {
     return list.map((l, i) => ({
-      id: i + 1,
+      id: `${slug}::${i + 1}`,
+      course_slug: slug,
       title: l[0],
       content_type: l[1] || 'video',
       duration_seconds: l[2] || 0,
+      body: l[3] || '',
+      quiz: l[4] || null,
       is_preview: i === 0,
       completed: false,
     }));
@@ -45,7 +50,7 @@
         'Add fractions with the same denominator',
       ],
       requirements: ['Can count to 100', 'Knows basic addition'],
-      lessons: lessons([
+      lessons: lessons('fractions-made-fun', [
         ['What is a fraction?', 'video', 420],
         ['Halves and quarters', 'video', 480],
         ['Fractions on a number line', 'video', 510],
@@ -53,7 +58,14 @@
         ['Comparing fractions', 'video', 465],
         ['Adding fractions', 'video', 600],
         ['Practice worksheet', 'pdf', 0],
-        ['End-of-course quiz', 'quiz', 0],
+        ['End-of-course quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'End-of-course quiz',
+          questions: [
+          { prompt: 'Which fraction is the same as one half?', options: ['2/4', '1/3', '3/5', '1/4'], answer: 0 },
+          { prompt: 'Which is bigger: 3/4 or 1/2?', options: ['1/2', '3/4', 'They are equal', 'Cannot tell'], answer: 1 },
+          { prompt: 'What is 1/5 + 2/5?', options: ['3/10', '2/5', '3/5', '1/5'], answer: 2 },
+          { prompt: 'The bottom number of a fraction is called the…', options: ['Numerator', 'Denominator', 'Divisor', 'Remainder'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -76,14 +88,21 @@
         'Use multiplication in word problems',
       ],
       requirements: ['Comfortable with addition'],
-      lessons: lessons([
+      lessons: lessons('multiplication-mastery', [
         ['Groups and arrays', 'video', 400],
         ['Tables 2, 5 and 10', 'video', 450],
         ['Tables 3, 4 and 6', 'video', 470],
         ['Tables 7, 8 and 9', 'video', 520],
         ['Tables 11 and 12', 'video', 430],
         ['Word problems', 'video', 560],
-        ['Speed drill quiz', 'quiz', 0],
+        ['Speed drill quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Speed drill quiz',
+          questions: [
+          { prompt: 'What is 7 x 8?', options: ['54', '56', '64', '48'], answer: 1 },
+          { prompt: 'Every multiple of 5 ends in…', options: ['0 or 5', '1 or 6', '2 or 7', '3 or 8'], answer: 0 },
+          { prompt: 'What is 12 x 11?', options: ['121', '132', '144', '122'], answer: 1 },
+          { prompt: '4 rows of 6 chairs is how many chairs?', options: ['10', '18', '24', '30'], answer: 2 }
+          ] }],
       ]),
     },
     {
@@ -106,14 +125,21 @@
         'Read simple sentences aloud',
       ],
       requirements: ['Knows the alphabet'],
-      lessons: lessons([
+      lessons: lessons('english-reading-starter', [
         ['Letter sounds A–M', 'video', 380],
         ['Letter sounds N–Z', 'video', 390],
         ['Blending sounds', 'video', 420],
         ['Sight words part 1', 'video', 400],
         ['Sight words part 2', 'video', 400],
         ['Reading your first story', 'video', 540],
-        ['Reading check quiz', 'quiz', 0],
+        ['Reading check quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Reading check quiz',
+          questions: [
+          { prompt: "Which word starts with the same sound as 'sun'?", options: ['cat', 'sock', 'milk', 'fan'], answer: 1 },
+          { prompt: "How many sounds are in the word 'ship'?", options: ['2', '3', '4', '5'], answer: 1 },
+          { prompt: 'Which of these is a sight word?', options: ['the', 'elephant', 'tomorrow', 'beautiful'], answer: 0 },
+          { prompt: 'Which sentence is written correctly?', options: ['the dog ran', 'The dog ran.', 'the Dog ran', 'THE dog ran'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -137,7 +163,7 @@
         'Edit your own writing',
       ],
       requirements: ['Can write full sentences'],
-      lessons: lessons([
+      lessons: lessons('creative-writing-for-kids', [
         ['Where ideas come from', 'video', 450],
         ['Building a character', 'video', 500],
         ['Setting the scene', 'video', 470],
@@ -169,14 +195,21 @@
         'Kutunga sentensi fupi',
       ],
       requirements: ['Hakuna — kwa wanaoanza kabisa'],
-      lessons: lessons([
+      lessons: lessons('kiswahili-kwa-watoto', [
         ['Salamu na majibu', 'video', 360],
         ['Kujitambulisha', 'video', 380],
         ['Kuhesabu 1–100', 'video', 420],
         ['Rangi na maumbo', 'video', 390],
         ['Siku na miezi', 'video', 400],
         ['Sentensi za kila siku', 'video', 450],
-        ['Jaribio la mwisho', 'quiz', 0],
+        ['Jaribio la mwisho', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Jaribio la mwisho',
+          questions: [
+          { prompt: "'Habari za asubuhi' inamaanisha nini?", options: ['Usiku mwema', 'Habari za asubuhi', 'Kwaheri', 'Karibu'], answer: 1 },
+          { prompt: "Namba 'saba' ni ipi?", options: ['6', '7', '8', '9'], answer: 1 },
+          { prompt: "Rangi ya 'nyekundu' kwa Kiingereza ni?", options: ['Blue', 'Green', 'Red', 'Black'], answer: 2 },
+          { prompt: 'Siku inayofuata Jumatatu ni?', options: ['Jumapili', 'Jumanne', 'Alhamisi', 'Ijumaa'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -200,14 +233,21 @@
         'Link healthy habits to body systems',
       ],
       requirements: ['Curiosity — nothing else'],
-      lessons: lessons([
+      lessons: lessons('science-explorers-human-body', [
         ['Your amazing body', 'video', 400],
         ['Bones and muscles', 'video', 460],
         ['Heart and blood', 'video', 480],
         ['Lungs and breathing', 'video', 450],
         ['Digestion', 'video', 500],
         ['The brain and senses', 'video', 520],
-        ['Body systems quiz', 'quiz', 0],
+        ['Body systems quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Body systems quiz',
+          questions: [
+          { prompt: 'Which organ pumps blood around the body?', options: ['Lungs', 'Heart', 'Liver', 'Stomach'], answer: 1 },
+          { prompt: 'How many bones are in an adult human body?', options: ['106', '206', '306', '406'], answer: 1 },
+          { prompt: 'Where does most digestion of food happen?', options: ['Mouth', 'Small intestine', 'Lungs', 'Kidneys'], answer: 1 },
+          { prompt: 'What do the lungs take in from the air?', options: ['Nitrogen', 'Oxygen', 'Carbon dioxide', 'Water'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -231,7 +271,7 @@
         'List ways to protect the environment',
       ],
       requirements: ['None'],
-      lessons: lessons([
+      lessons: lessons('plants-and-our-environment', [
         ['Parts of a plant', 'video', 370],
         ['From seed to seedling', 'video', 410],
         ['How plants make food', 'video', 440],
@@ -261,7 +301,7 @@
         'Build and share a simple game',
       ],
       requirements: ['Can use a mouse or trackpad', 'A computer with internet access'],
-      lessons: lessons([
+      lessons: lessons('coding-for-beginners-scratch', [
         ['Meet the Scratch editor', 'video', 420],
         ['Moving your first sprite', 'video', 450],
         ['Loops and repetition', 'video', 470],
@@ -269,7 +309,14 @@
         ['Variables and scores', 'video', 510],
         ['Build a catch game', 'video', 620],
         ['Share your project', 'text', 0],
-        ['Coding concepts quiz', 'quiz', 0],
+        ['Coding concepts quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Coding concepts quiz',
+          questions: [
+          { prompt: 'A loop is used to…', options: ['Repeat instructions', 'Stop the program', 'Delete a sprite', 'Change colour'], answer: 0 },
+          { prompt: "An 'if-then' block is an example of a…", options: ['Variable', 'Conditional', 'Loop', 'Sprite'], answer: 1 },
+          { prompt: 'What does a variable do?', options: ['Draws a shape', 'Stores a value', 'Plays a sound', 'Ends the game'], answer: 1 },
+          { prompt: 'Which block starts a script when the green flag is clicked?', options: ['A motion block', 'An event block', 'A sound block', 'A pen block'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -293,7 +340,7 @@
         'Publish a page online',
       ],
       requirements: ['Comfortable typing', 'Basic computer skills'],
-      lessons: lessons([
+      lessons: lessons('web-design-basics', [
         ['How the web works', 'video', 440],
         ['Your first HTML page', 'video', 520],
         ['Text, links and images', 'video', 500],
@@ -326,13 +373,20 @@
         'Respond safely to cyberbullying',
       ],
       requirements: ['None'],
-      lessons: lessons([
+      lessons: lessons('digital-safety-for-students', [
         ['Your digital footprint', 'video', 400],
         ['Passwords that actually work', 'video', 430],
         ['Spotting scams and phishing', 'video', 470],
         ['Privacy settings walkthrough', 'video', 450],
         ['Cyberbullying: what to do', 'video', 480],
-        ['Safety pledge quiz', 'quiz', 0],
+        ['Safety pledge quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Safety pledge quiz',
+          questions: [
+          { prompt: 'Which is the strongest password?', options: ['123456', 'password', 'Blue7!Kite$Moon', 'yourname2010'], answer: 2 },
+          { prompt: 'An email asking for your password urgently is probably…', options: ['A phishing scam', 'A normal message', 'From your school', 'Harmless'], answer: 0 },
+          { prompt: 'If someone bullies you online you should…', options: ['Reply angrily', 'Screenshot, block and tell a trusted adult', 'Ignore it forever', 'Share their posts'], answer: 1 },
+          { prompt: 'Your digital footprint is…', options: ['A phone setting', 'The trail of data you leave online', 'A type of virus', 'A password'], answer: 1 }
+          ] }],
       ]),
     },
     {
@@ -356,7 +410,7 @@
         'Manage nerves on exam day',
       ],
       requirements: ['Currently in school'],
-      lessons: lessons([
+      lessons: lessons('study-skills-and-exam-prep', [
         ['How memory really works', 'video', 460],
         ['Planning your revision', 'video', 500],
         ['Active recall techniques', 'video', 520],
@@ -386,14 +440,21 @@
         'Discuss bias, privacy and responsible use',
       ],
       requirements: ['Basic computer skills', 'Curiosity about technology'],
-      lessons: lessons([
+      lessons: lessons('introduction-to-ai', [
         ['What is artificial intelligence?', 'video', 480],
         ['How machines learn', 'video', 540],
         ['Data, patterns and predictions', 'video', 560],
         ['AI in everyday life', 'video', 500],
         ['Bias and fairness', 'video', 520],
         ['Using AI responsibly', 'video', 490],
-        ['Concepts quiz', 'quiz', 0],
+        ['Concepts quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
+          title: 'Concepts quiz',
+          questions: [
+          { prompt: 'Machine learning means a computer…', options: ['Follows fixed rules only', 'Learns patterns from data', 'Runs faster', 'Stores more files'], answer: 1 },
+          { prompt: 'Biased training data usually leads to…', options: ['Faster models', 'Biased predictions', 'Smaller files', 'No effect'], answer: 1 },
+          { prompt: 'Which is an everyday use of AI?', options: ['Video recommendations', 'A paper calendar', 'A hand-drawn map', 'A metal ruler'], answer: 0 },
+          { prompt: 'Responsible AI use includes…', options: ['Hiding how it works', 'Checking outputs and protecting privacy', 'Ignoring errors', 'Never telling anyone'], answer: 1 }
+          ] }],
       ]),
     },
   ];

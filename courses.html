@@ -193,18 +193,19 @@
         if (opts.sort) params.set('sort', opts.sort);
         if (opts.q) params.set('q', opts.q);
 
-        // Built-in catalog renders first so the page is never empty or errored.
-        let courses = (window.S21Courses ? window.S21Courses.query(opts) : []);
-        render(courses);
-
-        // If a backend is available, its data replaces the built-in catalog.
+        // Try the real catalog in D1 first — that's the source of truth.
+        let served = false;
         try {
           const res = await fetch(`/api/courses?${params.toString()}`);
           if (res.ok) {
             const data = await res.json();
-            if (data && Array.isArray(data.courses) && data.courses.length) render(data.courses);
+            if (data && Array.isArray(data.courses)) { render(data.courses); served = true; }
           }
-        } catch { /* stay on the built-in catalog */ }
+        } catch { /* backend unreachable — fall back below */ }
+
+        // Only if the backend gave us nothing at all: show the bundled
+        // catalog so the page is never blank or errored.
+        if (!served && window.S21Courses) render(window.S21Courses.query(opts));
       }
 
       function render(courses) {

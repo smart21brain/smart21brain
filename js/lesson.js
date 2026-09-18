@@ -42,6 +42,33 @@
 
   function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 
+  /* Builds the same shape the API would return, from the built-in catalog. */
+  function localLesson(id) {
+    if (!window.S21Courses) return null;
+    const slug = String(id).split('::')[0];
+    const course = window.S21Courses.findBySlug(slug);
+    if (!course) return null;
+    const P = window.S21Progress;
+    const lessons = P ? P.applyTo(slug, course.lessons) : course.lessons;
+    const idx = lessons.findIndex((l) => String(l.id) === String(id));
+    if (idx === -1) return null;
+    const lesson = lessons[idx];
+    return {
+      lesson,
+      video: null,
+      material: null,
+      quiz: lesson.quiz ? Object.assign({ id: lesson.id }, lesson.quiz) : null,
+      completed: !!lesson.completed,
+      course,
+      previous: idx > 0 ? lessons[idx - 1] : null,
+      next: idx < lessons.length - 1 ? lessons[idx + 1] : null,
+      lesson_index: idx + 1,
+      lesson_total: lessons.length,
+      local: true,
+      lessons,
+    };
+  }
+
   function show(el) { if (el) el.style.display = ''; }
   function hide(el) { if (el) el.style.display = 'none'; }
 
@@ -58,11 +85,11 @@
         show(els.blocked);
         return;
       }
-      if (!res.ok) { hide(els.loading); show(els.notFound); return; }
-      data = await res.json();
-    } catch {
-      hide(els.loading); show(els.notFound); return;
-    }
+      if (res.ok) data = await res.json();
+    } catch { /* fall through to the built-in catalog */ }
+
+    if (!data) data = localLesson(lessonId);
+    if (!data) { hide(els.loading); show(els.notFound); return; }
 
     hide(els.loading);
     show(els.content);
@@ -71,6 +98,7 @@
 
   function render(data) {
     const { lesson, video, material, quiz, completed, course, previous, next, lesson_index, lesson_total } = data;
+    const isLocal = !!data.local;
 
     document.title = `${lesson.title} — ${course.title} | Smart21Brain`;
     els.courseCrumbLink.href = `course.html?slug=${encodeURIComponent(course.slug)}`;
@@ -94,7 +122,7 @@
       els.pdfLink.href = `/api/materials/${material.id}`;
     } else if (lesson.content_type === 'quiz' && quiz) {
       show(els.quizBlock);
-      renderQuiz(quiz, lesson);
+      renderQuiz(quiz, lesson, isLocal);
     }
 
     if (lesson.body) {
@@ -111,7 +139,8 @@
     els.completeBtn.addEventListener('click', () => toggleComplete(!completed));
 
     // Mini curriculum sidebar, current lesson highlighted.
-    loadCurriculum(course, lesson.id);
+    if (isLocal) renderCurriculum(course, data.lessons, lesson.id);
+    else loadCurriculum(course, lesson.id);
 
     let currentCompleted = completed;
     function toggleComplete(next) {
@@ -121,6 +150,22 @@
 
     async function postComplete(nextState) {
       els.completeBtn.disabled = true;
+      if (isLocal) {
+        // Progress is stored in this browser — no server call, no server error.
+        if (window.S21Progress) {
+          window.S21Progress.setComplete(course.slug, lesson.id, nextState);
+          setCompleteState(nextState, window.S21Progress.progress(course.slug, lesson_total));
+          if (data.lessons) {
+            const row = data.lessons.find((l) => String(l.id) === String(lesson.id));
+            if (row) row.completed = nextState;
+            renderCurriculum(course, data.lessons, lesson.id);
+          }
+        } else {
+          setCompleteState(nextState);
+        }
+        els.completeBtn.disabled = false;
+        return;
+      }
       try {
         const res = await fetch(`/api/lessons/${lesson.id}/complete`, {
           method: 'POST', credentials: 'include',
@@ -148,7 +193,7 @@
     }
   }
 
-  function renderQuiz(quiz, lesson) {
+  function renderQuiz(quiz, lesson, isLocal) {
     els.quizTitle.textContent = quiz.title;
     const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
     els.quizForm.innerHTML = questions.map((q, qi) => `
@@ -173,6 +218,21 @@
         return;
       }
       els.quizSubmit.disabled = true;
+      if (isLocal) {
+        // Mark it locally — the correct answers ship with the catalog.
+        const total = questions.length;
+        const score = questions.reduce((n, q, qi) => n + (answers[qi] === q.answer ? 1 : 0), 0);
+        els.quizResult.style.display = '';
+        els.quizResult.innerHTML = `<strong>Score: ${score} / ${total}</strong> — ` +
+          (score === total ? 'perfect! You can mark this lesson complete.' : 'review the lessons and try again, or mark this lesson complete.');
+        questions.forEach((q, qi) => {
+          const chosen = els.quizForm.querySelector(`input[name="q${qi}"]:checked`);
+          const fs = els.quizForm.querySelectorAll('fieldset')[qi];
+          if (fs) fs.style.borderLeft = `4px solid ${chosen && Number(chosen.value) === q.answer ? 'var(--s21-primary)' : '#EF476F'}`;
+        });
+        els.quizSubmit.disabled = false;
+        return;
+      }
       try {
         const res = await fetch(`/api/quizzes/${quiz.id}/attempt`, {
           method: 'POST', credentials: 'include',
@@ -190,6 +250,16 @@
         els.quizSubmit.disabled = false;
       }
     };
+  }
+
+  function renderCurriculum(course, lessons, currentLessonId) {
+    els.curriculumTitle.textContent = course.title;
+    els.curriculumList.innerHTML = (lessons || []).map((l) => `
+      <a href="lesson.html?id=${encodeURIComponent(l.id)}" class="d-flex align-items-center gap-2 py-2 text-reset text-decoration-none ${String(l.id) === String(currentLessonId) ? 'fw-bold' : ''}" style="font-size:.85rem;${String(l.id) === String(currentLessonId) ? 'color:var(--s21-primary)' : ''}">
+        <i class="fa-solid ${l.completed ? 'fa-circle-check' : 'fa-circle'}" style="color:${l.completed ? 'var(--s21-primary)' : '#C9CFD6'};font-size:.7rem"></i>
+        ${esc(l.title)}
+      </a>
+    `).join('');
   }
 
   async function loadCurriculum(course, currentLessonId) {
