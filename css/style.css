@@ -1579,16 +1579,20 @@ a.badge-pill:hover, button.badge-pill:hover { transform: translateY(-1px); }
 .admin-sidebar .nav-label {
   opacity: 1; transition: opacity .35s ease .05s;
 }
-/* Collapsed state: narrow icon-only rail, labels fade out — same
-   effect as the responsive-sidebar reference (opacity + pointer-events,
-   eased width transition on the rail itself). */
+/* Collapsed state: narrow icon-only rail. The label must lose its
+   width (not just fade out) or it keeps reserving space in the flex
+   row — with justify-content:center that pushes the icon off to one
+   side and clips it entirely against the rail's overflow:hidden,
+   which is why links were rendering blank/broken when collapsed. */
 .admin-sidebar.is-collapsed { width: 76px; }
 .admin-sidebar.is-collapsed .nav-label,
 .admin-sidebar.is-collapsed .admin-sidebar-title {
-  opacity: 0; pointer-events: none; transition: opacity .15s ease;
+  opacity: 0; width: 0; margin: 0; overflow: hidden;
+  pointer-events: none;
+  transition: opacity .15s ease, width .15s ease, margin .15s ease;
 }
-.admin-sidebar.is-collapsed .nav-link { justify-content: center; padding-inline: 0; }
-.admin-sidebar.is-collapsed .admin-sidebar-head { justify-content: center; }
+.admin-sidebar.is-collapsed .nav-link { justify-content: center; padding-inline: 0; gap: 0; }
+.admin-sidebar.is-collapsed .admin-sidebar-head { justify-content: center; gap: 0; }
 .admin-content { flex: 1; padding: 1.8rem; min-width: 0; }
 .admin-content .dash-stat-card { text-align: left; display: flex; align-items: center; gap: 1rem; }
 .admin-content .dash-stat-card .stat-icon { margin: 0; flex-shrink: 0; }

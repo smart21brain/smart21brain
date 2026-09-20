@@ -188,10 +188,13 @@
     }
 
     if (enrollment && enrollment.payment_status === 'pending') {
-      btn.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> <span>Payment pending</span>';
-      btn.disabled = true;
+      // Paid course, payment not done yet — send them straight to Pricing
+      // to complete it, instead of a dead-end "contact us" message.
+      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> <span>Complete payment</span>';
+      btn.disabled = false;
       els.enrollFeedback.style.display = '';
-      els.enrollFeedback.textContent = 'This is a paid course. We\'ve recorded your enrollment — contact us to complete payment and unlock the lessons.';
+      els.enrollFeedback.textContent = 'This is a paid course — complete payment on the Pricing page to unlock it.';
+      btn.onclick = () => { window.location.href = 'pricing.html'; };
       return;
     }
 
@@ -199,15 +202,20 @@
       ? '<i class="fa-solid fa-play"></i> <span>Enroll free</span>'
       : `<i class="fa-solid fa-cart-shopping"></i> <span>Enroll — TZS ${Number(course.price).toLocaleString()}</span>`;
 
+    // Paid course, not yet enrolled: skip straight to Pricing for payment —
+    // no pending-enrollment/"contact us" detour.
+    if (!course.is_free) {
+      btn.onclick = () => { window.location.href = 'pricing.html'; };
+      return;
+    }
+
     btn.onclick = async () => {
       // No backend: enroll in this browser so the lessons unlock right away.
       if (isLocal) {
         if (window.S21Progress) window.S21Progress.enroll(course.slug);
         const first = lessons[0];
         els.enrollFeedback.style.display = '';
-        els.enrollFeedback.textContent = course.is_free
-          ? 'You\'re enrolled — opening the first lesson…'
-          : 'You\'re enrolled. Contact us to arrange payment for the full course.';
+        els.enrollFeedback.textContent = 'You\'re enrolled — opening the first lesson…';
         if (first) setTimeout(() => { window.location.href = `lesson.html?id=${encodeURIComponent(first.id)}`; }, 700);
         else setTimeout(() => window.location.reload(), 700);
         return;
@@ -235,13 +243,8 @@
         if (!res.ok) throw new Error(out.error || 'Could not enroll');
         els.enrollFeedback.style.display = '';
         els.enrollFeedback.textContent = out.message || 'Enrolled!';
-        // Free course: go straight into lesson one. Paid: stay and show status.
         const first = lessons[0];
-        if (out.payment_status !== 'pending' && first) {
-          setTimeout(() => { window.location.href = `lesson.html?id=${encodeURIComponent(first.id)}`; }, 600);
-        } else {
-          setTimeout(() => window.location.reload(), 900);
-        }
+        setTimeout(() => { window.location.href = `lesson.html?id=${encodeURIComponent(first.id)}`; }, 600);
       } catch (err) {
         btn.disabled = false;
         btn.innerHTML = originalHtml;
