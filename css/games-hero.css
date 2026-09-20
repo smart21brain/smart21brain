@@ -60,7 +60,7 @@
 .s21hero-video__crumb a:hover { color: #fff; }
 .s21hero-video__crumb .sep { color: rgba(255,255,255,.45); margin: 0 .4rem; }
 
-/* Blurred intro label — decorative, the typewriter line carries the real copy */
+/* Intro label — sits above the typewriter line */
 .s21hero-video__intro {
   pointer-events: none;
   user-select: none;
@@ -69,7 +69,6 @@
   line-height: 1.3;
   font-weight: 400;
   color: #fff;
-  filter: blur(4px);
 }
 
 .s21hero-video__type {
