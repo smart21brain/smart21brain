@@ -95,6 +95,17 @@
 /* Bootstrap dropdowns + modals otherwise ignore dark mode entirely
    (Bootstrap ships its own white/black defaults) — fixed here so they
    read correctly in both light and dark mode. */
+/* Bootstrap's .table sets its own hardcoded near-black text color via
+   --bs-table-color, which it never inherits from the page — so table
+   text (names, emails, dates in .dash-table/.yts-table) stayed dark and
+   low-contrast even in dark mode. Point it at the theme's own text color
+   instead, so it flips to white automatically like everything else. */
+.table {
+  --bs-table-color: var(--s21-text);
+  --bs-table-bg: transparent;
+  color: var(--s21-text);
+}
+
 .dropdown-menu {
   background: var(--s21-white);
   border: 1px solid var(--s21-border);
@@ -724,6 +735,12 @@ body {
   position: relative;
   z-index: 1;
 }
+.subj-section-bg .eyebrow {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3);
+  backdrop-filter: blur(4px);
+}
 .subj-section-bg h2 {
   color: #fff;
   text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
@@ -771,6 +788,9 @@ body {
 
 .subj-creative-bg { background-image: url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1920&q=70&auto=format&fit=crop'); }
 .subj-creative-bg::before { background: rgba(102, 40, 4, .78); } /* deep burnt-orange overlay, tinted toward --subj-creative */
+
+.subj-memory-bg { background-image: url('https://images.unsplash.com/photo-1550439062-609e1531270e?w=1920&q=70&auto=format&fit=crop'); }
+.subj-memory-bg::before { background: rgba(28, 18, 64, .8); } /* deep indigo overlay for Memory & Logic games */
 
 /* ---- Testimonials ("Loved by families") section background ---- */
 .section-testimonials-bg {
