@@ -147,7 +147,8 @@
       const sortSelect = document.getElementById('courseSort');
       const levelButtons = document.querySelectorAll('[data-course-level]');
       const searchInput = document.querySelector('.hero-search input[type="search"]');
-      let activeLevel = 'all';
+      const urlParams = new URLSearchParams(location.search);
+      let activeLevel = urlParams.get('level') || 'all';
       const thumbFallback = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=70&auto=format&fit=crop';
 
       function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
@@ -249,8 +250,25 @@
       sortSelect?.addEventListener('change', loadCourses);
       document.querySelector('.hero-search')?.addEventListener('submit', (e) => { e.preventDefault(); loadCourses(); });
 
-      loadCategories();
-      loadCourses();
+      // Deep-linking: a page like subjects.html can send someone here with
+      // ?category=mathematics&q=fractions so they land pre-filtered on the
+      // exact subject/topic they picked, instead of a generic full list.
+      if (urlParams.get('level') && urlParams.get('level') !== 'all') {
+        levelButtons.forEach((b) => {
+          const match = b.dataset.courseLevel === urlParams.get('level');
+          b.className = match ? 'btn-s21 btn-s21-primary' : 'btn-s21 btn-s21-outline';
+          b.setAttribute('aria-pressed', String(match));
+        });
+      }
+      if (urlParams.get('free') && priceSelect) priceSelect.value = urlParams.get('free');
+      if (urlParams.get('q') && searchInput) searchInput.value = urlParams.get('q');
+
+      async function applyUrlCategory() {
+        const cat = urlParams.get('category');
+        if (cat && categorySelect) categorySelect.value = cat;
+      }
+
+      loadCategories().then(applyUrlCategory).then(loadCourses);
     })();
   </script>
 

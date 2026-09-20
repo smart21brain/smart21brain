@@ -276,19 +276,29 @@
   </section>
 
   <script>
-    document.querySelectorAll('[data-book-filter]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-book-filter]').forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed','false'); });
-        btn.className = 'btn-s21 btn-s21-primary';
-        btn.setAttribute('aria-pressed','true');
-        const filter = btn.dataset.bookFilter;
-        document.querySelectorAll('[data-category]').forEach((card) => {
-          const wrapper = card.closest('[class*="col-"]') || card;
-          const show = filter === 'all' || card.dataset.category === filter;
-          wrapper.style.display = show ? '' : 'none';
-        });
+    function applyBookFilter(filter) {
+      const btn = document.querySelector(`[data-book-filter="${filter}"]`) || document.querySelector('[data-book-filter="all"]');
+      document.querySelectorAll('[data-book-filter]').forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed','false'); });
+      btn.className = 'btn-s21 btn-s21-primary';
+      btn.setAttribute('aria-pressed','true');
+      const active = btn.dataset.bookFilter;
+      document.querySelectorAll('[data-category]').forEach((card) => {
+        const wrapper = card.closest('[class*="col-"]') || card;
+        const show = active === 'all' || card.dataset.category === active;
+        wrapper.style.display = show ? '' : 'none';
       });
+    }
+
+    document.querySelectorAll('[data-book-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => applyBookFilter(btn.dataset.bookFilter));
     });
+
+    // Deep-linking: subjects.html can send someone here with
+    // ?category=mathematics so the Library opens already filtered.
+    (function () {
+      const cat = new URLSearchParams(location.search).get('category');
+      if (cat) applyBookFilter(cat);
+    })();
   </script>
 
 </main>

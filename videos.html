@@ -304,19 +304,30 @@
       }
     })();
 
-    document.querySelectorAll('[data-video-filter]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-video-filter]').forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed','false'); });
-        btn.className = 'btn-s21 btn-s21-primary';
-        btn.setAttribute('aria-pressed','true');
-        const filter = btn.dataset.videoFilter;
-        document.querySelectorAll('[data-category]').forEach((card) => {
-          const wrapper = card.closest('.col-sm-6');
-          const show = filter === 'all' || card.dataset.category === filter;
-          if (wrapper) wrapper.style.display = show ? '' : 'none';
-        });
+    function applyVideoFilter(filter) {
+      const btn = document.querySelector(`[data-video-filter="${filter}"]`) || document.querySelector('[data-video-filter="all"]');
+      document.querySelectorAll('[data-video-filter]').forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed','false'); });
+      btn.className = 'btn-s21 btn-s21-primary';
+      btn.setAttribute('aria-pressed','true');
+      const active = btn.dataset.videoFilter;
+      document.querySelectorAll('[data-category]').forEach((card) => {
+        const wrapper = card.closest('.col-sm-6');
+        const show = active === 'all' || card.dataset.category === active;
+        if (wrapper) wrapper.style.display = show ? '' : 'none';
       });
+    }
+
+    document.querySelectorAll('[data-video-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => applyVideoFilter(btn.dataset.videoFilter));
     });
+
+    // Deep-linking: subjects.html (and other pages) can send someone here
+    // with ?category=mathematics so VideoHub opens already filtered to the
+    // subject they picked, instead of the full unfiltered catalog.
+    (function () {
+      const cat = new URLSearchParams(location.search).get('category');
+      if (cat) applyVideoFilter(cat);
+    })();
   </script>
 
 </main>
