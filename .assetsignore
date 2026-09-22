@@ -4,7 +4,7 @@
 # the Worker's own source code would be publicly downloadable.
 
 src/
-schema.sql
+*.sql
 wrangler.toml
 DEPLOY_CLOUDFLARE.md
 README.md

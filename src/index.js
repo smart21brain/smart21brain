@@ -38,6 +38,14 @@ import * as stnAcademy from './handlers/stationery/academy.js';
 import * as stnChopaAI from './handlers/stationery/chopaai.js';
 import * as stnSecurity from './handlers/stationery/security.js';
 
+// ---- School System ----
+import * as schCore from './handlers/school/core.js';
+import * as schPeople from './handlers/school/people.js';
+import * as schAcademics from './handlers/school/academics.js';
+import * as schOps from './handlers/school/operations.js';
+import * as schInsights from './handlers/school/insights.js';
+import * as schDemo from './handlers/school/demo.js';
+
 const router = new Router();
 
 // ---- Auth ----
@@ -231,6 +239,128 @@ router.get('/api/stationery/audit-log', stnSecurity.listAuditLog);
 router.get('/api/stationery/backup/export', stnSecurity.exportBackup);
 router.post('/api/stationery/backup/restore', stnSecurity.restoreBackup);
 
+// ==================== School System ====================
+// Accounts / tenant
+router.post('/api/school/register-school', schCore.registerSchool);
+router.post('/api/school/login', schCore.login);
+router.post('/api/school/logout', schCore.logout);
+router.get('/api/school/context', schCore.context);
+router.post('/api/school/schools', schCore.createSchool);
+router.get('/api/school/lookups', schCore.lookups);
+router.get('/api/school/public/logo/:id', schCore.publicLogo);
+router.get('/api/school/verify/:token', schPeople.verifyStudent);
+
+// Settings
+router.get('/api/school/school-info', schCore.getSchoolInfo);
+router.put('/api/school/school-info', schCore.updateSchoolInfo);
+router.post('/api/school/school-info/logo', schCore.uploadLogo);
+router.put('/api/school/settings', schCore.saveSettings);
+router.get('/api/school/academic-years', schCore.listYears);
+router.post('/api/school/academic-years', schCore.saveYear);
+router.put('/api/school/academic-years/:id', schCore.saveYear);
+router.delete('/api/school/academic-years/:id', schCore.deleteYear);
+router.post('/api/school/terms', schCore.saveTerm);
+router.put('/api/school/terms/:id', schCore.saveTerm);
+router.delete('/api/school/terms/:id', schCore.deleteTerm);
+router.get('/api/school/permissions', schCore.getPermissions);
+router.put('/api/school/permissions', schCore.savePermissions);
+router.get('/api/school/users', schCore.listUsers);
+router.post('/api/school/users', schCore.addUser);
+router.put('/api/school/users/:id', schCore.updateUser);
+router.post('/api/school/demo-data', schDemo.loadDemoData);
+router.post('/api/school/reset-data', schDemo.resetSchoolData);
+
+// Students
+router.get('/api/school/students', schPeople.listStudents);
+router.post('/api/school/students', schPeople.createStudent);
+router.get('/api/school/students/:id', schPeople.getStudent);
+router.put('/api/school/students/:id', schPeople.updateStudent);
+router.delete('/api/school/students/:id', schPeople.deleteStudent);
+router.put('/api/school/students/:id/status', schPeople.setStudentStatus);
+router.post('/api/school/students/:id/photo', schPeople.uploadStudentPhoto);
+router.get('/api/school/students/:id/photo', schPeople.getStudentPhoto);
+router.get('/api/school/students/:id/notes', schPeople.listNotes);
+router.post('/api/school/students/:id/notes', schPeople.addNote);
+router.delete('/api/school/notes/:id', schPeople.deleteNote);
+router.get('/api/school/students/:id/id-card', schPeople.idCard);
+router.get('/api/school/students/:id/attendance', schOps.studentAttendance);
+router.get('/api/school/students/:id/fees', schOps.studentFees);
+router.get('/api/school/students/:id/results', schAcademics.studentResults);
+
+// Parents & teachers
+router.get('/api/school/parents', schPeople.listParents);
+router.post('/api/school/parents', schPeople.createParent);
+router.get('/api/school/parents/:id', schPeople.getParent);
+router.put('/api/school/parents/:id', schPeople.updateParent);
+router.delete('/api/school/parents/:id', schPeople.deleteParent);
+router.post('/api/school/parents/:id/portal', schPeople.givePortalAccess);
+router.get('/api/school/teachers', schPeople.listTeachers);
+router.post('/api/school/teachers', schPeople.createTeacher);
+router.get('/api/school/teachers/:id', schPeople.getTeacher);
+router.put('/api/school/teachers/:id', schPeople.updateTeacher);
+router.delete('/api/school/teachers/:id', schPeople.deleteTeacher);
+router.post('/api/school/teachers/:id/login', schPeople.giveTeacherLogin);
+router.post('/api/school/teachers/:id/photo', schPeople.uploadTeacherPhoto);
+router.get('/api/school/teachers/:id/photo', schPeople.getTeacherPhoto);
+
+// Classes, subjects, timetable
+router.get('/api/school/classes', schAcademics.listClasses);
+router.post('/api/school/classes', schAcademics.createClass);
+router.get('/api/school/classes/:id', schAcademics.getClass);
+router.put('/api/school/classes/:id', schAcademics.updateClass);
+router.delete('/api/school/classes/:id', schAcademics.deleteClass);
+router.get('/api/school/subjects', schAcademics.listSubjects);
+router.post('/api/school/subjects', schAcademics.createSubject);
+router.put('/api/school/subjects/:id', schAcademics.updateSubject);
+router.delete('/api/school/subjects/:id', schAcademics.deleteSubject);
+router.get('/api/school/timetable', schAcademics.listTimetable);
+router.post('/api/school/timetable', schAcademics.createTimetable);
+router.put('/api/school/timetable/:id', schAcademics.updateTimetable);
+router.delete('/api/school/timetable/:id', schAcademics.deleteTimetable);
+
+// Attendance
+router.get('/api/school/attendance/sheet', schOps.attendanceSheet);
+router.get('/api/school/attendance/summary', schOps.attendanceSummary);
+router.get('/api/school/attendance/alerts', schOps.attendanceAlerts);
+router.post('/api/school/attendance', schOps.saveAttendance);
+
+// Fees & payments
+router.get('/api/school/fees/structures', schOps.listFeeStructures);
+router.post('/api/school/fees/structures', schOps.createFeeStructure);
+router.put('/api/school/fees/structures/:id', schOps.updateFeeStructure);
+router.delete('/api/school/fees/structures/:id', schOps.deleteFeeStructure);
+router.get('/api/school/fees/overview', schOps.feesOverview);
+router.post('/api/school/fees/reminders', schOps.sendFeeReminders);
+router.get('/api/school/payments', schOps.listPayments);
+router.post('/api/school/payments', schOps.recordPayment);
+router.get('/api/school/payments/:id/receipt', schOps.getReceipt);
+router.put('/api/school/payments/:id', schOps.updatePayment);
+
+// Examinations & results
+router.get('/api/school/exams', schAcademics.listExams);
+router.post('/api/school/exams', schAcademics.createExam);
+router.get('/api/school/exams/:id', schAcademics.getExam);
+router.put('/api/school/exams/:id', schAcademics.updateExam);
+router.delete('/api/school/exams/:id', schAcademics.deleteExam);
+router.get('/api/school/exams/:id/sheet', schAcademics.examSheet);
+router.get('/api/school/results/entry', schAcademics.resultEntrySheet);
+router.post('/api/school/results', schAcademics.saveResults);
+router.get('/api/school/report-card', schAcademics.reportCard);
+router.put('/api/school/report-card/comment', schAcademics.saveReportComment);
+
+// Dashboard, portal, notifications, reports, audit, search
+router.get('/api/school/dashboard', schInsights.dashboard);
+router.get('/api/school/portal', schInsights.portal);
+router.get('/api/school/notifications', schInsights.listNotifications);
+router.post('/api/school/notifications', schInsights.createNotification);
+router.put('/api/school/notifications/read-all', schInsights.markAllRead);
+router.put('/api/school/notifications/:id/read', schInsights.markRead);
+router.delete('/api/school/notifications/:id', schInsights.deleteNotification);
+router.get('/api/school/reports', schInsights.reportCatalogue);
+router.get('/api/school/reports/:key', schInsights.runReport);
+router.get('/api/school/audit', schInsights.listAudit);
+router.get('/api/school/search', schInsights.search);
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -256,13 +386,18 @@ export default {
       // smart21brain account — see src/lib/stationery-auth.js.
       '/stationery-app.html': ['user', 'admin', 'teacher', 'parent'],
       '/stationery-app': ['user', 'admin', 'teacher', 'parent'],
+      // School System: any signed-in account may open the app; what they see
+      // inside is decided per school (role + permissions) by /api/school/*.
+      '/school-app.html': ['user', 'admin', 'teacher', 'parent'],
+      '/school-app': ['user', 'admin', 'teacher', 'parent'],
     };
 
     const allowedRoles = protectedPages[normalizedPath];
     if (allowedRoles) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
-        return Response.redirect(new URL('/login.html', request.url), 302);
+        const loginPage = normalizedPath.startsWith('/school-') ? '/school-login.html' : '/login.html';
+        return Response.redirect(new URL(loginPage, request.url), 302);
       }
       if (!allowedRoles.includes(user.role)) {
         // Send them to *their own* dashboard, not always /dashboard.html —
