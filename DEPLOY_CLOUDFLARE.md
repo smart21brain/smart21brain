@@ -34,6 +34,21 @@ academy courses, service requirement templates):
 wrangler d1 execute smart21brain-db --file=./schema.sql --remote
 ```
 
+> **Upgrading a database created before Phase 8?** `schema.sql` now
+> expects `course_modules`/`certificates` tables and a couple of new
+> columns on `courses`/`course_lessons` that a pre-Phase-8 database
+> won't have yet. Run the one-time migration below *once*, first —
+> plain SQLite has no `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, so
+> this step can't be folded into the safely-re-runnable `schema.sql`:
+>
+> ```bash
+> wrangler d1 execute smart21brain-db --file=./migrations/phase8-course-engine-v2.sql --remote
+> ```
+>
+> After that, `schema.sql` (or `course-engine-schema.sql`) can be
+> re-run as usual to pick up new seed data. A brand-new database
+> created from this repo already has everything and doesn't need it.
+
 ## 2. Create the R2 buckets
 
 ```bash
@@ -142,6 +157,32 @@ smart21brain/
 - `GET  /api/materials` · `POST /api/materials` (admin, multipart file upload)
 - `GET  /api/materials/:id` (streams the file) · `DELETE /api/materials/:id` (admin)
 - `GET  /api/dashboard` (signed-in user's stats)
+
+### Course Engine (Phase 8): `Course -> Module -> Lessons + Quiz -> ... -> Final Exam -> Certificate`
+
+- `GET  /api/courses` · `POST /api/courses` (admin/teacher) — list/create
+- `GET  /api/courses/:idOrSlug` — course + curriculum (`modules` nested with their `lessons` and
+  quiz pass/fail, plus `ungrouped_lessons` for courses with no modules) +, if signed in and
+  enrolled, `progress` (the full completion algorithm: lesson %, required %, final exam gate,
+  `course_completed`, `certificate`)
+- `PUT/DELETE /api/courses/:id` (admin/teacher who owns it)
+- `POST /api/courses/:id/enroll` · `GET /api/courses/my` (signed-in user's enrollments)
+- `GET  /api/courses/:id/modules` · `POST /api/courses/:id/modules` (admin/teacher)
+- `PUT/DELETE /api/course-modules/:moduleId` (admin/teacher) — deleting a module ungroups its
+  lessons rather than deleting them
+- `GET  /api/courses/:id/lessons` · `POST /api/courses/:id/lessons` (admin/teacher, accepts
+  `module_id` to place it in a module, or omit for an ungrouped lesson)
+- `PUT/DELETE /api/courses/:id/lessons/:lessonId` (admin/teacher)
+- `GET  /api/lessons/:id` (a single lesson's content) · `POST /api/lessons/:id/complete`
+  `{completed}` — recomputes the whole completion algorithm and issues a certificate the moment
+  every gate clears
+- `POST /api/quizzes/:id/attempt` — same endpoint used for every quiz on the site; when the quiz
+  is a module quiz or a course's final exam, the response's `courses[]` array reports the
+  updated progress/completion for that course too
+- `GET  /api/courses/:id/certificate` (signed-in learner's own certificate for that course)
+- `GET  /api/certificates/my` (signed-in learner's certificates, newest first)
+- `GET  /api/certificates/:code` — public, no sign-in required: verifies a certificate code the
+  same way `school-verify.html` verifies a student ID card
 
 ### Stationery OS (all under `/api/stationery`, any signed-in user — role checked per action)
 

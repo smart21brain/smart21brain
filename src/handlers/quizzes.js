@@ -1,4 +1,5 @@
 import { getSessionUser, json, badRequest, unauthorized, forbidden, notFound } from '../lib/auth.js';
+import { syncCoursesForQuiz } from '../lib/course-engine.js';
 
 export async function listQuizzes({ env }) {
   const { results } = await env.DB.prepare(
@@ -82,5 +83,10 @@ export async function submitQuizAttempt({ request, params, env }) {
     'INSERT INTO quiz_attempts (user_id, quiz_id, score, total) VALUES (?, ?, ?, ?)'
   ).bind(user.id, params.id, score, questions.length).run();
 
-  return json({ score, total: questions.length }, { status: 201 });
+  // PHASE 8: this quiz might be a module quiz or a final exam for one or
+  // more courses — if so, resync that course's completion/certificate
+  // for this user. Any ordinary standalone site quiz just gets [] here.
+  const courses = await syncCoursesForQuiz(env, user.id, Number(params.id));
+
+  return json({ score, total: questions.length, courses }, { status: 201 });
 }

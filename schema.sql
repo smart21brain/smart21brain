@@ -596,16 +596,6 @@ INSERT OR IGNORE INTO stn_service_templates (service_type, checklist) VALUES
 ('Visa', '["Valid passport (6+ months validity)","Visa application form","Passport-size photo (destination country spec)","Invitation letter / travel itinerary","Proof of funds"]'),
 ('TIN', '["National ID / Passport copy","Business registration certificate (if applicable)","Physical/postal address","Completed TIN application form"]');
 
--- =======================================================================
--- COURSE ENGINE — Smart21Brain main-site LMS core
--- courses -> lessons, with enrollment + per-lesson progress.
--- Apply together with schema.sql (same D1 database) — this file is
--- appended into schema.sql by the build; kept separate here for review.
--- =======================================================================
-
--- ---------------------------------------------------------------------
--- Course categories (admin-manageable)
--- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS course_categories (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   name        TEXT NOT NULL UNIQUE,
@@ -632,8 +622,18 @@ CREATE TABLE IF NOT EXISTS courses (
   requirements        TEXT,                                -- JSON array of strings
   price               REAL NOT NULL DEFAULT 0,
   is_free             INTEGER NOT NULL DEFAULT 1,           -- 0/1 — kept alongside price for fast filtering
-  certificate_enabled INTEGER NOT NULL DEFAULT 0,           -- 0/1 — certificate issued on completion (see certificates phase)
-  passing_score       INTEGER NOT NULL DEFAULT 70,          -- % of lessons that must be completed to mark the course done
+  certificate_enabled INTEGER NOT NULL DEFAULT 0,           -- 0/1 — certificate issued on completion
+  passing_score       INTEGER NOT NULL DEFAULT 70,          -- REQUIRED PERCENTAGE: % of the course (lessons + any
+                                                             -- module quizzes) that must be completed before the
+                                                             -- final exam unlocks, or before the course itself is
+                                                             -- marked done when there's no final exam.
+  -- PHASE 8 — Final Exam: one optional exam (a normal row in the
+  -- existing `quizzes` table) that sits above the modules, not inside
+  -- one. It only unlocks once passing_score above is met, and the
+  -- learner must clear final_exam_passing_score to complete the course.
+  -- See src/lib/course-engine.js for how these two fields gate completion.
+  final_exam_quiz_id       INTEGER REFERENCES quizzes(id) ON DELETE SET NULL,
+  final_exam_passing_score INTEGER NOT NULL DEFAULT 70,
   published           INTEGER NOT NULL DEFAULT 1,
   created_by          INTEGER REFERENCES users(id) ON DELETE SET NULL,
   created_at          TEXT NOT NULL DEFAULT (datetime('now'))
@@ -643,14 +643,37 @@ CREATE INDEX IF NOT EXISTS idx_courses_instructor ON courses(instructor_id);
 CREATE INDEX IF NOT EXISTS idx_courses_published ON courses(published);
 
 -- ---------------------------------------------------------------------
--- Lessons — belong to a course, ordered by sort_order. A lesson can
--- point at existing content (a video, a material/PDF, or a quiz) or
--- just carry its own text body — reusing the site's existing content
--- tables instead of duplicating video/PDF storage.
+-- PHASE 8 — Modules: the layer between a course and its lessons.
+--   Course → Module → Lessons + (optional) Module Quiz → ... → Final Exam
+-- A module's quiz is just another row in `quizzes`, referenced here —
+-- no separate quiz-authoring system needed. passing_score is the %
+-- correct required on THAT quiz for the module to count as done.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS course_modules (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  course_id      INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  title          TEXT NOT NULL,
+  description    TEXT,
+  quiz_id        INTEGER REFERENCES quizzes(id) ON DELETE SET NULL,
+  passing_score  INTEGER NOT NULL DEFAULT 70,        -- % correct required on this module's quiz, if it has one
+  sort_order     INTEGER NOT NULL DEFAULT 0,
+  created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(course_id, title)
+);
+CREATE INDEX IF NOT EXISTS idx_course_modules_course ON course_modules(course_id);
+
+-- ---------------------------------------------------------------------
+-- Lessons — belong to a course (and, from Phase 8 on, usually to one of
+-- its modules — module_id is nullable so older/simple courses can keep
+-- a flat lesson list with no modules at all). A lesson can point at
+-- existing content (a video, a material/PDF, or a quiz) or just carry
+-- its own text body — reusing the site's existing content tables
+-- instead of duplicating video/PDF storage.
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS course_lessons (
   id                INTEGER PRIMARY KEY AUTOINCREMENT,
   course_id         INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id         INTEGER REFERENCES course_modules(id) ON DELETE SET NULL, -- PHASE 8: which module (if any)
   title             TEXT NOT NULL,
   content_type      TEXT NOT NULL DEFAULT 'text',   -- text|video|pdf|quiz
   video_id          INTEGER REFERENCES videos(id) ON DELETE SET NULL,
@@ -664,6 +687,7 @@ CREATE TABLE IF NOT EXISTS course_lessons (
   UNIQUE(course_id, title)
 );
 CREATE INDEX IF NOT EXISTS idx_course_lessons_course ON course_lessons(course_id);
+CREATE INDEX IF NOT EXISTS idx_course_lessons_module ON course_lessons(module_id);
 
 -- ---------------------------------------------------------------------
 -- Enrollments — one row per (user, course). payment_status distinguishes
@@ -695,6 +719,26 @@ CREATE TABLE IF NOT EXISTS lesson_progress (
   UNIQUE(user_id, lesson_id)
 );
 CREATE INDEX IF NOT EXISTS idx_lesson_progress_user ON lesson_progress(user_id);
+
+-- ---------------------------------------------------------------------
+-- PHASE 8 — Certificates. Issued automatically (see
+-- src/lib/course-engine.js) the moment a learner clears every gate in
+-- the completion algorithm on a course with certificate_enabled = 1.
+-- `code` is the short public verification code printed/QR'd on the
+-- certificate — anyone with it can confirm it's real via
+-- GET /api/certificates/:code, the same pattern school-verify.html
+-- already uses for student ID cards. One certificate per (user, course).
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS certificates (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id   INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  code        TEXT NOT NULL UNIQUE,
+  issued_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id, course_id)
+);
+CREATE INDEX IF NOT EXISTS idx_certificates_user ON certificates(user_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_code ON certificates(code);
 
 -- ---------------------------------------------------------------------
 -- Seed categories matching what the site already advertises on
@@ -1241,3 +1285,97 @@ FROM (
   SELECT 'High and Low Notes' AS title, 'Pitch describes how high or low a sound is — a whistle is high-pitched, while a drum is often low-pitched.' AS body, 2 AS sort_order, 0 AS is_preview
 )
 WHERE EXISTS (SELECT 1 FROM courses WHERE slug = 'music-theory-for-kids');
+
+-- =======================================================================
+-- PHASE 8 — Course Engine v2 demo: "Fractions Made Fun" rebuilt as the
+-- full Module → Lessons + Quiz → ... → Final Exam → Certificate shape,
+-- so the new engine has one real, click-through-able example instead of
+-- shipping as an empty skeleton. Every other seeded course above is left
+-- as a flat lesson list — module_id stays NULL for them, which the
+-- course engine treats as perfectly valid (see src/lib/course-engine.js).
+-- Guarded with WHERE NOT EXISTS on title, since quizzes has no unique
+-- constraint to lean on for INSERT OR IGNORE the way the tables above do.
+-- =======================================================================
+
+INSERT INTO quizzes (title, subject, description, questions, published, created_by)
+SELECT
+  'Fractions Made Fun — Module 1 Quiz', 'Mathematics',
+  'Checks the basics: what a fraction is, and comparing simple fractions.',
+  '[
+    {"prompt":"In the fraction 3/4, what does the 4 tell you?","options":["How many parts you have","How many equal parts the whole is split into","The size of each part in centimetres","Nothing important"],"correct_index":1,"explanation":"The bottom number (denominator) tells you how many equal parts the whole is divided into."},
+    {"prompt":"Which is bigger, 3/8 or 5/8?","options":["3/8","5/8","They are equal","Cannot tell"],"correct_index":1,"explanation":"Same denominator, so compare the numerators — 5 is bigger than 3, so 5/8 is bigger."},
+    {"prompt":"What is a quarter of a whole?","options":["Splitting it into 2 equal parts","Splitting it into 3 equal parts","Splitting it into 4 equal parts","Splitting it into 8 equal parts"],"correct_index":2,"explanation":"A quarter means dividing the whole into 4 equal parts and taking one."}
+  ]',
+  1, (SELECT id FROM users WHERE role = 'admin' ORDER BY id LIMIT 1)
+WHERE EXISTS (SELECT 1 FROM users WHERE role = 'admin')
+  AND NOT EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Module 1 Quiz');
+
+INSERT INTO quizzes (title, subject, description, questions, published, created_by)
+SELECT
+  'Fractions Made Fun — Module 2 Quiz', 'Mathematics',
+  'Checks equivalent fractions, adding simple fractions, and spotting fractions in real life.',
+  '[
+    {"prompt":"Which fraction is equivalent to 1/2?","options":["1/3","2/4","3/8","1/5"],"correct_index":1,"explanation":"2/4 simplifies to 1/2 — both represent the same amount, just cut into more, smaller pieces."},
+    {"prompt":"What is 1/4 + 2/4?","options":["1/4","2/4","3/4","3/8"],"correct_index":2,"explanation":"Same denominator, so add the numerators: 1 + 2 = 3, giving 3/4."},
+    {"prompt":"Which of these is an example of a fraction in real life?","options":["Counting to ten","Sharing a pizza into equal slices","Naming a colour","Reading the time on a digital clock"],"correct_index":1,"explanation":"Cutting a pizza into equal slices is a everyday fraction — each slice is a fraction of the whole pizza."}
+  ]',
+  1, (SELECT id FROM users WHERE role = 'admin' ORDER BY id LIMIT 1)
+WHERE EXISTS (SELECT 1 FROM users WHERE role = 'admin')
+  AND NOT EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Module 2 Quiz');
+
+INSERT INTO quizzes (title, subject, description, questions, published, created_by)
+SELECT
+  'Fractions Made Fun — Final Exam', 'Mathematics',
+  'Covers everything in Fractions Made Fun — comparing, equivalence and simple addition.',
+  '[
+    {"prompt":"What does the top number of a fraction (the numerator) tell you?","options":["How many equal parts the whole is split into","How many of those parts you have","The name of the fraction","Nothing important"],"correct_index":1,"explanation":"The numerator counts how many of the equal parts you actually have."},
+    {"prompt":"Which is bigger: 2/5 or 4/5?","options":["2/5","4/5","They are equal","Cannot tell"],"correct_index":1,"explanation":"Same denominator, so the fraction with the bigger numerator — 4/5 — is bigger."},
+    {"prompt":"Which fraction is equivalent to 2/4?","options":["1/2","1/3","3/4","1/8"],"correct_index":0,"explanation":"2/4 simplifies to 1/2 — cutting something in half is the same whether you call it 1/2 or 2/4."},
+    {"prompt":"What is 2/6 + 3/6?","options":["5/6","5/12","1/6","6/6"],"correct_index":0,"explanation":"Same denominator, so add the numerators: 2 + 3 = 5, giving 5/6."},
+    {"prompt":"You cut a cake into 8 equal slices and eat 3. What fraction did you eat?","options":["3/5","3/8","8/3","5/8"],"correct_index":1,"explanation":"You ate 3 of the 8 equal slices, so that''s 3/8 of the cake."}
+  ]',
+  1, (SELECT id FROM users WHERE role = 'admin' ORDER BY id LIMIT 1)
+WHERE EXISTS (SELECT 1 FROM users WHERE role = 'admin')
+  AND NOT EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Final Exam');
+
+INSERT OR IGNORE INTO course_modules (course_id, title, description, quiz_id, passing_score, sort_order)
+SELECT
+  (SELECT id FROM courses WHERE slug = 'fractions-made-fun'),
+  'Module 1: Fraction Basics',
+  'What a fraction is, and how to compare simple fractions.',
+  (SELECT id FROM quizzes WHERE title = 'Fractions Made Fun — Module 1 Quiz'),
+  70, 1
+WHERE EXISTS (SELECT 1 FROM courses WHERE slug = 'fractions-made-fun')
+  AND EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Module 1 Quiz');
+
+INSERT OR IGNORE INTO course_modules (course_id, title, description, quiz_id, passing_score, sort_order)
+SELECT
+  (SELECT id FROM courses WHERE slug = 'fractions-made-fun'),
+  'Module 2: Fractions in Action',
+  'Equivalent fractions, adding simple fractions, and where fractions turn up in everyday life.',
+  (SELECT id FROM quizzes WHERE title = 'Fractions Made Fun — Module 2 Quiz'),
+  70, 2
+WHERE EXISTS (SELECT 1 FROM courses WHERE slug = 'fractions-made-fun')
+  AND EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Module 2 Quiz');
+
+UPDATE course_lessons SET module_id = (
+  SELECT m.id FROM course_modules m
+  JOIN courses c ON c.id = m.course_id
+  WHERE c.slug = 'fractions-made-fun' AND m.title = 'Module 1: Fraction Basics'
+)
+WHERE course_id = (SELECT id FROM courses WHERE slug = 'fractions-made-fun')
+  AND title IN ('What is a Fraction?', 'Halves and Quarters', 'Comparing Fractions');
+
+UPDATE course_lessons SET module_id = (
+  SELECT m.id FROM course_modules m
+  JOIN courses c ON c.id = m.course_id
+  WHERE c.slug = 'fractions-made-fun' AND m.title = 'Module 2: Fractions in Action'
+)
+WHERE course_id = (SELECT id FROM courses WHERE slug = 'fractions-made-fun')
+  AND title IN ('Equivalent Fractions', 'Adding Simple Fractions', 'Fractions in Real Life');
+
+UPDATE courses SET
+  final_exam_quiz_id = (SELECT id FROM quizzes WHERE title = 'Fractions Made Fun — Final Exam'),
+  final_exam_passing_score = 70
+WHERE slug = 'fractions-made-fun'
+  AND EXISTS (SELECT 1 FROM quizzes WHERE title = 'Fractions Made Fun — Final Exam');

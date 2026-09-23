@@ -1,4 +1,5 @@
 import { getSessionUser, json, badRequest, unauthorized, forbidden, notFound, slugify } from '../lib/auth.js';
+import { getCourseProgress } from '../lib/course-engine.js';
 
 // A teacher may manage only their own courses; an admin may manage any.
 function canManage(user, course) {
@@ -106,8 +107,9 @@ export async function createCourse({ request, env }) {
   const result = await env.DB.prepare(
     `INSERT INTO courses (
       title, slug, description, thumbnail_url, category_id, instructor_id, level, age_range,
-      language, objectives, requirements, price, is_free, certificate_enabled, passing_score, published, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      language, objectives, requirements, price, is_free, certificate_enabled, passing_score,
+      final_exam_quiz_id, final_exam_passing_score, published, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
     body.title, slug, body.description || null, body.thumbnail_url || null,
     body.category_id || null, instructorId, body.level || 'beginner', body.age_range || null,
@@ -115,6 +117,7 @@ export async function createCourse({ request, env }) {
     JSON.stringify(Array.isArray(body.objectives) ? body.objectives : []),
     JSON.stringify(Array.isArray(body.requirements) ? body.requirements : []),
     price, price > 0 ? 0 : 1, body.certificate_enabled ? 1 : 0, Number(body.passing_score) || 70,
+    body.final_exam_quiz_id || null, Number(body.final_exam_passing_score) || 70,
     body.published === false ? 0 : 1, user.id
   ).run();
 
@@ -122,8 +125,11 @@ export async function createCourse({ request, env }) {
 }
 
 // Looked up by numeric id or slug (course.html deep links via ?slug=).
-// Includes curriculum (lessons) and, for a signed-in learner, their
-// enrollment + per-lesson completion so the page can render real state.
+// Includes curriculum (modules -> lessons, plus any ungrouped lessons)
+// and, for a signed-in learner, their enrollment + progress through the
+// full Phase 8 completion algorithm (lessons -> required % -> final
+// exam -> passing score -> certificate) so the page can render real
+// state without a second round trip.
 export async function getCourse({ request, params, env }) {
   const key = params.id;
   const isNumeric = /^\d+$/.test(key);
@@ -144,10 +150,11 @@ export async function getCourse({ request, params, env }) {
   course.requirements = parseJsonArray(course.requirements);
 
   const { results: lessons } = await env.DB.prepare(
-    'SELECT id, title, content_type, duration_seconds, sort_order, is_preview FROM course_lessons WHERE course_id = ? ORDER BY sort_order ASC, id ASC'
+    'SELECT id, module_id, title, content_type, duration_seconds, sort_order, is_preview FROM course_lessons WHERE course_id = ? ORDER BY sort_order ASC, id ASC'
   ).bind(course.id).all();
 
   let enrollment = null;
+  let progress = null;
   if (user) {
     enrollment = await env.DB.prepare(
       'SELECT payment_status, status, enrolled_at, completed_at FROM course_enrollments WHERE user_id = ? AND course_id = ?'
@@ -161,11 +168,29 @@ export async function getCourse({ request, params, env }) {
       ).bind(user.id, course.id).all();
       const completedIds = new Set(done.map((r) => r.lesson_id));
       lessons.forEach((l) => { l.completed = completedIds.has(l.id); });
+
+      progress = await getCourseProgress(env, user.id, course);
     }
   }
 
+  // PHASE 8: nest lessons under their module, keep a separate bucket for
+  // lessons with no module (older/simpler courses, or lessons not yet
+  // organized into a module) — both are fully valid shapes.
+  const { results: moduleRows } = await env.DB.prepare(
+    'SELECT id, title, description, quiz_id, passing_score, sort_order FROM course_modules WHERE course_id = ? ORDER BY sort_order ASC, id ASC'
+  ).bind(course.id).all();
+  const modules = moduleRows.map((m) => ({
+    ...m,
+    lessons: lessons.filter((l) => l.module_id === m.id),
+    quiz_status: progress?.module_status?.[m.id] || null,
+  }));
+  const ungroupedLessons = lessons.filter((l) => !l.module_id);
+
   const reviewCount = 0; // reviews aren't tracked yet — surfaced honestly as 0, not a fake number
-  return json({ course, lessons, enrollment, review_count: reviewCount });
+  return json({
+    course, lessons, modules, ungrouped_lessons: ungroupedLessons,
+    enrollment, progress, review_count: reviewCount,
+  });
 }
 
 export async function updateCourse({ request, params, env }) {
@@ -182,7 +207,8 @@ export async function updateCourse({ request, params, env }) {
   await env.DB.prepare(
     `UPDATE courses SET title = ?, description = ?, thumbnail_url = ?, category_id = ?, level = ?,
       age_range = ?, language = ?, objectives = ?, requirements = ?, price = ?, is_free = ?,
-      certificate_enabled = ?, passing_score = ?, published = ? WHERE id = ?`
+      certificate_enabled = ?, passing_score = ?, final_exam_quiz_id = ?, final_exam_passing_score = ?,
+      published = ? WHERE id = ?`
   ).bind(
     body.title ?? course.title,
     body.description ?? course.description,
@@ -196,6 +222,8 @@ export async function updateCourse({ request, params, env }) {
     price, price > 0 ? 0 : 1,
     body.certificate_enabled != null ? (body.certificate_enabled ? 1 : 0) : course.certificate_enabled,
     body.passing_score != null ? Number(body.passing_score) : course.passing_score,
+    body.final_exam_quiz_id !== undefined ? body.final_exam_quiz_id : course.final_exam_quiz_id,
+    body.final_exam_passing_score != null ? Number(body.final_exam_passing_score) : course.final_exam_passing_score,
     body.published === false ? 0 : 1,
     params.id
   ).run();
@@ -258,12 +286,13 @@ export async function myCourses({ request, env }) {
             e.payment_status, e.status, e.enrolled_at, e.completed_at,
             (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) AS total_lessons,
             (SELECT COUNT(*) FROM lesson_progress lp JOIN course_lessons cl ON cl.id = lp.lesson_id
-               WHERE lp.user_id = ? AND cl.course_id = c.id AND lp.completed = 1) AS completed_lessons
+               WHERE lp.user_id = ? AND cl.course_id = c.id AND lp.completed = 1) AS completed_lessons,
+            (SELECT code FROM certificates WHERE user_id = ? AND course_id = c.id) AS certificate_code
      FROM course_enrollments e
      JOIN courses c ON c.id = e.course_id
      WHERE e.user_id = ?
      ORDER BY e.enrolled_at DESC`
-  ).bind(user.id, user.id).all();
+  ).bind(user.id, user.id, user.id).all();
 
   const courses = results.map((c) => ({
     ...c,

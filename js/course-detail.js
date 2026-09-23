@@ -21,10 +21,15 @@
     requirementsWrap: document.getElementById('course-requirements-wrap'),
     requirements: document.getElementById('course-requirements'),
     curriculum: document.getElementById('course-curriculum'),
+    finalExamWrap: document.getElementById('course-final-exam-wrap'),
+    finalExam: document.getElementById('course-final-exam'),
+    certificateWrap: document.getElementById('course-certificate-wrap'),
+    certificate: document.getElementById('course-certificate'),
     progressBlock: document.getElementById('course-progress-block'),
     progressBar: document.getElementById('course-progress-bar'),
     progressPct: document.getElementById('course-progress-pct'),
     progressCount: document.getElementById('course-progress-count'),
+    progressGate: document.getElementById('course-progress-gate'),
     priceBlock: document.getElementById('course-price-block'),
     priceLabel: document.getElementById('course-price-label'),
     enrollFeedback: document.getElementById('course-enroll-feedback'),
@@ -51,30 +56,134 @@
     return { bg: '#F1F3F5', color: '#8A93A0', inner: `<i class="fa-solid ${icons[l.content_type] || 'fa-book-open'}"></i>` };
   }
 
-  function renderCurriculum(lessons, enrolled, isFree) {
-    if (!lessons.length) {
+  function lessonRow(l, i, total, enrolled) {
+    const icon = lessonIcon(l);
+    const canOpen = enrolled || l.is_preview;
+    const durationLabel = l.duration_seconds
+      ? `${Math.floor(l.duration_seconds / 60)}:${String(l.duration_seconds % 60).padStart(2, '0')}`
+      : (l.content_type === 'quiz' ? 'Quiz' : l.content_type.charAt(0).toUpperCase() + l.content_type.slice(1));
+    const action = canOpen
+      ? `<a href="lesson.html?id=${l.id}" class="btn-s21 ${l.completed ? '' : 'btn-s21-outline'}" style="padding:.4rem .9rem;font-size:.78rem">${l.completed ? 'Review' : 'Start'}</a>`
+      : `<span class="text-soft" style="font-size:.78rem"><i class="fa-solid fa-lock"></i> Locked</span>`;
+    return `
+      <div class="d-flex align-items-center gap-3 p-3 ${i < total - 1 ? 'border-bottom' : ''}">
+        <span class="d-flex align-items-center justify-content-center" style="width:34px;height:34px;border-radius:50%;background:${icon.bg};color:${icon.color};font-size:.85rem;flex-shrink:0">${l.completed ? icon.inner : (i + 1)}</span>
+        <div class="flex-grow-1">
+          <div class="fw-bold" style="font-size:.92rem">${esc(l.title)}</div>
+          <div class="text-soft" style="font-size:.78rem">${esc(durationLabel)}${l.is_preview ? ' · Free preview' : ''}</div>
+        </div>
+        ${action}
+      </div>`;
+  }
+
+  // Module's own quiz row, styled like a lesson row but linking to the
+  // dedicated module-quiz page and showing pass/fail once attempted.
+  function moduleQuizRow(mod, enrolled, isLast) {
+    const status = mod.quiz_status;
+    const passed = !!(status && status.passed);
+    const attempted = status && status.best_score_percent != null;
+    const icon = passed
+      ? { bg: 'var(--s21-primary-light)', color: 'var(--s21-primary)', inner: '<i class="fa-solid fa-check"></i>' }
+      : { bg: '#F1F3F5', color: '#8A93A0', inner: '<i class="fa-solid fa-circle-question"></i>' };
+    const sub = passed
+      ? `Passed · ${status.best_score_percent}%`
+      : attempted
+        ? `Best attempt ${status.best_score_percent}% · needs ${status.passing_score}%`
+        : `Quiz · needs ${mod.passing_score}% to pass`;
+    const action = enrolled
+      ? `<a href="module-quiz.html?module=${mod.id}" class="btn-s21 ${passed ? '' : 'btn-s21-outline'}" style="padding:.4rem .9rem;font-size:.78rem">${passed ? 'Review' : (attempted ? 'Retake' : 'Take quiz')}</a>`
+      : `<span class="text-soft" style="font-size:.78rem"><i class="fa-solid fa-lock"></i> Locked</span>`;
+    return `
+      <div class="d-flex align-items-center gap-3 p-3 ${isLast ? '' : 'border-bottom'}" style="background:rgba(0,0,0,.015)">
+        <span class="d-flex align-items-center justify-content-center" style="width:34px;height:34px;border-radius:50%;background:${icon.bg};color:${icon.color};font-size:.85rem;flex-shrink:0">${icon.inner}</span>
+        <div class="flex-grow-1">
+          <div class="fw-bold" style="font-size:.92rem">${esc(mod.title)} Quiz</div>
+          <div class="text-soft" style="font-size:.78rem">${esc(sub)}</div>
+        </div>
+        ${action}
+      </div>`;
+  }
+
+  // PHASE 8: renders Module -> Lessons (+ Quiz) blocks, followed by any
+  // ungrouped lessons (older/simpler courses with no modules at all —
+  // rendered exactly as before, flat).
+  function renderCurriculum(modules, ungroupedLessons, enrolled) {
+    const totalItems = modules.reduce((n, m) => n + m.lessons.length + (m.quiz_id ? 1 : 0), 0) + ungroupedLessons.length;
+    if (!totalItems) {
       els.curriculum.innerHTML = '<div class="p-3 text-soft" style="font-size:.85rem">Lessons are being prepared for this course.</div>';
       return;
     }
-    els.curriculum.innerHTML = lessons.map((l, i) => {
-      const icon = lessonIcon(l);
-      const canOpen = enrolled || l.is_preview;
-      const durationLabel = l.duration_seconds
-        ? `${Math.floor(l.duration_seconds / 60)}:${String(l.duration_seconds % 60).padStart(2, '0')}`
-        : (l.content_type === 'quiz' ? 'Quiz' : l.content_type.charAt(0).toUpperCase() + l.content_type.slice(1));
-      const action = canOpen
-        ? `<a href="lesson.html?id=${l.id}" class="btn-s21 ${l.completed ? '' : 'btn-s21-outline'}" style="padding:.4rem .9rem;font-size:.78rem">${l.completed ? 'Review' : 'Start'}</a>`
-        : `<span class="text-soft" style="font-size:.78rem"><i class="fa-solid fa-lock"></i> Locked</span>`;
-      return `
-        <div class="d-flex align-items-center gap-3 p-3 ${i < lessons.length - 1 ? 'border-bottom' : ''}">
-          <span class="d-flex align-items-center justify-content-center" style="width:34px;height:34px;border-radius:50%;background:${icon.bg};color:${icon.color};font-size:.85rem;flex-shrink:0">${icon.completed ? icon.inner : (i + 1)}</span>
+
+    const blocks = [];
+
+    modules.forEach((mod, mi) => {
+      const rows = mod.lessons.map((l, i) => lessonRow(l, i, mod.lessons.length + (mod.quiz_id ? 1 : 0), enrolled)).join('');
+      const quizRow = mod.quiz_id ? moduleQuizRow(mod, enrolled, true) : '';
+      blocks.push(`
+        <div class="${mi < modules.length - 1 || ungroupedLessons.length ? 'border-bottom' : ''}">
+          <div class="p-3 fw-bold" style="font-size:.85rem;background:#FAFBFC">Module ${mi + 1}: ${esc(mod.title.replace(/^module\s*\d+\s*:\s*/i, ''))}</div>
+          ${rows}${quizRow}
+        </div>`);
+    });
+
+    if (ungroupedLessons.length) {
+      blocks.push(ungroupedLessons.map((l, i) => lessonRow(l, i, ungroupedLessons.length, enrolled)).join(''));
+    }
+
+    els.curriculum.innerHTML = blocks.join('');
+  }
+
+  // PHASE 8: Final Exam card — locked until the required lesson
+  // percentage is met, then a take/retake button, then a pass banner.
+  function renderFinalExam(finalExam, enrolled) {
+    if (!finalExam) { els.finalExamWrap.style.display = 'none'; return; }
+    els.finalExamWrap.style.display = '';
+
+    if (!enrolled) {
+      els.finalExam.innerHTML = `<div class="text-soft" style="font-size:.85rem"><i class="fa-solid fa-lock"></i> Enroll and complete the course content to unlock the final exam.</div>`;
+      return;
+    }
+    if (finalExam.passed) {
+      els.finalExam.innerHTML = `
+        <div class="d-flex align-items-center gap-3">
+          <span class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;border-radius:50%;background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-check fa-lg"></i></span>
           <div class="flex-grow-1">
-            <div class="fw-bold" style="font-size:.92rem">${esc(l.title)}</div>
-            <div class="text-soft" style="font-size:.78rem">${esc(durationLabel)}${l.is_preview ? ' · Free preview' : ''}</div>
+            <div class="fw-bold">Passed — ${finalExam.best_score_percent}%</div>
+            <div class="text-soft" style="font-size:.82rem">Needed ${finalExam.passing_score}% to pass.</div>
           </div>
-          ${action}
+          <a href="final-exam.html?course=${encodeURIComponent(els.crumb.dataset.courseKey || '')}" class="btn-s21 btn-s21-outline" style="padding:.5rem 1rem;font-size:.82rem">Review</a>
         </div>`;
-    }).join('');
+      return;
+    }
+    if (!finalExam.unlocked) {
+      els.finalExam.innerHTML = `<div class="text-soft" style="font-size:.85rem"><i class="fa-solid fa-lock"></i> Complete more of the course content to unlock the final exam.</div>`;
+      return;
+    }
+    const attemptedLine = finalExam.best_score_percent != null
+      ? `<div class="text-soft" style="font-size:.82rem">Best attempt so far: ${finalExam.best_score_percent}% — needs ${finalExam.passing_score}% to pass.</div>`
+      : `<div class="text-soft" style="font-size:.82rem">Needs ${finalExam.passing_score}% to pass and complete the course.</div>`;
+    els.finalExam.innerHTML = `
+      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div>
+          <div class="fw-bold mb-1">Ready when you are</div>
+          ${attemptedLine}
+        </div>
+        <a href="final-exam.html?course=${encodeURIComponent(els.crumb.dataset.courseKey || '')}" class="btn-s21 btn-s21-primary" style="padding:.6rem 1.1rem;font-size:.85rem">${finalExam.best_score_percent != null ? 'Retake exam' : 'Take final exam'}</a>
+      </div>`;
+  }
+
+  // PHASE 8: shown once a certificate has actually been issued — never
+  // fabricated client-side, always reflects a real row from the API.
+  function renderCertificate(certificate, courseTitle) {
+    if (!certificate) { els.certificateWrap.style.display = 'none'; return; }
+    els.certificateWrap.style.display = '';
+    els.certificate.innerHTML = `
+      <span class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:52px;height:52px;border-radius:50%;background:var(--s21-primary-light);color:var(--s21-primary)"><i class="fa-solid fa-award fa-lg"></i></span>
+      <div class="flex-grow-1">
+        <div class="fw-bold">You earned a certificate!</div>
+        <div class="text-soft" style="font-size:.82rem">${esc(courseTitle)} — code ${esc(certificate.code)}</div>
+      </div>
+      <a href="certificate.html?code=${encodeURIComponent(certificate.code)}" class="btn-s21 btn-s21-primary" style="padding:.55rem 1.1rem;font-size:.85rem">View certificate</a>`;
   }
 
   async function main() {
@@ -101,7 +210,11 @@
     const isLocal = !!data.local;
 
     const { course, lessons, enrollment } = data;
+    const modules = data.modules || [];
+    const ungroupedLessons = data.ungrouped_lessons || (modules.length ? [] : lessons);
+    const progress = data.progress || null;
     els.contentSection.style.display = '';
+    els.crumb.dataset.courseKey = course.slug || course.id || key;
 
     document.title = `${course.title} — Smart21Brain`;
     els.crumb.textContent = course.title;
@@ -134,20 +247,41 @@
 
     const isEnrolled = !!enrollment;
     const isActive = isEnrolled && enrollment.payment_status !== 'pending';
-    renderCurriculum(lessons, isActive, course.is_free);
+    renderCurriculum(modules, ungroupedLessons, isActive);
 
     // Sidebar: progress (if actively enrolled) or price (if not)
     if (isActive) {
-      const total = lessons.length;
-      const done = lessons.filter((l) => l.completed).length;
-      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      let pct, doneCount, totalCount;
+      if (progress) {
+        pct = progress.progress_percent;
+        doneCount = progress.completed_lessons;
+        totalCount = progress.total_lessons;
+      } else {
+        totalCount = lessons.length;
+        doneCount = lessons.filter((l) => l.completed).length;
+        pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+      }
       els.progressBlock.style.display = '';
       els.progressBar.style.width = `${pct}%`;
       els.progressPct.textContent = `${pct}% complete`;
-      els.progressCount.textContent = `${done} / ${total} lessons`;
+      els.progressCount.textContent = `${doneCount} / ${totalCount} lessons`;
+
+      if (progress && progress.final_exam) {
+        els.progressGate.style.display = '';
+        els.progressGate.textContent = progress.lessons_requirement_met
+          ? (progress.final_exam.passed ? 'Course completed — final exam passed.' : `Final exam unlocked — needs ${progress.final_exam.passing_score}% to pass.`)
+          : `Reach ${progress.required_percent}% to unlock the final exam.`;
+      } else {
+        els.progressGate.style.display = 'none';
+      }
+
+      renderFinalExam(progress ? progress.final_exam : null, true);
+      renderCertificate(progress ? progress.certificate : null, course.title);
     } else {
       els.priceBlock.style.display = '';
       els.priceLabel.textContent = course.is_free ? 'Free' : `TZS ${Number(course.price).toLocaleString()}`;
+      renderFinalExam(null, false);
+      renderCertificate(null, course.title);
     }
 
     // Includes list — built from what's actually true about this course.

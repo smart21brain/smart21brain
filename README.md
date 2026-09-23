@@ -385,6 +385,65 @@ language explanation after every answer, running score, and a results
 screen with a score-based message. Swap the `QUESTIONS` array to make a
 new quiz (Mathematics Quiz, Science Quiz, etc.) — everything else is reused.
 
+### Course Engine (Phase 8) — Modules, Final Exam, Certificates
+
+The real (backend-wired) course engine, separate from the standalone
+`js/quiz.js` demo above, now follows:
+
+```
+Course
+│
+├── Module 1
+│   ├── Lesson 1
+│   ├── Lesson 2
+│   └── Quiz            (a normal `quizzes` row — no separate authoring system)
+│
+├── Module 2
+│   ├── Lesson 3
+│   ├── Lesson 4
+│   └── Quiz
+│
+└── Final Exam           (optional; sits above the modules, not inside one)
+```
+
+and the completion algorithm:
+
+```
+Lessons completed → Required percentage → Final assessment →
+Passing score → Course completed → Certificate
+```
+
+A course's "units" are its lessons plus one unit per module that has its
+own quiz; once enough are done to clear `courses.passing_score` (the
+required %), the optional Final Exam unlocks, and clearing
+`final_exam_passing_score` on it is what actually completes the course —
+issuing a certificate automatically the first time every gate clears. A
+course with no final exam completes as soon as the percentage gate is
+met, so every course built before Phase 8 keeps working unchanged, and
+`module_id` on a lesson is nullable so a course can stay a flat lesson
+list forever if that's all it needs.
+
+- **`src/lib/course-engine.js`** — the shared calculation + certificate
+  issuance, called from lesson completion and from quiz-attempt
+  submission (`src/handlers/course-lessons.js`, `src/handlers/quizzes.js`).
+- **`src/handlers/course-modules.js`**, **`src/handlers/certificates.js`**
+  — module CRUD, and certificate lookup/public verification.
+- **`module-quiz.html`/`js/module-quiz.js`** and **`final-exam.html`/
+  `js/final-exam.js`** — the two quiz-taking pages the course page links
+  to; the final exam page refuses to render until the API reports
+  `progress.final_exam.unlocked`.
+- **`certificate.html`/`js/certificate.js`** — a printable certificate,
+  and the same page anyone can open with just the code to verify it's
+  real (`GET /api/certificates/:code`, public, no sign-in), the same
+  pattern `school-verify.html` uses for student ID cards.
+- **Demo course**: *Fractions Made Fun* is fully built out end-to-end —
+  2 modules with real quizzes + a 5-question final exam — so the engine
+  ships with one real, click-through-able example rather than an empty
+  skeleton.
+- See `course-engine-schema.sql` for the schema and
+  `migrations/phase8-course-engine-v2.sql` for upgrading a database that
+  was already running before Phase 8 existed.
+
 
 ## Design tokens
 

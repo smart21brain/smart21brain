@@ -6,6 +6,8 @@ import * as blog from './handlers/blog.js';
 import * as materials from './handlers/materials.js';
 import * as courses from './handlers/courses.js';
 import * as courseLessons from './handlers/course-lessons.js';
+import * as courseModules from './handlers/course-modules.js';
+import * as certificates from './handlers/certificates.js';
 import * as videos from './handlers/videos.js';
 import * as books from './handlers/books.js';
 import * as users from './handlers/users.js';
@@ -113,6 +115,17 @@ router.delete('/api/courses/:id/lessons/:lessonId', courseLessons.deleteLesson);
 
 router.get('/api/lessons/:id', courseLessons.getLesson);
 router.post('/api/lessons/:id/complete', courseLessons.completeLesson);
+
+// ---- PHASE 8: modules (Course -> Module -> Lessons + Quiz -> ... -> Final Exam) ----
+router.get('/api/courses/:id/modules', courseModules.listModules);
+router.post('/api/courses/:id/modules', courseModules.createModule);
+router.put('/api/course-modules/:moduleId', courseModules.updateModule);
+router.delete('/api/course-modules/:moduleId', courseModules.deleteModule);
+
+// ---- PHASE 8: certificates ----
+router.get('/api/courses/:id/certificate', certificates.myCertificate);
+router.get('/api/certificates/my', certificates.myCertificates);
+router.get('/api/certificates/:code', certificates.verifyCertificate);
 
 // ---- Materials (R2) ----
 router.get('/api/materials', materials.listMaterials);

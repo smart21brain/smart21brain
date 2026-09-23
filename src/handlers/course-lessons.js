@@ -1,6 +1,7 @@
 import { getSessionUser, json, badRequest, unauthorized, forbidden, notFound } from '../lib/auth.js';
+import { syncCourseCompletion } from '../lib/course-engine.js';
 
-async function canManageCourse(env, user, courseId) {
+export async function canManageCourse(env, user, courseId) {
   if (!user) return false;
   if (user.role === 'admin') return true;
   if (user.role !== 'teacher') return false;
@@ -32,10 +33,10 @@ export async function createLesson({ request, params, env }) {
   ).bind(params.id).first();
 
   const result = await env.DB.prepare(
-    `INSERT INTO course_lessons (course_id, title, content_type, video_id, material_id, quiz_id, body, duration_seconds, sort_order, is_preview)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO course_lessons (course_id, module_id, title, content_type, video_id, material_id, quiz_id, body, duration_seconds, sort_order, is_preview)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
-    params.id, body.title, contentType,
+    params.id, body.module_id || null, body.title, contentType,
     body.video_id || null, body.material_id || null, body.quiz_id || null,
     body.body || null, body.duration_seconds || null,
     Number.isFinite(body.sort_order) ? body.sort_order : count + 1,
@@ -57,9 +58,10 @@ export async function updateLesson({ request, params, env }) {
   const contentType = ['text', 'video', 'pdf', 'quiz'].includes(body.content_type) ? body.content_type : lesson.content_type;
 
   await env.DB.prepare(
-    `UPDATE course_lessons SET title = ?, content_type = ?, video_id = ?, material_id = ?, quiz_id = ?,
+    `UPDATE course_lessons SET module_id = ?, title = ?, content_type = ?, video_id = ?, material_id = ?, quiz_id = ?,
       body = ?, duration_seconds = ?, sort_order = ?, is_preview = ? WHERE id = ?`
   ).bind(
+    body.module_id !== undefined ? body.module_id : lesson.module_id,
     body.title ?? lesson.title, contentType,
     body.video_id ?? lesson.video_id, body.material_id ?? lesson.material_id, body.quiz_id ?? lesson.quiz_id,
     body.body ?? lesson.body, body.duration_seconds ?? lesson.duration_seconds,
@@ -160,30 +162,17 @@ export async function completeLesson({ request, params, env }) {
      ON CONFLICT(user_id, lesson_id) DO UPDATE SET completed = excluded.completed, completed_at = excluded.completed_at`
   ).bind(user.id, lesson.id, completed ? 1 : 0, completed ? new Date().toISOString() : null).run();
 
-  const totals = await env.DB.prepare(
-    `SELECT
-       (SELECT COUNT(*) FROM course_lessons WHERE course_id = ?) AS total,
-       (SELECT COUNT(*) FROM lesson_progress lp JOIN course_lessons cl ON cl.id = lp.lesson_id
-          WHERE lp.user_id = ? AND cl.course_id = ? AND lp.completed = 1) AS done`
-  ).bind(lesson.course_id, user.id, lesson.course_id).first();
-
-  const course = await env.DB.prepare('SELECT passing_score, certificate_enabled FROM courses WHERE id = ?').bind(lesson.course_id).first();
-  const percent = totals.total > 0 ? Math.round((totals.done / totals.total) * 100) : 0;
-  const courseCompleted = percent >= (course?.passing_score ?? 70);
-
-  if (courseCompleted && enrollment.status !== 'completed') {
-    await env.DB.prepare(
-      "UPDATE course_enrollments SET status = 'completed', completed_at = datetime('now') WHERE id = ?"
-    ).bind(enrollment.id).run();
-  } else if (!courseCompleted && enrollment.status === 'completed') {
-    await env.DB.prepare(
-      "UPDATE course_enrollments SET status = 'active', completed_at = NULL WHERE id = ?"
-    ).bind(enrollment.id).run();
-  }
+  const course = await env.DB.prepare('SELECT * FROM courses WHERE id = ?').bind(lesson.course_id).first();
+  const progress = await syncCourseCompletion(env, user.id, course);
 
   return json({
-    ok: true, completed, progress_percent: percent,
-    completed_lessons: totals.done, total_lessons: totals.total,
-    course_completed: courseCompleted,
+    ok: true, completed,
+    progress_percent: progress.progress_percent,
+    completed_lessons: progress.completed_lessons, total_lessons: progress.total_lessons,
+    required_percent: progress.required_percent,
+    lessons_requirement_met: progress.lessons_requirement_met,
+    final_exam: progress.final_exam,
+    course_completed: progress.course_completed,
+    certificate: progress.certificate,
   });
 }
