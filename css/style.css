@@ -792,6 +792,9 @@ body {
 .subj-memory-bg { background-image: url('https://images.unsplash.com/photo-1550439062-609e1531270e?w=1920&q=70&auto=format&fit=crop'); }
 .subj-memory-bg::before { background: rgba(28, 18, 64, .8); } /* deep indigo overlay for Memory & Logic games */
 
+.subj-geo-bg { background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=70&auto=format&fit=crop'); }
+.subj-geo-bg::before { background: rgba(10, 66, 62, .8); } /* deep teal-green overlay for Geography games */
+
 /* ---- Testimonials ("Loved by families") section background ---- */
 .section-testimonials-bg {
   position: relative;

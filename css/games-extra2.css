@@ -1,0 +1,121 @@
+/* Smart21Brain — games-extra2.css
+   Styles for the second wave of games: Sudoku, Code Breaker, Tic-Tac-Toe,
+   Word Scramble, and the shared difficulty picker used by Math Speed,
+   Money Math, Binary Numbers, Flag Quiz, Periodic Table Quiz, Tanzania
+   Regions, and HTML Tag Challenge. Loaded alongside games-extra.css. */
+
+/* ---- Shared difficulty picker ---- */
+.difficulty-row { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin: 0 0 1.4rem; }
+.difficulty-btn {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: var(--radius-pill);
+  color: #fff;
+  padding: .5rem 1.2rem;
+  font-weight: 700;
+  font-size: .85rem;
+  transition: all .18s var(--ease);
+}
+.difficulty-btn:hover { background: rgba(255,255,255,.22); }
+.difficulty-btn.is-active { background: var(--s21-secondary); color: #3D2B00; border-color: var(--s21-secondary); }
+
+/* ---- Sudoku ---- */
+.sudoku-grid {
+  display: grid;
+  gap: 2px;
+  background: rgba(255,255,255,.35);
+  padding: 3px;
+  border-radius: 10px;
+  margin: 0 auto 1.2rem;
+}
+.sudoku-cell {
+  width: 38px; height: 38px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  background: rgba(255,255,255,.14);
+  color: #fff;
+  border-radius: 3px;
+}
+.sudoku-cell.is-fixed { background: rgba(255,255,255,.32); color: #fff; }
+.sudoku-cell.is-error { background: var(--s21-accent); color: #fff; }
+.sudoku-cell.is-hint { background: var(--s21-secondary); color: #3D2B00; }
+.sudoku-cell:focus { outline: 2px solid var(--s21-secondary); outline-offset: -2px; }
+.sudoku-cell.box-edge-r { border-right: 2px solid rgba(255,255,255,.7); }
+.sudoku-cell.box-edge-b { border-bottom: 2px solid rgba(255,255,255,.7); }
+@media (max-width: 420px) { .sudoku-cell { width: 30px; height: 30px; font-size: .95rem; } }
+
+.sudoku-pad { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; margin-bottom: .6rem; }
+.sudoku-pad button {
+  width: 40px; height: 40px; border-radius: 10px; border: none;
+  background: rgba(255,255,255,.16); color: #fff; font-weight: 700; font-size: 1rem;
+}
+.sudoku-pad button:hover { background: rgba(255,255,255,.3); }
+.sudoku-pad button.is-erase { background: var(--s21-accent); }
+
+/* ---- Tic-Tac-Toe ---- */
+.ttt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 76px);
+  grid-template-rows: repeat(3, 76px);
+  gap: 6px;
+  margin: 0 auto 1rem;
+}
+.ttt-cell {
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+}
+.ttt-cell:hover:not(:disabled) { background: rgba(255,255,255,.24); }
+.ttt-cell:disabled { opacity: 1; }
+.ttt-cell.is-x { color: var(--s21-secondary); }
+.ttt-cell.is-o { color: #7BE3C8; }
+.ttt-cell.is-win { background: var(--s21-secondary); color: #3D2B00 !important; }
+@media (max-width: 420px) { .ttt-grid { grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); } .ttt-cell { font-size: 1.8rem; } }
+
+/* ---- Code Breaker (Mastermind style) ---- */
+.cb-history { display: flex; flex-direction: column-reverse; gap: .4rem; max-width: 320px; margin: 0 auto 1rem; max-height: 220px; overflow-y: auto; }
+.cb-guess-row { display: flex; align-items: center; gap: .6rem; justify-content: center; background: rgba(255,255,255,.08); border-radius: 10px; padding: .35rem .6rem; }
+.cb-pegs { display: flex; gap: .3rem; }
+.cb-peg { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); }
+.cb-peg.is-empty { background: rgba(255,255,255,.08); }
+.cb-feedback { display: grid; grid-template-columns: repeat(2, 8px); gap: 3px; }
+.cb-feedback span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.15); }
+.cb-feedback span.black { background: #fff; }
+.cb-feedback span.white { background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.7); }
+.cb-current { display: flex; gap: .5rem; justify-content: center; margin-bottom: 1rem; }
+.cb-slot { width: 40px; height: 40px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.5); }
+.cb-palette { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.cb-color-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); }
+.cb-color-btn:hover { transform: scale(1.08); }
+
+/* ---- Word Scramble ---- */
+.scramble-letters { display: flex; gap: .45rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.scramble-letter-btn {
+  width: 46px; height: 46px; border-radius: 10px; border: none;
+  background: rgba(255,255,255,.16); color: #fff;
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
+}
+.scramble-letter-btn:hover:not(:disabled) { background: rgba(255,255,255,.28); }
+.scramble-letter-btn:disabled { opacity: .25; }
+.scramble-answer {
+  min-height: 3.2rem; display: flex; gap: .45rem; justify-content: center; flex-wrap: wrap;
+  border: 2px dashed rgba(255,255,255,.4); border-radius: var(--radius-md);
+  padding: .5rem; max-width: 480px; margin: 0 auto 1rem;
+}
+.scramble-answer .scramble-letter-btn { background: var(--s21-secondary); color: #3D2B00; }
+.scramble-clue { font-size: .9rem; opacity: .9; margin-bottom: 1rem; }
+
+/* ---- Generic score/coming-soon roadmap card ---- */
+.game-card.is-soon { opacity: .55; cursor: default; pointer-events: none; position: relative; }
+.game-card.is-soon .soon-tag {
+  position: absolute; top: .5rem; right: .5rem;
+  background: rgba(0,0,0,.55); color: #fff; font-size: .62rem; font-weight: 800;
+  padding: .18rem .5rem; border-radius: var(--radius-pill); text-transform: uppercase; letter-spacing: .04em;
+}

@@ -5,9 +5,10 @@
    and leaderboard key — everything else (timer, lives, levels, HUD,
    leaderboard) is shared. */
 (function () {
-  const GAME_DURATION = 60; // seconds
-  const LIVES_START = 3;
   const LEVEL_UP_EVERY = 5; // correct answers
+  const DIFF_RANGE = { easy: 0, medium: 1, hard: 2 };
+
+  function toBinary(n) { return n.toString(2); }
 
   const OPERATIONS = {
     addition: {
@@ -43,11 +44,49 @@
         return { terms, answer: cur, display: `${terms.join(', ')}, ?` };
       },
     },
+    // Mixed +, -, x, ÷ — used by Math Speed Challenge. Difficulty widens the
+    // number range and unlocks division/negative-friendly subtraction.
+    mixed: {
+      symbol: null,
+      supportsDifficulty: true,
+      make(level, difficulty) {
+        const tier = DIFF_RANGE[difficulty] ?? 1;
+        const max = [10, 20, 40][tier] + level * 4;
+        const opsAvailable = tier === 0 ? ['+', '-'] : tier === 1 ? ['+', '-', '×'] : ['+', '-', '×', '÷'];
+        const symbol = opsAvailable[randInt(0, opsAvailable.length - 1)];
+        let a = randInt(1, max);
+        let b = randInt(1, max);
+        let answer;
+        if (symbol === '+') answer = a + b;
+        else if (symbol === '-') { if (b > a) [a, b] = [b, a]; answer = a - b; }
+        else if (symbol === '×') { a = randInt(1, Math.min(12, max)); b = randInt(1, 12); answer = a * b; }
+        else { b = randInt(2, Math.min(12, max)); answer = randInt(1, 12); a = b * answer; }
+        return { a, b, answer, display: `${a} ${symbol} ${b} = ?` };
+      },
+    },
+    // Binary <-> Decimal, direction picked at random each round — Binary Numbers Challenge.
+    binary: {
+      symbol: null,
+      supportsDifficulty: true,
+      make(level, difficulty) {
+        const tier = DIFF_RANGE[difficulty] ?? 1;
+        const max = [15, 63, 255][tier];
+        const n = randInt(0, max);
+        const toBin = Math.random() < 0.5;
+        return toBin
+          ? { n, answer: toBinary(n), display: `Decimal ${n} = ? (write in binary)` }
+          : { n, answer: String(n), display: `Binary ${toBinary(n)} = ? (write in decimal)` };
+      },
+      checkAnswer(raw, problem) { return raw.trim().replace(/^0+(?=\d)/, '') === problem.answer.replace(/^0+(?=\d)/, ''); },
+    },
   };
 
   const config = window.S21_GAME_CONFIG || { operation: 'addition', leaderboardKey: 's21-addition-race-scores' };
   const op = OPERATIONS[config.operation] || OPERATIONS.addition;
   const LEADERBOARD_KEY = config.leaderboardKey;
+  const GAME_DURATION = config.duration || 60;
+  const LIVES_START = config.lives || 3;
+  let difficulty = 'medium';
 
   let state = null;
   let timerId = null;
@@ -115,7 +154,7 @@
   }
 
   function startGame() {
-    state = { score: 0, level: 1, lives: LIVES_START, timeLeft: GAME_DURATION, correctStreak: 0, problem: op.make(1) };
+    state = { score: 0, level: 1, lives: LIVES_START, timeLeft: GAME_DURATION, correctStreak: 0, problem: op.make(1, difficulty) };
     $('game-start-screen').classList.add('d-none');
     $('game-over-screen').classList.add('d-none');
     $('game-play-screen').classList.remove('d-none');
@@ -143,10 +182,12 @@
     e.preventDefault();
     if (!state || state.timeLeft <= 0) return;
     const input = $('game-answer-input');
-    const value = parseInt(input.value, 10);
+    const raw = input.value;
+    const value = op.checkAnswer ? null : parseInt(raw, 10);
+    const isCorrect = op.checkAnswer ? op.checkAnswer(raw, state.problem) : value === state.problem.answer;
     const feedback = $('game-feedback');
 
-    if (value === state.problem.answer) {
+    if (isCorrect) {
       state.score += 10 * state.level;
       state.correctStreak += 1;
       feedback.textContent = window.S21_t ? window.S21_t('runtime_correct') : 'Correct! ✓';
@@ -165,7 +206,7 @@
 
     if (state.lives <= 0) { endGame(); return; }
 
-    state.problem = op.make(state.level);
+    state.problem = op.make(state.level, difficulty);
     renderProblem();
     input.focus();
     setTimeout(() => { if (feedback) feedback.textContent = ''; }, 900);
@@ -177,6 +218,14 @@
     $('game-start-btn').addEventListener('click', startGame);
     $('game-restart-btn')?.addEventListener('click', startGame);
     $('game-answer-form')?.addEventListener('submit', handleAnswer);
+
+    const diffBtns = document.querySelectorAll('.difficulty-btn[data-diff]');
+    if (diffBtns.length) {
+      diffBtns.forEach((btn) => btn.addEventListener('click', () => {
+        difficulty = btn.dataset.diff;
+        diffBtns.forEach((b) => b.classList.toggle('is-active', b === btn));
+      }));
+    }
 
     $('game-save-score-form')?.addEventListener('submit', (e) => {
       e.preventDefault();
