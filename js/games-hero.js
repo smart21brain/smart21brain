@@ -70,23 +70,38 @@
   const typeTarget = document.getElementById('gamesHeroTypeText');
   const cursor = document.getElementById('gamesHeroCursor');
   if (typeTarget) {
-    const text = typeTarget.getAttribute('data-text') || '';
-    const speed = 38;
-    const startDelay = 600;
-    let i = 0;
+    let activeTimers = [];
+    const clearTimers = () => {
+      activeTimers.forEach((id) => clearTimeout(id));
+      activeTimers = [];
+    };
+    const startTypewriter = () => {
+      clearTimers();
+      const text = (window.S21_t ? window.S21_t('games_hero_type_text') : (typeTarget.getAttribute('data-text') || ''));
+      typeTarget.setAttribute('data-text', text);
+      typeTarget.textContent = '';
+      if (cursor) cursor.classList.remove('is-done');
 
-    setTimeout(() => {
-      const tick = () => {
-        i += 1;
-        typeTarget.textContent = text.slice(0, i);
-        if (i < text.length) {
-          setTimeout(tick, speed);
-        } else if (cursor) {
-          cursor.classList.add('is-done');
-        }
-      };
-      tick();
-    }, startDelay);
+      const speed = 38;
+      const startDelay = 600;
+      let i = 0;
+
+      activeTimers.push(setTimeout(() => {
+        const tick = () => {
+          i += 1;
+          typeTarget.textContent = text.slice(0, i);
+          if (i < text.length) {
+            activeTimers.push(setTimeout(tick, speed));
+          } else if (cursor) {
+            cursor.classList.add('is-done');
+          }
+        };
+        tick();
+      }, startDelay));
+    };
+
+    startTypewriter();
+    document.addEventListener('s21-lang-changed', startTypewriter);
   }
 
   /* ---------- Pills fade-in (independent of typewriter) ---------- */
