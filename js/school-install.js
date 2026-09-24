@@ -7,7 +7,7 @@
  *      "Download the app" button (native install prompt where the browser
  *      supports it, clear step-by-step help where it doesn't),
  *   3. shows a one-time popup offering the download when the System is opened
- *      (only on pages with  data-school-install-popup  on <html>).
+ *      (every visit, only on pages with  data-school-install-popup  on <html>; never inside the installed app).
  *
  * Nothing here touches the rest of the site or the school app's own code.
  */
@@ -181,13 +181,11 @@
     });
   }
 
-  function snooze() { store(function () { localStorage.setItem(SNOOZE_KEY, String(Date.now() + SNOOZE_MS)); }); }
+  function snooze() { /* "Not now" only closes it for this page view; it returns next visit. */ }
 
-  function shouldPopup() {
-    if (alreadyInstalled()) return false;
-    var until = Number(store(function () { return localStorage.getItem(SNOOZE_KEY); }) || 0);
-    return Date.now() > until;
-  }
+  // The popup shows on EVERY visit to the school pages and after every login.
+  // The only time it stays away is inside the installed app itself.
+  function shouldPopup() { return !isStandalone; }
 
   function showPopup() {
     if (!shouldPopup() || overlay) return;

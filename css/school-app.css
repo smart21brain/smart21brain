@@ -442,3 +442,11 @@ body.sc-body {
 .sc-pop button { display: flex; align-items: center; gap: .65rem; width: 100%; border: 0; background: none; padding: .55rem .7rem; border-radius: 10px; font-weight: 600; cursor: pointer; text-align: left; color: var(--sc-text); }
 .sc-pop button:hover { background: var(--sc-primary-50); } .sc-pop button.danger { color: var(--sc-danger); } .sc-pop button.danger:hover { background: var(--sc-danger-bg); }
 .sc-pop button i { width: 16px; text-align: center; color: var(--sc-muted); } .sc-pop button.danger i { color: var(--sc-danger); }
+
+/* ===== app background (a different image from the marketing pages) =====
+   images/school/bg-app-light.svg / bg-app-dark.svg — a tiled pattern of
+   school icons over a soft green glow. Cards and the sidebar stay solid, so
+   the pattern only shows around them. */
+body.sc-body { background-image: url("../images/school/bg-app-light.svg"); background-size: 520px; background-attachment: fixed; }
+[data-theme="dark"] body.sc-body { background-image: url("../images/school/bg-app-dark.svg"); }
+.sc-auth-art { background-image: url("../images/school/bg-app-dark.svg"), linear-gradient(150deg, var(--sc-primary), #0A5B57); background-size: 420px, cover; }

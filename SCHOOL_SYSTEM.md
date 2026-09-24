@@ -79,6 +79,6 @@ icons/school-*.png       app icons
   (currently on the home hero, the home School System section, and both CTA rows
   of school.html).
 - The popup appears on pages whose `<html>` tag has `data-school-install-popup`
-  (school.html, school-login.html, school-app.html). "Not now" hides it for 7 days.
+  (school.html, school-login.html, school-app.html). It shows on every visit and after every login; "Not now" only closes it for that visit.
 - Chrome/Edge/Android get the native install prompt; iPhone/iPad and Firefox get
   step-by-step instructions. It needs HTTPS (Cloudflare provides this).
