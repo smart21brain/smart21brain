@@ -63,3 +63,22 @@ file). Local `wrangler dev` does not return `206 Partial Content` for
 static assets, so seeking may not work when testing locally — confirm it
 works once deployed, since Cloudflare's production static-asset serving
 supports Range requests.
+
+## Download / install the app
+
+The School System is an installable web app (PWA).
+
+```
+school-manifest.json     app name, icons, start page (school-app.html)
+school-sw.js             tiny service worker, scope "/school-" (never touches /api/*)
+js/school-install.js     download buttons + one-time "Download the app" popup
+icons/school-*.png       app icons
+```
+
+- Any element with the attribute `data-school-install` becomes a download button
+  (currently on the home hero, the home School System section, and both CTA rows
+  of school.html).
+- The popup appears on pages whose `<html>` tag has `data-school-install-popup`
+  (school.html, school-login.html, school-app.html). "Not now" hides it for 7 days.
+- Chrome/Edge/Android get the native install prompt; iPhone/iPad and Firefox get
+  step-by-step instructions. It needs HTTPS (Cloudflare provides this).

@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-school-install-popup>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>School System — Smart21Brain</title>
 <meta name="description" content="The Smart21Brain School System: manage students, teachers, parents, attendance, fees, examinations, timetables and reports for any school or tuition center.">
 <link rel="canonical" href="https://smart21brain.com/school.html">
+<meta name="theme-color" content="#0B6E4F">
+<link rel="manifest" href="school-manifest.json">
+<link rel="apple-touch-icon" href="icons/school-apple-touch.png" data-school="1">
 <link rel="icon" href="images/logo/coool.png" type="image/png">
 <link rel="icon" href="images/logo/coool.png" type="image/png">
-<link rel="apple-touch-icon" href="images/logo/coool.png">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
@@ -95,6 +97,7 @@
           <div class="d-flex flex-wrap gap-2 mt-4">
             <a href="school-login.html#register" class="btn-s21 btn-s21-primary btn-lg"><i class="fa-solid fa-school-flag"></i> Register your school</a>
             <a href="school-login.html" class="btn-s21 btn-s21-outline btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Sign in</a>
+            <a href="school-app.html" data-school-install class="btn-s21 btn-s21-outline btn-lg"><i class="fa-solid fa-download"></i> Download the app</a>
           </div>
           <p class="text-soft mt-3" style="font-size:.82rem"><i class="fa-solid fa-circle-info"></i> Free to set up. Explore instantly with one-click sample data.</p>
         </div>
@@ -269,6 +272,7 @@
         <div class="d-flex flex-wrap gap-2 justify-content-center">
           <a href="school-login.html#register" class="btn-s21 btn-s21-primary"><i class="fa-solid fa-school-flag"></i> Register your school</a>
           <a href="school-login.html" class="btn-s21 btn-s21-outline"><i class="fa-solid fa-right-to-bracket"></i> Sign in to an existing school</a>
+          <a href="school-app.html" data-school-install class="btn-s21 btn-s21-outline"><i class="fa-solid fa-download"></i> Download the app</a>
         </div>
       </div>
     </div>
@@ -378,6 +382,7 @@
 <script src="js/nav-account.js"></script>
 <script src="js/video.js"></script>
 <script>AOS.init({duration:650,once:true,offset:60});</script>
+<script src="js/school-install.js?v=1"></script>
 <script src="js/cookie-consent.js"></script>
 </body>
 </html>

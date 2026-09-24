@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-school-install-popup>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign in — Smart21Brain School System</title>
 <meta name="description" content="Sign in to the Smart21Brain School System, or register your school in a minute.">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B6E4F">
+<link rel="manifest" href="school-manifest.json">
+<link rel="apple-touch-icon" href="icons/school-apple-touch.png" data-school="1">
 <link rel="icon" href="images/school/logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,5 +100,6 @@
   submit(inForm, '/login', 'Login'); submit(upForm, '/register-school', 'Create my school');
 })();
 </script>
+<script src="js/school-install.js?v=1"></script>
 </body>
 </html>
