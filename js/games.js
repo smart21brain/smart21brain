@@ -79,6 +79,37 @@
       },
       checkAnswer(raw, problem) { return raw.trim().replace(/^0+(?=\d)/, '') === problem.answer.replace(/^0+(?=\d)/, ''); },
     },
+    // Solve for x in simple linear equations — Equation Solver.
+    equation: {
+      symbol: null,
+      supportsDifficulty: true,
+      make(level, difficulty) {
+        const tier = DIFF_RANGE[difficulty] ?? 1;
+        const xMax = [10, 15, 25][tier];
+        const x = randInt(1, xMax);
+        const a = randInt(2, [4, 6, 9][tier]);
+        const bMax = [15, 30, 50][tier];
+        const b = randInt(0, bMax);
+        const useSubtract = Math.random() < 0.5 && tier > 0;
+        const c = useSubtract ? a * x - b : a * x + b;
+        const display = useSubtract ? `${a}x − ${b} = ${c}   (find x)` : `${a}x + ${b} = ${c}   (find x)`;
+        return { a, b, c, answer: x, display };
+      },
+    },
+    // Exact-division problems — Division Challenge.
+    division: {
+      symbol: '÷',
+      supportsDifficulty: true,
+      make(level, difficulty) {
+        const tier = DIFF_RANGE[difficulty] ?? 1;
+        const bMax = [10, 12, 12][tier];
+        const quotMax = [10, 20, 50][tier];
+        const b = randInt(2, bMax);
+        const answer = randInt(1, quotMax);
+        const a = b * answer;
+        return { a, b, answer, display: `${a} ÷ ${b} = ?` };
+      },
+    },
   };
 
   const config = window.S21_GAME_CONFIG || { operation: 'addition', leaderboardKey: 's21-addition-race-scores' };

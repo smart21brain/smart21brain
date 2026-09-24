@@ -250,3 +250,20 @@
   background: rgba(255,255,255,.1); color: #fff;
 }
 #kb-input:focus { outline: none; border-color: var(--s21-secondary); }
+
+/* ---- Story Builder ---- */
+.story-bank { display: flex; flex-direction: column; gap: .5rem; max-width: 560px; margin: 0 auto 1rem; }
+.story-sentence-btn {
+  text-align: left; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px; color: #fff; padding: .6rem .9rem; font-size: .88rem; line-height: 1.4;
+}
+.story-sentence-btn:hover:not(:disabled) { background: rgba(255,255,255,.24); }
+.story-sentence-btn:disabled { opacity: .25; }
+.story-answer { max-width: 560px; margin: 0 auto 1rem; text-align: left; min-height: 3rem; }
+.story-answer-line { background: rgba(11,110,79,.25); border-radius: 8px; padding: .5rem .8rem; margin-bottom: .4rem; font-size: .86rem; color: #fff; }
+.story-num { font-weight: 800; color: var(--s21-secondary); margin-right: .3rem; }
+
+/* ---- Time & Clock Challenge / Pronunciation Challenge ---- */
+#clock-svg { width: 220px; height: 220px; margin: 0 auto 1.2rem; display: block; }
+#pron-replay-btn { margin-bottom: 1rem; }
+#pron-no-speech { font-size: .8rem; color: rgba(255,255,255,.75); }
