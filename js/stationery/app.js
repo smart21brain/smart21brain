@@ -66,6 +66,7 @@
         <div class="stn-sub" id="stnBusinessName">—</div>
       </div>
       <div class="ms-auto d-flex align-items-center gap-2">
+        <button class="stn-icon-btn" id="stnLangToggle" data-lang-toggle aria-label="Switch language" title="Switch language">EN</button>
         <button class="stn-icon-btn" id="stnNotifBtn" title="Notifications">
           <i class="fa-solid fa-bell"></i>
           <span class="badge-dot" id="stnNotifBadge" style="display:none;position:absolute;top:-4px;right:-4px"></span>
@@ -99,6 +100,21 @@
     document.querySelectorAll('.stn-nav-link').forEach((el) => {
       el.addEventListener('click', () => { location.hash = '#' + el.dataset.route; });
     });
+    const stnLangToggle = document.getElementById('stnLangToggle');
+    const syncStationeryLangToggle = () => {
+      const current = (() => { try { return localStorage.getItem('s21-lang') || 'en'; } catch (e) { return 'en'; } })();
+      if (!stnLangToggle) return;
+      stnLangToggle.textContent = current === 'en' ? 'SW' : 'EN';
+      stnLangToggle.setAttribute('title', current === 'en' ? 'Switch to Kiswahili' : 'Switch to English');
+    };
+    if (stnLangToggle) {
+      stnLangToggle.addEventListener('click', () => {
+        const next = (() => { try { return localStorage.getItem('s21-lang') === 'en' ? 'sw' : 'en'; } catch (e) { return 'en'; } })();
+        try { localStorage.setItem('s21-lang', next); } catch (e) {}
+        syncStationeryLangToggle();
+        if (window.S21_applyLang) window.S21_applyLang(next);
+      });
+    }
     document.getElementById('stnNotifBtn').addEventListener('click', showNotifications);
     document.getElementById('stnChopaBtn').addEventListener('click', () => { location.hash = '#chopaai'; });
     document.getElementById('stnBusinessSwitcher').addEventListener('change', async (e) => {
@@ -110,6 +126,7 @@
       await loadContext(id);
       route();
     });
+    syncStationeryLangToggle();
   }
 
   const ROUTE_TITLES = {
