@@ -48,6 +48,15 @@ import * as schOps from './handlers/school/operations.js';
 import * as schInsights from './handlers/school/insights.js';
 import * as schDemo from './handlers/school/demo.js';
 
+// ---- Smart21Shop ----
+import * as shpCore from './handlers/shop/core.js';
+import * as shpCustomers from './handlers/shop/customers.js';
+import * as shpProducts from './handlers/shop/products.js';
+import * as shpSales from './handlers/shop/sales.js';
+import * as shpExpenses from './handlers/shop/expenses.js';
+import * as shpInsights from './handlers/shop/insights.js';
+import * as shpDemo from './handlers/shop/demo.js';
+
 const router = new Router();
 
 // ---- Auth ----
@@ -374,6 +383,76 @@ router.get('/api/school/reports/:key', schInsights.runReport);
 router.get('/api/school/audit', schInsights.listAudit);
 router.get('/api/school/search', schInsights.search);
 
+// ==================== Smart21Shop ====================
+// Accounts / tenant
+router.post('/api/shop/register-shop', shpCore.registerShop);
+router.post('/api/shop/login', shpCore.login);
+router.post('/api/shop/logout', shpCore.logout);
+router.get('/api/shop/context', shpCore.context);
+router.post('/api/shop/shops', shpCore.createShop);
+router.get('/api/shop/lookups', shpCore.lookups);
+router.get('/api/shop/public/logo/:id', shpCore.publicLogo);
+
+// Settings, roles, staff
+router.get('/api/shop/shop-info', shpCore.getShopInfo);
+router.put('/api/shop/shop-info', shpCore.updateShopInfo);
+router.post('/api/shop/shop-info/logo', shpCore.uploadLogo);
+router.put('/api/shop/settings', shpCore.saveSettings);
+router.get('/api/shop/permissions', shpCore.getPermissions);
+router.put('/api/shop/permissions', shpCore.savePermissions);
+router.get('/api/shop/users', shpCore.listUsers);
+router.post('/api/shop/users', shpCore.addUser);
+router.put('/api/shop/users/:id', shpCore.updateUser);
+router.post('/api/shop/demo-data', shpDemo.loadDemoData);
+router.post('/api/shop/reset-data', shpDemo.resetShopData);
+
+// Customers
+router.get('/api/shop/customers', shpCustomers.listCustomers);
+router.post('/api/shop/customers', shpCustomers.createCustomer);
+router.get('/api/shop/customers/:id', shpCustomers.getCustomer);
+router.put('/api/shop/customers/:id', shpCustomers.updateCustomer);
+router.delete('/api/shop/customers/:id', shpCustomers.deleteCustomer);
+router.put('/api/shop/customers/:id/status', shpCustomers.setCustomerStatus);
+router.post('/api/shop/customers/:id/notes', shpCustomers.addNote);
+router.delete('/api/shop/customer-notes/:id', shpCustomers.deleteNote);
+router.get('/api/shop/customers/:id/statement', shpCustomers.statement);
+router.post('/api/shop/customers/:id/payments', shpCustomers.receivePayment);
+
+// Products, categories, stock
+router.get('/api/shop/categories', shpProducts.listCategories);
+router.post('/api/shop/categories', shpProducts.saveCategory);
+router.put('/api/shop/categories/:id', shpProducts.saveCategory);
+router.delete('/api/shop/categories/:id', shpProducts.deleteCategory);
+router.get('/api/shop/products', shpProducts.listProducts);
+router.post('/api/shop/products', shpProducts.createProduct);
+router.get('/api/shop/products/:id', shpProducts.getProduct);
+router.put('/api/shop/products/:id', shpProducts.updateProduct);
+router.delete('/api/shop/products/:id', shpProducts.deleteProduct);
+router.post('/api/shop/products/:id/image', shpProducts.uploadProductImage);
+router.get('/api/shop/products/:id/image', shpProducts.getProductImage);
+router.post('/api/shop/products/:id/stock', shpProducts.adjustStock);
+router.get('/api/shop/products/:id/history', shpProducts.stockHistory);
+
+// Sales (Point of Sale)
+router.get('/api/shop/sales', shpSales.listSales);
+router.post('/api/shop/sales', shpSales.createSale);
+router.get('/api/shop/sales/:id', shpSales.getSale);
+router.post('/api/shop/sales/:id/payments', shpSales.addPayment);
+router.post('/api/shop/sales/:id/void', shpSales.voidSale);
+
+// Expenses
+router.get('/api/shop/expenses', shpExpenses.listExpenses);
+router.post('/api/shop/expenses', shpExpenses.createExpense);
+router.delete('/api/shop/expenses/:id', shpExpenses.deleteExpense);
+
+// Dashboard, alerts, search, reports, activity log
+router.get('/api/shop/dashboard', shpInsights.dashboard);
+router.get('/api/shop/alerts', shpInsights.alerts);
+router.get('/api/shop/search', shpInsights.search);
+router.get('/api/shop/reports', shpInsights.reportCatalogue);
+router.get('/api/shop/reports/:key', shpInsights.runReport);
+router.get('/api/shop/audit', shpInsights.listAudit);
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -403,13 +482,18 @@ export default {
       // inside is decided per school (role + permissions) by /api/school/*.
       '/school-app.html': ['user', 'admin', 'teacher', 'parent'],
       '/school-app': ['user', 'admin', 'teacher', 'parent'],
+      // Smart21Shop: same idea — any signed-in account may open the app; what
+      // they can do inside is decided per shop (role + permissions) by /api/shop/*.
+      '/shop-app.html': ['user', 'admin', 'teacher', 'parent'],
+      '/shop-app': ['user', 'admin', 'teacher', 'parent'],
     };
 
     const allowedRoles = protectedPages[normalizedPath];
     if (allowedRoles) {
       const user = await getSessionUser(request, env.DB);
       if (!user) {
-        const loginPage = normalizedPath.startsWith('/school-') ? '/school-login.html' : '/login.html';
+        const loginPage = normalizedPath.startsWith('/school-') ? '/school-login.html'
+          : normalizedPath.startsWith('/shop-') ? '/shop-login.html' : '/login.html';
         return Response.redirect(new URL(loginPage, request.url), 302);
       }
       if (!allowedRoles.includes(user.role)) {

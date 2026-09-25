@@ -97,7 +97,6 @@
             ${SC.isParent() ? '<div style="flex:1"></div>' : `<div class="sc-search"><i class="fa-solid fa-magnifying-glass"></i>
               <input type="search" id="scSearch" placeholder="Search students, teachers, parents, payments…" autocomplete="off" aria-label="Global search"><div class="sc-search-panel" id="scSearchPanel"></div></div>`}
             <div class="sc-top-actions" style="position:relative">
-              <button class="sc-icon-btn" id="scLangToggle" data-lang-toggle aria-label="Switch language" title="Switch language">EN</button>
               <button class="sc-icon-btn" id="scTheme" aria-label="Toggle dark mode" title="Dark / light mode"><i class="fa-solid fa-moon"></i></button>
               <button class="sc-icon-btn" id="scBell" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="sc-badge-dot sc-hide" id="scBellBadge">0</span></button>
               <div class="sc-search-panel" id="scBellPanel" style="left:auto;right:0;width:min(380px,92vw);top:calc(100% + 8px)"></div>
@@ -115,27 +114,11 @@
     document.getElementById('scLogout').addEventListener('click', async () => { await SC.api.post('/logout').catch(() => {}); localStorage.removeItem('sc-school-id'); location.href = 'school-login.html'; });
     const sw = document.getElementById('scSwitch');
     if (sw) sw.addEventListener('change', () => { localStorage.setItem('sc-school-id', sw.value); location.hash = SC.isParent() ? 'home' : 'dashboard'; location.reload(); });
-    const scLangToggle = document.getElementById('scLangToggle');
-    const syncSchoolLangToggle = () => {
-      const current = (() => { try { return localStorage.getItem('s21-lang') || 'en'; } catch (e) { return 'en'; } })();
-      if (!scLangToggle) return;
-      scLangToggle.textContent = current === 'en' ? 'SW' : 'EN';
-      scLangToggle.setAttribute('title', current === 'en' ? 'Switch to Kiswahili' : 'Switch to English');
-    };
-    if (scLangToggle) {
-      scLangToggle.addEventListener('click', () => {
-        const next = (() => { try { return localStorage.getItem('s21-lang') === 'en' ? 'sw' : 'en'; } catch (e) { return 'en'; } })();
-        try { localStorage.setItem('s21-lang', next); } catch (e) {}
-        syncSchoolLangToggle();
-        if (window.S21_applyLang) window.S21_applyLang(next);
-      });
-    }
     document.getElementById('scTheme').addEventListener('click', () => {
       const dark = document.documentElement.dataset.theme !== 'dark';
       document.documentElement.dataset.theme = dark ? 'dark' : 'light'; localStorage.setItem('sc-theme', dark ? 'dark' : 'light');
       document.dispatchEvent(new Event('sc-theme'));
     });
-    syncSchoolLangToggle();
     wireSearch(); wireBell();
   }
 
