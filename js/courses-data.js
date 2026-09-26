@@ -51,20 +51,77 @@
       ],
       requirements: ['Can count to 100', 'Knows basic addition'],
       lessons: lessons('fractions-made-fun', [
-        ['What is a fraction?', 'video', 420],
-        ['Halves and quarters', 'video', 480],
-        ['Fractions on a number line', 'video', 510],
-        ['Equivalent fractions', 'video', 540],
-        ['Comparing fractions', 'video', 465],
-        ['Adding fractions', 'video', 600],
-        ['Practice worksheet', 'pdf', 0],
+        ['What is a fraction?', 'video', 420,
+          "A fraction is a way of showing a part of a whole.\n\n" +
+          "Every fraction has two numbers, written one above the other, separated by a line:\n" +
+          "  • The TOP number is the numerator — it tells you how many parts you have.\n" +
+          "  • The BOTTOM number is the denominator — it tells you how many equal parts the whole was cut into.\n\n" +
+          "Example: If a chocolate bar is cut into 4 equal pieces and you eat 1 piece, you ate 1/4 (one quarter) of the bar.\n" +
+          "  1 ← numerator (pieces you have)\n" +
+          "  4 ← denominator (total equal pieces)\n\n" +
+          "Try it yourself: A pizza is cut into 8 equal slices. If you eat 3 slices, what fraction of the pizza did you eat? (Answer: 3/8)"],
+        ['Halves and quarters', 'video', 480,
+          "Halves and quarters are two of the easiest fractions to picture.\n\n" +
+          "HALVES: Cut something into 2 equal parts. Each part is 1/2 (one half). Two halves make a whole: 1/2 + 1/2 = 1.\n\n" +
+          "QUARTERS: Cut something into 4 equal parts. Each part is 1/4 (one quarter). Four quarters make a whole: 1/4 + 1/4 + 1/4 + 1/4 = 1.\n\n" +
+          "A useful shortcut: if you cut each half in half again, you get quarters — so 2 quarters is the same amount as 1 half (2/4 = 1/2).\n\n" +
+          "Try it yourself: You share a chocolate bar equally between 4 friends. What fraction does each friend get? (Answer: 1/4)"],
+        ['Fractions on a number line', 'video', 510,
+          "A number line helps you see exactly where a fraction sits between two whole numbers.\n\n" +
+          "To place fractions with denominator 4 between 0 and 1:\n" +
+          "  1. Draw a line from 0 to 1.\n" +
+          "  2. Split it into 4 equal spaces (because the denominator is 4).\n" +
+          "  3. Each mark, moving right from 0, is 1/4, 2/4, 3/4, then 4/4 (which equals 1, the whole).\n\n" +
+          "The bigger the numerator, the further right the fraction sits on the line — and the closer it is to the next whole number.\n\n" +
+          "Try it yourself: On a number line split into 5 equal parts between 0 and 1, where would 3/5 sit? (Answer: three marks to the right of 0, two marks before reaching 1.)"],
+        ['Equivalent fractions', 'video', 540,
+          "Equivalent fractions are different fractions that represent the exact same amount.\n\n" +
+          "The rule: if you multiply (or divide) the numerator AND the denominator by the same number, the value of the fraction does not change.\n\n" +
+          "Example: 1/2 × (2/2) = 2/4 — so 1/2 and 2/4 are equivalent.\n" +
+          "Example: 1/2 × (3/3) = 3/6 — so 1/2, 2/4 and 3/6 are all equivalent.\n\n" +
+          "This is why fraction walls and number lines often show several fractions lining up at the exact same point.\n\n" +
+          "Try it yourself: Find a fraction equivalent to 2/3 by multiplying top and bottom by 2. (Answer: 4/6)"],
+        ['Comparing fractions', 'video', 465,
+          "To compare two fractions, look at the denominator first.\n\n" +
+          "SAME denominator: just compare the numerators. Example: 3/5 is bigger than 2/5, because 3 > 2.\n\n" +
+          "DIFFERENT denominators: rewrite the fractions so they share the same (common) denominator, then compare the numerators.\n" +
+          "Example: Compare 1/2 and 3/4. Rewrite 1/2 as 2/4 (equivalent fraction). Now compare 2/4 and 3/4 — since 3 > 2, we know 3/4 is bigger than 1/2.\n\n" +
+          "A quick trick: the fraction closer to 1 (with a numerator closer to its denominator) is usually the larger one.\n\n" +
+          "Try it yourself: Which is bigger, 2/6 or 2/3? (Answer: 2/3, because once 2/3 is rewritten as 4/6, 4/6 > 2/6.)"],
+        ['Adding fractions', 'video', 600,
+          "Adding fractions with the SAME denominator is simple:\n" +
+          "  1. Keep the denominator the same.\n" +
+          "  2. Add the numerators together.\n" +
+          "  3. Simplify the answer if you can.\n\n" +
+          "Example: 1/5 + 2/5 = (1+2)/5 = 3/5.\n" +
+          "Example: 2/8 + 3/8 = 5/8.\n\n" +
+          "Sometimes the answer can be simplified. Example: 2/4 + 1/4 = 3/4 (already simplest form), but 2/6 + 2/6 = 4/6, which simplifies to 2/3 (divide top and bottom by 2).\n\n" +
+          "Try it yourself: What is 3/7 + 2/7? (Answer: 5/7)"],
+        ['Practice worksheet', 'text', 0,
+          "PRACTICE WORKSHEET — Fractions Made Fun\n\n" +
+          "Work through these on paper, then check your answers below.\n\n" +
+          "1) What fraction of this word is vowels: \"PIZZA\"? (5 letters, 2 vowels)\n" +
+          "2) Write the fraction for 3 shaded parts out of 8 equal parts.\n" +
+          "3) Which is bigger: 1/3 or 1/4?\n" +
+          "4) Find an equivalent fraction for 3/5 (multiply top and bottom by 2).\n" +
+          "5) Add: 2/9 + 4/9\n" +
+          "6) Add: 1/6 + 1/6\n" +
+          "7) Place 2/4 on a number line between 0 and 1 — is it closer to 0, 1/2, or 1?\n" +
+          "8) A cake is cut into 6 equal slices. You eat 2. What fraction is left?\n" +
+          "9) Which is bigger: 5/8 or 1/2?\n" +
+          "10) Simplify 4/8 to its simplest form.\n\n" +
+          "— ANSWER KEY —\n" +
+          "1) 2/5   2) 3/8   3) 1/3   4) 6/10   5) 6/9 (= 2/3 simplified)   6) 2/6 (= 1/3 simplified)   " +
+          "7) exactly at 1/2   8) 4/6 (= 2/3 simplified)   9) 5/8   10) 1/2"],
         ['End-of-course quiz', 'quiz', 0, 'Answer every question, then mark the lesson complete.', {
           title: 'End-of-course quiz',
           questions: [
           { prompt: 'Which fraction is the same as one half?', options: ['2/4', '1/3', '3/5', '1/4'], answer: 0 },
           { prompt: 'Which is bigger: 3/4 or 1/2?', options: ['1/2', '3/4', 'They are equal', 'Cannot tell'], answer: 1 },
           { prompt: 'What is 1/5 + 2/5?', options: ['3/10', '2/5', '3/5', '1/5'], answer: 2 },
-          { prompt: 'The bottom number of a fraction is called the…', options: ['Numerator', 'Denominator', 'Divisor', 'Remainder'], answer: 1 }
+          { prompt: 'The bottom number of a fraction is called the…', options: ['Numerator', 'Denominator', 'Divisor', 'Remainder'], answer: 1 },
+          { prompt: 'Which fraction is equivalent to 2/3?', options: ['3/2', '4/6', '2/6', '3/6'], answer: 1 },
+          { prompt: 'A pizza is cut into 8 equal slices. Eating 4 slices means you ate…', options: ['1/8', '1/2', '1/4', '4/4'], answer: 1 }
           ] }],
       ]),
     },
