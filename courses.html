@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="css/style.css?v=10">
 <link rel="stylesheet" href="css/responsive.css?v=5">
 <link rel="stylesheet" href="css/animations.css?v=4">
+<link rel="stylesheet" href="css/smart21code.css?v=1">
 
 </head>
 <body>
@@ -104,6 +105,37 @@
       </form>
     </div>
   </section>
+
+  <!-- ================= Smart21Code — learn to code, W3Schools-style ================= -->
+  <section class="section s21code-section" id="smart21code" aria-labelledby="s21code-heading">
+    <div class="container">
+      <div class="s21code-head">
+        <div>
+          <span class="badge-pill pink mb-2"><i class="fa-solid fa-laptop-code"></i> Free coding reference</span>
+          <h2 id="s21code-heading" class="h3 mb-1">Smart21Code — learn to code, right here</h2>
+          <p class="text-soft mb-0" style="max-width:640px">A bite-sized, W3Schools-style reference for HTML, CSS, JavaScript, Python and SQL. Pick a language, pick a topic, read a short explanation, then edit the code and hit <strong>Run</strong> to see it work — no sign-up needed.</p>
+        </div>
+        <button type="button" class="btn-s21 btn-s21-outline" id="s21code-toggle"><i class="fa-solid fa-chevron-up"></i> Hide Smart21Code</button>
+      </div>
+
+      <div class="s21code-collapsible">
+        <div class="s21code-lang-tabs" id="s21code-lang-tabs" role="tablist" aria-label="Programming language"></div>
+
+        <div class="s21code-body">
+          <aside class="s21code-sidebar">
+            <div class="s21code-search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="search" id="s21code-search" placeholder="Filter topics…" aria-label="Filter Smart21Code topics">
+            </div>
+            <div id="s21code-sidebar-list" role="tablist" aria-label="Topics"></div>
+          </aside>
+
+          <div class="s21code-lesson" id="s21code-lesson"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ================================================================================= -->
 
   <section class="section-tight">
     <div class="container">
@@ -377,6 +409,8 @@
 <script src="js/nav-account.js"></script>
 
 <script>AOS.init({duration:650,once:true,offset:60});</script>
+<script src="js/smart21code-data.js"></script>
+<script src="js/smart21code.js"></script>
 <script src="js/cookie-consent.js"></script>
 </body>
 </html>
