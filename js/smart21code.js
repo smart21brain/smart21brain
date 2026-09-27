@@ -82,8 +82,16 @@
     }
     var lang = langMeta(state.lang);
     var isRunnable = (state.lang === 'html' || state.lang === 'css' || state.lang === 'javascript');
+    var topics = currentTopics();
+    var idx = topics.findIndex(function (t) { return t.id === topic.id; });
+    var prevTopic = idx > 0 ? topics[idx - 1] : null;
+    var nextTopic = idx > -1 && idx < topics.length - 1 ? topics[idx + 1] : null;
 
     host.innerHTML = '' +
+      '<p class="s21code-crumb text-soft small mb-2">' +
+        '<i class="fa-solid fa-book-open"></i> ' + lang.name + ' Tutorial' +
+        ' &nbsp;›&nbsp; Topic ' + (idx + 1) + ' of ' + topics.length +
+      '</p>' +
       '<div class="d-flex align-items-center gap-2 flex-wrap mb-2">' +
         '<span class="badge-pill" style="background:color-mix(in srgb, ' + lang.color + ' 16%, transparent);color:' + lang.color + '">' +
           '<i class="fa-solid ' + lang.icon + '"></i> ' + lang.name +
@@ -110,6 +118,14 @@
             '<iframe id="s21code-frame" title="Live preview" sandbox="allow-scripts"></iframe>' :
             '<pre id="s21code-output" class="s21code-output" aria-label="Program output"></pre>') +
         '</div>' +
+      '</div>' +
+      '<div class="s21code-pager">' +
+        (prevTopic ?
+          '<button type="button" class="s21code-pager-btn prev" data-topic="' + prevTopic.id + '"><i class="fa-solid fa-chevron-left"></i> ' + esc(prevTopic.title) + '</button>' :
+          '<span></span>') +
+        (nextTopic ?
+          '<button type="button" class="s21code-pager-btn next" data-topic="' + nextTopic.id + '">' + esc(nextTopic.title) + ' <i class="fa-solid fa-chevron-right"></i></button>' :
+          '<span></span>') +
       '</div>';
 
     // Auto-run once so learners see a result immediately
@@ -119,6 +135,9 @@
     $('#s21code-reset').addEventListener('click', function () {
       $('#s21code-editor').value = topic.code;
       runCurrent(topic);
+    });
+    host.querySelectorAll('.s21code-pager-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { selectTopic(btn.getAttribute('data-topic')); });
     });
   }
 
@@ -221,7 +240,7 @@
   }
 
   function init() {
-    if (!$('#smart21code')) return;
+    if (!$('#s21code-lang-tabs')) return;
     renderLangTabs();
     renderSidebar();
     renderLesson();

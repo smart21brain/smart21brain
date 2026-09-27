@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Courses — Structured Learning Paths | Smart21Brain</title>
-<meta name="description" content="Browse Smart21Brain's structured courses across Mathematics, Science, Languages, Computer Studies and more — built and reviewed by real teachers.">
-<link rel="canonical" href="https://smart21brain.com/courses.html">
-<link rel="icon" href="images/logo/coool.png" type="image/png">
+<title>Smart21Code — Free Tutorials for HTML, CSS, JavaScript, Python & SQL | Smart21Brain</title>
+<meta name="description" content="Smart21Code: free, bite-sized coding tutorials with live Try it Yourself editors for HTML, CSS, JavaScript, Python and SQL — right inside Smart21Brain.">
+<link rel="canonical" href="https://smart21brain.com/smart21code.html">
 <link rel="icon" href="images/logo/coool.png" type="image/png">
 <link rel="apple-touch-icon" href="images/logo/coool.png">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
@@ -18,7 +17,7 @@
 <link rel="stylesheet" href="css/smart21code.css?v=1">
 
 </head>
-<body>
+<body class="s21code-page">
 <a href="#main" class="skip-link" data-i18n="blog_skip_to_main_content">Skip to main content</a>
 
 <header class="s21-navbar">
@@ -86,228 +85,64 @@
 
 <main id="main">
 
-  <section class="hero" style="background-image:url('https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1800&q=75&auto=format&fit=crop');min-height:0;padding:3rem 0 2.2rem">
+  <section class="s21code-masthead">
     <div class="container">
       <nav aria-label="breadcrumb" style="font-size:.85rem">
-        <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.6)">
-          <li class="breadcrumb-item"><a href="index.html" style="color:rgba(255,255,255,.8)" data-i18n="book_home">Home</a></li>
-          <li class="breadcrumb-item active" style="color:#fff" aria-current="page" data-i18n="nav_courses">Courses</li>
+        <ol class="breadcrumb mb-2">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="courses.html">Courses</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Smart21Code</li>
         </ol>
       </nav>
-      <h1 class="mb-2" data-i18n="nav_courses">Courses</h1>
-      <p class="lead mb-4" data-i18n="courses_structured_teacher_built_learning_pa">Structured, teacher-built learning paths — pick a subject, work through the lessons, and earn a certificate.</p>
-      <form class="hero-search s21-search-wrap" role="search" aria-label="Search courses" style="max-width:640px">
-        <i class="fa-solid fa-magnifying-glass text-soft ms-1" aria-hidden="true"></i>
-        <input type="search" placeholder="Search courses…" data-i18n-placeholder="courses_ph_search_courses" aria-label="Search courses">
-        <button type="button" class="icon-btn" style="background:transparent;border:none;color:#5B6470" data-voice-search aria-label="Search by voice"><i class="fa-solid fa-microphone"></i></button>
-        <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="s21-search-panel" role="listbox"></div>
-      </form>
+      <span class="badge-pill mb-2"><i class="fa-solid fa-laptop-code"></i> 100% free · no sign-up needed</span>
+      <h1 class="mb-2">Smart21Code</h1>
+      <p class="lead mb-0">Learn to code with short lessons, clear examples, and a live <strong>Try it Yourself</strong> editor — for HTML, CSS, JavaScript, Python and SQL. Pick a language below to get started.</p>
     </div>
   </section>
 
-  <!-- ================= Smart21Code — learn to code, W3Schools-style ================= -->
-  <section class="section s21code-section s21code-collapsed" id="smart21code" aria-labelledby="s21code-heading">
+  <div class="s21code-topbar">
     <div class="container">
-      <div class="s21code-head">
-        <div>
-          <span class="badge-pill pink mb-2"><i class="fa-solid fa-laptop-code"></i> Free coding reference</span>
-          <h2 id="s21code-heading" class="h3 mb-1">Smart21Code — learn to code, right here</h2>
-          <p class="text-soft mb-0" style="max-width:640px">A bite-sized, W3Schools-style reference for HTML, CSS, JavaScript, Python and SQL. Pick a language, pick a topic, read a short explanation, then edit the code and hit <strong>Run</strong> to see it work — no sign-up needed.</p>
-        </div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button type="button" class="btn-s21 btn-s21-outline" id="s21code-toggle"><i class="fa-solid fa-chevron-down"></i> Show Smart21Code</button>
-          <a href="smart21code.html" target="_blank" rel="noopener" class="btn-s21 btn-s21-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Smart21Code</a>
-        </div>
-      </div>
-
-      <div class="s21code-collapsible">
-        <div class="s21code-lang-tabs" id="s21code-lang-tabs" role="tablist" aria-label="Programming language"></div>
-
-        <div class="s21code-body">
-          <aside class="s21code-sidebar">
-            <div class="s21code-search-wrap">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="search" id="s21code-search" placeholder="Filter topics…" aria-label="Filter Smart21Code topics">
-            </div>
-            <div id="s21code-sidebar-list" role="tablist" aria-label="Topics"></div>
-          </aside>
-
-          <div class="s21code-lesson" id="s21code-lesson"></div>
-        </div>
-      </div>
+      <div class="s21code-lang-tabs" id="s21code-lang-tabs" role="tablist" aria-label="Programming language"></div>
     </div>
-  </section>
-  <!-- ================================================================================= -->
+  </div>
 
-  <section class="section-tight">
+  <section class="section pt-4">
     <div class="container">
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div class="d-flex flex-wrap gap-2" role="tablist" aria-label="Course filters" id="courseLevelFilters">
-          <button class="btn-s21 btn-s21-primary" type="button" data-course-level="all" aria-pressed="true" data-i18n="blog_all">All</button>
-          <button class="btn-s21 btn-s21-outline" type="button" data-course-level="beginner" aria-pressed="false" data-i18n="courses_beginner">Beginner</button>
-          <button class="btn-s21 btn-s21-outline" type="button" data-course-level="intermediate" aria-pressed="false" data-i18n="courses_intermediate">Intermediate</button>
-          <button class="btn-s21 btn-s21-outline" type="button" data-course-level="advanced" aria-pressed="false" data-i18n="courses_advanced">Advanced</button>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-          <select class="form-select" id="courseCategoryFilter" style="max-width:180px;border-radius:999px" aria-label="Filter by category">
-            <option value="">All subjects</option>
-          </select>
-          <select class="form-select" id="coursePriceFilter" style="max-width:150px;border-radius:999px" aria-label="Filter by price">
-            <option value="">Free &amp; Paid</option>
-            <option value="true">Free only</option>
-            <option value="false">Paid only</option>
-          </select>
-          <select class="form-select" id="courseSort" style="max-width:170px;border-radius:999px" aria-label="Sort courses">
-            <option value="new" data-i18n="courses_newest_first">Newest first</option>
-            <option value="title" data-i18n="courses_a_z">A–Z</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section pt-0">
-    <div class="container">
-      <div class="row g-4" id="coursesGrid">
-        <div class="col-12" id="coursesGridLoading"><p class="text-soft">Loading courses…</p></div>
-      </div>
-    </div>
-  </section>
-
-  <script src="js/courses-data.js"></script>
-  <script>
-    (function () {
-      const grid = document.getElementById('coursesGrid');
-      const categorySelect = document.getElementById('courseCategoryFilter');
-      const priceSelect = document.getElementById('coursePriceFilter');
-      const sortSelect = document.getElementById('courseSort');
-      const levelButtons = document.querySelectorAll('[data-course-level]');
-      const searchInput = document.querySelector('.hero-search input[type="search"]');
-      const urlParams = new URLSearchParams(location.search);
-      let activeLevel = urlParams.get('level') || 'all';
-      const thumbFallback = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=70&auto=format&fit=crop';
-
-      function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-      const LEVEL_LABELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced', 'all-levels': 'All levels' };
-
-      function courseCard(c) {
-        const priceLabel = c.is_free ? 'Free' : `TZS ${Number(c.price).toLocaleString()}`;
-        return `
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-          <div class="s21-card media-card">
-            <div class="thumb-wrap">
-              <img src="${esc(c.thumbnail_url || thumbFallback)}" alt="${esc(c.title)}" loading="lazy">
-              <span class="cat-badge">${esc(LEVEL_LABELS[c.level] || c.level)}</span>
-            </div>
-            <div class="body">
-              ${c.category_name ? `<span class="badge-pill mb-2">${esc(c.category_name)}</span>` : ''}
-              <h3><a href="course.html?slug=${encodeURIComponent(c.slug)}" class="text-reset">${esc(c.title)}</a></h3>
-              <div class="meta mb-2"><i class="fa-regular fa-clock"></i> ${c.lesson_count} lesson${c.lesson_count === 1 ? '' : 's'}${c.age_range ? ` · Ages ${esc(c.age_range)}` : ''}</div>
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-1" style="font-size:.82rem;color:var(--s21-text-soft)">
-                  ${esc(c.instructor_name || 'Smart21Brain')}
-                </div>
-                <a href="course.html?slug=${encodeURIComponent(c.slug)}" class="btn-s21 btn-s21-primary" style="padding:.5rem 1.1rem;font-size:.82rem">${priceLabel === 'Free' ? 'Enroll free' : priceLabel}</a>
+      <div class="row g-4">
+        <div class="col-lg-9">
+          <div class="s21code-page-body">
+            <aside class="s21code-sidebar">
+              <div class="s21code-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="s21code-search" placeholder="Filter topics…" aria-label="Filter Smart21Code topics">
               </div>
-            </div>
+              <div id="s21code-sidebar-list" role="tablist" aria-label="Topics"></div>
+            </aside>
+
+            <div class="s21code-lesson" id="s21code-lesson"></div>
           </div>
-        </div>`;
-      }
+        </div>
 
-      async function loadCourses() {
-        if (!grid) return;
-        const opts = {
-          level: activeLevel,
-          category: categorySelect?.value || '',
-          free: priceSelect?.value || '',
-          sort: sortSelect?.value || 'new',
-          q: searchInput?.value.trim() || '',
-        };
-        const params = new URLSearchParams();
-        if (opts.level !== 'all') params.set('level', opts.level);
-        if (opts.category) params.set('category', opts.category);
-        if (opts.free) params.set('free', opts.free);
-        if (opts.sort) params.set('sort', opts.sort);
-        if (opts.q) params.set('q', opts.q);
-
-        // Try the real catalog in D1 first — that's the source of truth.
-        let served = false;
-        try {
-          const res = await fetch(`/api/courses?${params.toString()}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data && Array.isArray(data.courses)) { render(data.courses); served = true; }
-          }
-        } catch { /* backend unreachable — fall back below */ }
-
-        // Only if the backend gave us nothing at all: show the bundled
-        // catalog so the page is never blank or errored.
-        if (!served && window.S21Courses) render(window.S21Courses.query(opts));
-      }
-
-      function render(courses) {
-        grid.innerHTML = courses.length
-          ? courses.map(courseCard).join('')
-          : '<div class="col-12"><p class="text-soft">No courses match these filters yet.</p></div>';
-        if (window.AOS) AOS.refreshHard();
-      }
-
-      async function loadCategories() {
-        if (!categorySelect) return;
-        function fill(categories) {
-          categorySelect.querySelectorAll('option[value]:not([value=""])').forEach((o) => o.remove());
-          categories.forEach((cat) => {
-            const opt = document.createElement('option');
-            opt.value = cat.slug; opt.textContent = cat.name;
-            categorySelect.appendChild(opt);
-          });
-        }
-        if (window.S21Courses) fill(window.S21Courses.categories);
-        try {
-          const res = await fetch('/api/course-categories');
-          if (res.ok) {
-            const data = await res.json();
-            if (data && Array.isArray(data.categories) && data.categories.length) fill(data.categories);
-          }
-        } catch { /* built-in categories stay */ }
-      }
-
-      levelButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          levelButtons.forEach((b) => { b.className = 'btn-s21 btn-s21-outline'; b.setAttribute('aria-pressed', 'false'); });
-          btn.className = 'btn-s21 btn-s21-primary';
-          btn.setAttribute('aria-pressed', 'true');
-          activeLevel = btn.dataset.courseLevel;
-          loadCourses();
-        });
-      });
-      categorySelect?.addEventListener('change', loadCourses);
-      priceSelect?.addEventListener('change', loadCourses);
-      sortSelect?.addEventListener('change', loadCourses);
-      document.querySelector('.hero-search')?.addEventListener('submit', (e) => { e.preventDefault(); loadCourses(); });
-
-      // Deep-linking: a page like subjects.html can send someone here with
-      // ?category=mathematics&q=fractions so they land pre-filtered on the
-      // exact subject/topic they picked, instead of a generic full list.
-      if (urlParams.get('level') && urlParams.get('level') !== 'all') {
-        levelButtons.forEach((b) => {
-          const match = b.dataset.courseLevel === urlParams.get('level');
-          b.className = match ? 'btn-s21 btn-s21-primary' : 'btn-s21 btn-s21-outline';
-          b.setAttribute('aria-pressed', String(match));
-        });
-      }
-      if (urlParams.get('free') && priceSelect) priceSelect.value = urlParams.get('free');
-      if (urlParams.get('q') && searchInput) searchInput.value = urlParams.get('q');
-
-      async function applyUrlCategory() {
-        const cat = urlParams.get('category');
-        if (cat && categorySelect) categorySelect.value = cat;
-      }
-
-      loadCategories().then(applyUrlCategory).then(loadCourses);
-    })();
-  </script>
+        <div class="col-lg-3 d-none d-lg-block">
+          <div class="s21code-side-panel mb-3">
+            <h6><i class="fa-solid fa-certificate text-warning"></i> Want the full course?</h6>
+            <p class="text-soft small mb-2">Smart21Code is a free quick reference. For structured lessons, quizzes, projects and a certificate, take a full computer studies course.</p>
+            <a href="courses.html?category=Computer%20Studies" class="btn-s21 btn-s21-primary w-100 btn-sm-s21">Browse Coding Courses</a>
+          </div>
+          <div class="s21code-side-panel">
+            <h6><i class="fa-solid fa-list-check text-soft"></i> On this page</h6>
+            <ul>
+              <li><i class="fa-brands fa-html5" style="color:#E34F26"></i> HTML — structure</li>
+              <li><i class="fa-brands fa-css3-alt" style="color:#2965F1"></i> CSS — style & layout</li>
+              <li><i class="fa-brands fa-js" style="color:#F0B90B"></i> JavaScript — interactivity</li>
+              <li><i class="fa-brands fa-python" style="color:#3776AB"></i> Python — logic & data</li>
+              <li><i class="fa-solid fa-database" style="color:#7B61FF"></i> SQL — databases</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -333,6 +168,7 @@
         <ul class="list-unstyled d-flex flex-column gap-2">
           <li><a href="index.html" data-i18n="nav_home">Home</a></li>
           <li><a href="courses.html" data-i18n="nav_courses">Courses</a></li>
+          <li><a href="smart21code.html">Smart21Code</a></li>
           <li><a href="videos.html" data-i18n="nav_videos">Videos</a></li>
           <li><a href="library.html" data-i18n="nav_books">Books</a></li>
           <li><a href="games.html" data-i18n="nav_games">Games</a></li>
