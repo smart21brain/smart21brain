@@ -7,6 +7,14 @@
   SC.state = { user: null, school: null, role: null, perms: [], settings: {}, lookups: null, photoV: Date.now() };
   SC.modules = {};
 
+  // ------------------------------------------------------------ language (English / Kiswahili)
+  const LANG_KEY = 's21-lang';
+  SC.lang = () => { try { return localStorage.getItem(LANG_KEY) || 'en'; } catch (e) { return 'en'; } };
+  SC.isSw = () => SC.lang() === 'sw';
+  SC.setLang = (l) => { try { localStorage.setItem(LANG_KEY, l); } catch (e) { /* ignore */ } };
+  SC.toggleLang = () => { SC.setLang(SC.isSw() ? 'en' : 'sw'); location.reload(); };
+  SC.t = (en, sw) => (SC.isSw() ? sw : en);
+
   // ------------------------------------------------------------ helpers
   SC.esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const esc = SC.esc;
@@ -33,7 +41,8 @@
   SC.initials = (name) => String(name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   SC.classLabel = (c) => (c ? `${c.name || c.class_name}${(c.stream || c.class_stream) ? ' ' + (c.stream || c.class_stream) : ''}` : '—');
   const STATUS_TEXT = { paid: 'Paid', partial: 'Partially Paid', pending: 'Pending', overdue: 'Overdue', active: 'Active', inactive: 'Inactive', graduated: 'Graduated', suspended: 'Suspended', transferred: 'Transferred', present: 'Present', absent: 'Absent', late: 'Late' };
-  SC.chip = (status, text) => `<span class="sc-chip ${esc(status)}">${esc(text || STATUS_TEXT[status] || SC.cap(status))}</span>`;
+  const STATUS_TEXT_SW = { paid: 'Imelipwa', partial: 'Imelipwa Sehemu', pending: 'Inasubiri', overdue: 'Imechelewa', active: 'Hai', inactive: 'Haifanyi kazi', graduated: 'Amehitimu', suspended: 'Amesimamishwa', transferred: 'Amehamishwa', present: 'Yupo', absent: 'Hayupo', late: 'Amechelewa' };
+  SC.chip = (status, text) => `<span class="sc-chip ${esc(status)}">${esc(text || (SC.isSw() ? STATUS_TEXT_SW[status] : STATUS_TEXT[status]) || SC.cap(status))}</span>`;
   SC.photoUrl = (kind, id) => `/api/school/${kind}/${id}/photo?school_id=${SC.state.school ? SC.state.school.id : ''}&v=${SC.state.photoV}`;
   SC.logoUrl = (id) => `/api/school/public/logo/${id || (SC.state.school && SC.state.school.id)}?v=${SC.state.photoV}`;
   SC.avatar = (kind, id, name, has, size = '') =>
@@ -53,11 +62,11 @@
       else { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
     }
     let res;
-    try { res = await fetch('/api/school' + path, opts); } catch (e) { throw new Error('Cannot reach the server. Please check your internet connection and try again.'); }
+    try { res = await fetch('/api/school' + path, opts); } catch (e) { throw new Error(SC.t('Cannot reach the server. Please check your internet connection and try again.', 'Haiwezekani kufikia seva. Tafadhali angalia mtandao wako na ujaribu tena.')); }
     let data = null;
     try { data = await res.json(); } catch (e) { /* not JSON */ }
-    if (res.status === 401 && !/^\/(login|register-school|verify)/.test(path)) { if (!/school-login/.test(location.pathname)) location.href = 'school-login.html'; throw new Error('Please sign in again.'); }
-    if (!res.ok) { const err = new Error((data && data.error) || `Something went wrong (${res.status}).`); err.status = res.status; err.data = data; throw err; }
+    if (res.status === 401 && !/^\/(login|register-school|verify)/.test(path)) { if (!/school-login/.test(location.pathname)) location.href = 'school-login.html'; throw new Error(SC.t('Please sign in again.', 'Tafadhali ingia tena.')); }
+    if (!res.ok) { const err = new Error((data && data.error) || SC.t(`Something went wrong (${res.status}).`, `Hitilafu imetokea (${res.status}).`)); err.status = res.status; err.data = data; throw err; }
     return data;
   }
   SC.api = {
@@ -86,7 +95,7 @@
     if (loading[name]) return loading[name];
     loading[name] = new Promise((resolve, reject) => {
       const s = document.createElement('script'); s.src = src; s.onload = resolve;
-      s.onerror = () => { delete loading[name]; reject(new Error('Could not load a helper library. Check your internet connection.')); };
+      s.onerror = () => { delete loading[name]; reject(new Error(SC.t('Could not load a helper library. Check your internet connection.', 'Imeshindwa kupakia maktaba msaidizi. Angalia mtandao wako.'))); };
       document.head.appendChild(s);
     });
     return loading[name];
@@ -111,7 +120,7 @@
     const back = document.createElement('div');
     back.className = 'sc-modal-back'; back.id = 'scModal';
     back.innerHTML = `<div class="sc-modal ${size}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-      <div class="sc-modal-head"><h3>${esc(title)}</h3><button class="sc-icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="sc-modal-head"><h3>${esc(title)}</h3><button class="sc-icon-btn" data-close aria-label="${SC.t('Close', 'Funga')}"><i class="fa-solid fa-xmark"></i></button></div>
       <div class="sc-modal-body">${bodyHtml}</div>${footer ? `<div class="sc-modal-foot">${footer}</div>` : ''}</div>`;
     back.__onClose = onClose;
     back.addEventListener('mousedown', (e) => { if (e.target === back) SC.closeModal(); });
@@ -129,9 +138,9 @@
   };
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') SC.closeModal(); });
 
-  SC.confirm = ({ title = 'Are you sure?', message = '', confirmText = 'Yes, continue', danger = true, icon }) => new Promise((resolve) => {
+  SC.confirm = ({ title = SC.t('Are you sure?', 'Una uhakika?'), message = '', confirmText = SC.t('Yes, continue', 'Ndiyo, endelea'), danger = true, icon }) => new Promise((resolve) => {
     const back = SC.modal(title, `<div><div class="sc-confirm-ico ${danger ? '' : 'info'}"><i class="fa-solid ${icon || (danger ? 'fa-triangle-exclamation' : 'fa-circle-question')}"></i></div><p style="margin:0">${message}</p></div>`, {
-      footer: `<button class="sc-btn ghost" data-no>Cancel</button><button class="sc-btn ${danger ? 'danger' : 'primary'}" data-yes>${esc(confirmText)}</button>`, onClose: () => resolve(false),
+      footer: `<button class="sc-btn ghost" data-no>${SC.t('Cancel', 'Ghairi')}</button><button class="sc-btn ${danger ? 'danger' : 'primary'}" data-yes>${esc(confirmText)}</button>`, onClose: () => resolve(false),
     });
     back.querySelector('[data-no]').addEventListener('click', () => SC.closeModal());
     back.querySelector('[data-yes]').addEventListener('click', () => { back.__onClose = null; SC.closeModal(true); resolve(true); });
@@ -154,10 +163,10 @@
   };
 
   // ------------------------------------------------------------ small UI pieces
-  SC.skeleton = (rows = 4) => `<div class="sc-card" aria-busy="true" aria-label="Loading">${Array.from({ length: rows }, (_, i) => `<div class="sc-skel line" style="width:${90 - i * 9}%"></div>`).join('')}</div>`;
+  SC.skeleton = (rows = 4) => `<div class="sc-card" aria-busy="true" aria-label="${SC.t('Loading', 'Inapakia')}">${Array.from({ length: rows }, (_, i) => `<div class="sc-skel line" style="width:${90 - i * 9}%"></div>`).join('')}</div>`;
   SC.skeletonPage = () => `<div class="sc-grid stats">${'<div class="sc-card"><div class="sc-skel box"></div></div>'.repeat(4)}</div><div class="sc-grid cols-2" style="margin-top:1.1rem">${'<div class="sc-card"><div class="sc-skel" style="height:220px"></div></div>'.repeat(2)}</div>`;
   SC.empty = (icon, title, text, action = '') => `<div class="sc-empty"><div class="ico"><i class="fa-solid ${icon}"></i></div><h4>${esc(title)}</h4><p>${esc(text)}</p>${action}</div>`;
-  SC.errorBox = (err) => `<div class="sc-card">${SC.empty('fa-plug-circle-exclamation', 'We could not load this page', err && err.message ? err.message : 'Please try again.', '<button class="sc-btn primary" onclick="location.reload()">Try again</button>')}</div>`;
+  SC.errorBox = (err) => `<div class="sc-card">${SC.empty('fa-plug-circle-exclamation', SC.t('We could not load this page', 'Hatukuweza kupakia ukurasa huu'), err && err.message ? err.message : SC.t('Please try again.', 'Tafadhali jaribu tena.'), `<button class="sc-btn primary" onclick="location.reload()">${SC.t('Try again', 'Jaribu tena')}</button>`)}</div>`;
   SC.pageHead = (title, sub, actions = '') => `<div class="sc-page-head"><div><h2>${esc(title)}</h2>${sub ? `<p>${esc(sub)}</p>` : ''}</div><div class="sc-row">${actions}</div></div>`;
   SC.stat = (icon, value, label, sub = '', tone = '') => `<div class="sc-card sc-stat"><div class="ico ${tone}"><i class="fa-solid ${icon}"></i></div><div><div class="val">${value}</div><div class="lbl">${esc(label)}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div></div>`;
   SC.progress = (pct, tone = '') => `<div class="sc-progress ${tone}"><span style="width:${Math.max(0, Math.min(100, pct || 0))}%"></span></div>`;
@@ -170,12 +179,13 @@
       rows.map((r) => `<tr>${cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   };
   SC.pager = (page, limit, total) => {
-    if (total <= limit) return total ? `<div class="sc-pager"><span>${total} record${total === 1 ? '' : 's'}</span></div>` : '';
+    const sw = SC.isSw();
+    if (total <= limit) return total ? `<div class="sc-pager"><span>${total} ${sw ? 'rekodi' : `record${total === 1 ? '' : 's'}`}</span></div>` : '';
     const pages = Math.ceil(total / limit);
-    return `<div class="sc-pager"><span>Showing ${(page - 1) * limit + 1}–${Math.min(page * limit, total)} of ${total}</span>
-      <span class="sc-row"><button class="sc-btn ghost sm" data-act="page" data-p="${page - 1}" ${page <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i> Previous</button>
-      <span>Page ${page} of ${pages}</span>
-      <button class="sc-btn ghost sm" data-act="page" data-p="${page + 1}" ${page >= pages ? 'disabled' : ''}>Next <i class="fa-solid fa-chevron-right"></i></button></span></div>`;
+    return `<div class="sc-pager"><span>${sw ? 'Inaonyesha' : 'Showing'} ${(page - 1) * limit + 1}–${Math.min(page * limit, total)} ${sw ? 'kati ya' : 'of'} ${total}</span>
+      <span class="sc-row"><button class="sc-btn ghost sm" data-act="page" data-p="${page - 1}" ${page <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i> ${sw ? 'Iliyotangulia' : 'Previous'}</button>
+      <span>${sw ? 'Ukurasa' : 'Page'} ${page} ${sw ? 'kati ya' : 'of'} ${pages}</span>
+      <button class="sc-btn ghost sm" data-act="page" data-p="${page + 1}" ${page >= pages ? 'disabled' : ''}>${sw ? 'Inayofuata' : 'Next'} <i class="fa-solid fa-chevron-right"></i></button></span></div>`;
   };
 
   // Click delegation: <button data-act="name"> -> handlers.name(button, event)
@@ -200,7 +210,7 @@
         ${hint ? `<span class="hint">${esc(hint)}</span>` : ''}<span class="err"></span></div>`;
     },
     select(name, label, options, o = {}) {
-      const { value = '', required = false, placeholder = 'Select…', hint = '', cls = '', attr = {}, noBlank = false } = o;
+      const { value = '', required = false, placeholder = SC.t('Select…', 'Chagua…'), hint = '', cls = '', attr = {}, noBlank = false } = o;
       const opts = options.map((x) => (Array.isArray(x) ? { v: x[0], l: x[1] } : x));
       return `<div class="sc-field ${cls}" data-field="${name}"><label for="f_${name}">${esc(label)}${required ? '<span class="req">*</span>' : ''}</label>
         <select class="sc-select" id="f_${name}" name="${name}" ${required ? 'required data-label="' + esc(label) + '"' : ''} ${attrs(attr)}>
@@ -220,10 +230,10 @@
     classes: (lk, onlyActive = true) => (lk.classes || []).filter((c) => !onlyActive || c.status === 'active').map((c) => ({ v: c.id, l: SC.classLabel(c) })),
     subjects: (lk) => (lk.subjects || []).filter((s) => s.status === 'active').map((s) => ({ v: s.id, l: s.name })),
     teachers: (lk) => (lk.teachers || []).map((t) => ({ v: t.id, l: t.full_name })),
-    years: (lk) => (lk.years || []).map((y) => ({ v: y.id, l: y.name + (y.is_current ? ' (current)' : '') })),
+    years: (lk) => (lk.years || []).map((y) => ({ v: y.id, l: y.name + (y.is_current ? SC.t(' (current)', ' (sasa)') : '') })),
     terms: (lk) => (lk.terms || []).map((t) => ({ v: t.id, l: t.name })),
-    gender: [['male', 'Male'], ['female', 'Female']],
-    status: [['active', 'Active'], ['inactive', 'Inactive'], ['graduated', 'Graduated'], ['suspended', 'Suspended'], ['transferred', 'Transferred']],
+    gender: [['male', SC.t('Male', 'Mwanaume')], ['female', SC.t('Female', 'Mwanamke')]],
+    status: [['active', SC.t('Active', 'Hai')], ['inactive', SC.t('Inactive', 'Haifanyi kazi')], ['graduated', SC.t('Graduated', 'Amehitimu')], ['suspended', SC.t('Suspended', 'Amesimamishwa')], ['transferred', SC.t('Transferred', 'Amehamishwa')]],
   };
 
   SC.formData = (form) => {
@@ -241,17 +251,18 @@
     form.querySelectorAll('.sc-field').forEach((f) => { f.classList.remove('has-error'); const er = f.querySelector('.err'); if (er) er.textContent = ''; });
     form.querySelectorAll('input, select, textarea').forEach((el) => {
       const wrap = el.closest('.sc-field'); if (!wrap || el.disabled) return;
-      const label = el.dataset.label || 'this field';
+      const sw = SC.isSw();
+      const label = el.dataset.label || (sw ? 'sehemu hii' : 'this field');
       let msg = '';
       const val = el.value.trim();
-      if (el.required && !val) msg = el.tagName === 'SELECT' ? `Please choose ${label.toLowerCase()}.` : `Please enter ${label.toLowerCase()}.`;
-      else if (val && el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) msg = 'Please enter a valid email address, like name@example.com.';
-      else if (val && el.dataset.kind === 'phone' && !/^\+?[0-9][0-9 ()\-]{5,19}$/.test(val)) msg = 'Please enter a valid phone number, like +255 712 345 678.';
+      if (el.required && !val) msg = sw ? `Tafadhali ${el.tagName === 'SELECT' ? 'chagua' : 'jaza'} ${label.toLowerCase()}.` : (el.tagName === 'SELECT' ? `Please choose ${label.toLowerCase()}.` : `Please enter ${label.toLowerCase()}.`);
+      else if (val && el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) msg = sw ? 'Tafadhali weka barua pepe sahihi, mfano name@example.com.' : 'Please enter a valid email address, like name@example.com.';
+      else if (val && el.dataset.kind === 'phone' && !/^\+?[0-9][0-9 ()\-]{5,19}$/.test(val)) msg = sw ? 'Tafadhali weka namba sahihi ya simu, mfano +255 712 345 678.' : 'Please enter a valid phone number, like +255 712 345 678.';
       else if (val && el.type === 'number') {
         const n = Number(val);
-        if (Number.isNaN(n) || (el.min !== '' && n < Number(el.min))) msg = `Please enter a number${el.min !== '' ? ` of ${el.min} or more` : ''}.`;
-        else if (el.max !== '' && n > Number(el.max)) msg = `The number cannot be more than ${el.max}.`;
-      } else if (val && el.minLength > 0 && val.length < el.minLength) msg = `Please use at least ${el.minLength} characters.`;
+        if (Number.isNaN(n) || (el.min !== '' && n < Number(el.min))) msg = sw ? `Tafadhali weka namba${el.min !== '' ? ` ya ${el.min} au zaidi` : ''}.` : `Please enter a number${el.min !== '' ? ` of ${el.min} or more` : ''}.`;
+        else if (el.max !== '' && n > Number(el.max)) msg = sw ? `Namba haiwezi kuzidi ${el.max}.` : `The number cannot be more than ${el.max}.`;
+      } else if (val && el.minLength > 0 && val.length < el.minLength) msg = sw ? `Tafadhali tumia angalau herufi ${el.minLength}.` : `Please use at least ${el.minLength} characters.`;
       if (msg) { wrap.classList.add('has-error'); const er = wrap.querySelector('.err'); if (er) er.textContent = msg; if (!firstBad) firstBad = el; }
     });
     if (firstBad) { firstBad.scrollIntoView({ block: 'center', behavior: 'smooth' }); firstBad.focus({ preventScroll: true }); }
@@ -259,9 +270,9 @@
   };
 
   // Standard modal form: validation, spinner, server error display.
-  SC.formModal = ({ title, body, submit = 'Save', size = '', onSubmit, onOpen, danger = false }) => {
+  SC.formModal = ({ title, body, submit = SC.t('Save', 'Hifadhi'), size = '', onSubmit, onOpen, danger = false }) => {
     const back = SC.modal(title, `<form class="sc-form" novalidate id="scForm"><div class="sc-form-error" role="alert"></div>${body}</form>`, {
-      size, footer: `<button type="button" class="sc-btn ghost" data-close2>Cancel</button><button type="submit" form="scForm" class="sc-btn ${danger ? 'danger' : 'primary'}" data-submit>${esc(submit)}</button>`,
+      size, footer: `<button type="button" class="sc-btn ghost" data-close2>${SC.t('Cancel', 'Ghairi')}</button><button type="submit" form="scForm" class="sc-btn ${danger ? 'danger' : 'primary'}" data-submit>${esc(submit)}</button>`,
     });
     const form = back.querySelector('form');
     back.querySelector('[data-close2]').addEventListener('click', () => SC.closeModal());
@@ -271,7 +282,7 @@
       const btn = back.querySelector('[data-submit]'); const errBox = form.querySelector('.sc-form-error');
       errBox.classList.remove('show');
       if (!SC.validate(form)) return;
-      const label = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="sc-spin"></span> Please wait…';
+      const label = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="sc-spin"></span> ${SC.t('Please wait…', 'Tafadhali subiri…')}`;
       try { await onSubmit(SC.formData(form), form); }
       catch (err) { errBox.textContent = err.message; errBox.classList.add('show'); errBox.scrollIntoView({ block: 'nearest' }); }
       finally { btn.disabled = false; btn.innerHTML = label; }
@@ -294,8 +305,8 @@
     img.src = url;
   });
   SC.photoField = (name = 'photo', current = '') => `<div class="sc-photo-drop"><div class="preview" id="scPhotoPreview">${current ? `<img src="${current}" alt="" onerror="this.remove()">` : '<i class="fa-solid fa-camera"></i>'}</div>
-    <div><label class="sc-btn ghost sm" for="f_${name}"><i class="fa-solid fa-upload"></i> Choose photo</label><input type="file" id="f_${name}" name="${name}" accept="image/png,image/jpeg,image/webp" class="sc-sr">
-    <div class="sc-small sc-muted" style="margin-top:.35rem">PNG, JPG or WEBP, up to 3 MB. Optional.</div></div></div>`;
+    <div><label class="sc-btn ghost sm" for="f_${name}"><i class="fa-solid fa-upload"></i> ${SC.t('Choose photo', 'Chagua picha')}</label><input type="file" id="f_${name}" name="${name}" accept="image/png,image/jpeg,image/webp" class="sc-sr">
+    <div class="sc-small sc-muted" style="margin-top:.35rem">${SC.t('PNG, JPG or WEBP, up to 3 MB. Optional.', 'PNG, JPG au WEBP, hadi MB 3. Si lazima.')}</div></div></div>`;
   SC.wirePhotoField = (form, name = 'photo') => {
     const input = form.querySelector(`[name=${name}]`); if (!input) return;
     input.addEventListener('change', () => {

@@ -7,6 +7,17 @@
   SP.state = { user: null, shop: null, role: null, perms: [], settings: {}, lookups: null, photoV: Date.now() };
   SP.modules = {};
 
+  // ------------------------------------------------------------ language (English / Kiswahili)
+  // Shares the same storage key as the rest of the Smart21Brain site, so a
+  // language choice made anywhere (marketing pages or any app) applies here too.
+  const LANG_KEY = 's21-lang';
+  SP.lang = () => { try { return localStorage.getItem(LANG_KEY) || 'en'; } catch (e) { return 'en'; } };
+  SP.isSw = () => SP.lang() === 'sw';
+  SP.setLang = (l) => { try { localStorage.setItem(LANG_KEY, l); } catch (e) { /* ignore */ } };
+  SP.toggleLang = () => { SP.setLang(SP.isSw() ? 'en' : 'sw'); location.reload(); };
+  // Pick between an English and Swahili string for the current language.
+  SP.t = (en, sw) => (SP.isSw() ? sw : en);
+
   // ------------------------------------------------------------ helpers
   SP.esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const esc = SP.esc;
@@ -31,7 +42,8 @@
   SP.cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1).replace(/_/g, ' ') : '');
   SP.initials = (name) => String(name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   const STATUS_TEXT = { paid: 'Paid', partial: 'Partial', unpaid: 'Unpaid', active: 'Active', inactive: 'Inactive', completed: 'Completed', void: 'Cancelled', retail: 'Retail', wholesale: 'Wholesale', vip: 'VIP', ok: 'In stock', low: 'Low stock', out: 'Out of stock', na: 'Service' };
-  SP.chip = (status, text) => `<span class="sp-chip ${esc(status)}">${esc(text || STATUS_TEXT[status] || SP.cap(status))}</span>`;
+  const STATUS_TEXT_SW = { paid: 'Imelipwa', partial: 'Sehemu', unpaid: 'Haijalipwa', active: 'Hai', inactive: 'Haifanyi kazi', completed: 'Imekamilika', void: 'Imeghairiwa', retail: 'Rejareja', wholesale: 'Jumla', vip: 'VIP', ok: 'Ipo stoo', low: 'Inapungua', out: 'Imeisha', na: 'Huduma' };
+  SP.chip = (status, text) => `<span class="sp-chip ${esc(status)}">${esc(text || (SP.isSw() ? STATUS_TEXT_SW[status] : STATUS_TEXT[status]) || SP.cap(status))}</span>`;
   SP.photoUrl = (kind, id) => `/api/shop/${kind}/${id}/image?shop_id=${SP.state.shop ? SP.state.shop.id : ''}&v=${SP.state.photoV}`;
   SP.logoUrl = (id) => `/api/shop/public/logo/${id || (SP.state.shop && SP.state.shop.id)}?v=${SP.state.photoV}`;
   SP.avatar = (kind, id, name, has, size = '') =>
@@ -108,7 +120,7 @@
     const back = document.createElement('div');
     back.className = 'sp-modal-back'; back.id = 'spModal';
     back.innerHTML = `<div class="sp-modal ${size}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-      <div class="sp-modal-head"><h3>${esc(title)}</h3><button class="sp-icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="sp-modal-head"><h3>${esc(title)}</h3><button class="sp-icon-btn" data-close aria-label="${SP.t('Close', 'Funga')}"><i class="fa-solid fa-xmark"></i></button></div>
       <div class="sp-modal-body">${bodyHtml}</div>${footer ? `<div class="sp-modal-foot">${footer}</div>` : ''}</div>`;
     back.__onClose = onClose;
     back.addEventListener('mousedown', (e) => { if (e.target === back) SP.closeModal(); });
@@ -126,9 +138,9 @@
   };
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') SP.closeModal(); });
 
-  SP.confirm = ({ title = 'Are you sure?', message = '', confirmText = 'Yes, continue', danger = true, icon }) => new Promise((resolve) => {
+  SP.confirm = ({ title = SP.t('Are you sure?', 'Una uhakika?'), message = '', confirmText = SP.t('Yes, continue', 'Ndiyo, endelea'), danger = true, icon }) => new Promise((resolve) => {
     const back = SP.modal(title, `<div><div class="sp-confirm-ico ${danger ? '' : 'info'}"><i class="fa-solid ${icon || (danger ? 'fa-triangle-exclamation' : 'fa-circle-question')}"></i></div><p style="margin:0">${message}</p></div>`, {
-      footer: `<button class="sp-btn ghost" data-no>Cancel</button><button class="sp-btn ${danger ? 'danger' : 'primary'}" data-yes>${esc(confirmText)}</button>`, onClose: () => resolve(false),
+      footer: `<button class="sp-btn ghost" data-no>${SP.t('Cancel', 'Ghairi')}</button><button class="sp-btn ${danger ? 'danger' : 'primary'}" data-yes>${esc(confirmText)}</button>`, onClose: () => resolve(false),
     });
     back.querySelector('[data-no]').addEventListener('click', () => SP.closeModal());
     back.querySelector('[data-yes]').addEventListener('click', () => { back.__onClose = null; SP.closeModal(true); resolve(true); });
@@ -151,10 +163,10 @@
   };
 
   // ------------------------------------------------------------ small UI pieces
-  SP.skeleton = (rows = 4) => `<div class="sp-card" aria-busy="true" aria-label="Loading">${Array.from({ length: rows }, (_, i) => `<div class="sp-skel line" style="width:${90 - i * 9}%"></div>`).join('')}</div>`;
+  SP.skeleton = (rows = 4) => `<div class="sp-card" aria-busy="true" aria-label="${SP.t('Loading', 'Inapakia')}">${Array.from({ length: rows }, (_, i) => `<div class="sp-skel line" style="width:${90 - i * 9}%"></div>`).join('')}</div>`;
   SP.skeletonPage = () => `<div class="sp-grid stats">${'<div class="sp-card"><div class="sp-skel box"></div></div>'.repeat(4)}</div><div class="sp-grid cols-2" style="margin-top:1.1rem">${'<div class="sp-card"><div class="sp-skel" style="height:220px"></div></div>'.repeat(2)}</div>`;
   SP.empty = (icon, title, text, action = '') => `<div class="sp-empty"><div class="ico"><i class="fa-solid ${icon}"></i></div><h4>${esc(title)}</h4><p>${esc(text)}</p>${action}</div>`;
-  SP.errorBox = (err) => `<div class="sp-card">${SP.empty('fa-plug-circle-exclamation', 'We could not load this page', err && err.message ? err.message : 'Please try again.', '<button class="sp-btn primary" onclick="location.reload()">Try again</button>')}</div>`;
+  SP.errorBox = (err) => `<div class="sp-card">${SP.empty('fa-plug-circle-exclamation', SP.t('We could not load this page', 'Hatukuweza kupakia ukurasa huu'), err && err.message ? err.message : SP.t('Please try again.', 'Tafadhali jaribu tena.'), `<button class="sp-btn primary" onclick="location.reload()">${SP.t('Try again', 'Jaribu tena')}</button>`)}</div>`;
   SP.pageHead = (title, sub, actions = '') => `<div class="sp-page-head"><div><h2>${esc(title)}</h2>${sub ? `<p>${esc(sub)}</p>` : ''}</div><div class="sp-row">${actions}</div></div>`;
   SP.stat = (icon, value, label, sub = '', tone = '') => `<div class="sp-card sp-stat"><div class="ico ${tone}"><i class="fa-solid ${icon}"></i></div><div><div class="val">${value}</div><div class="lbl">${esc(label)}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div></div>`;
   SP.progress = (pct, tone = '') => `<div class="sp-progress ${tone}"><span style="width:${Math.max(0, Math.min(100, pct || 0))}%"></span></div>`;
@@ -165,12 +177,13 @@
       rows.map((r) => `<tr>${cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   };
   SP.pager = (page, limit, total) => {
-    if (total <= limit) return total ? `<div class="sp-pager"><span>${total} record${total === 1 ? '' : 's'}</span></div>` : '';
+    const sw = SP.isSw();
+    if (total <= limit) return total ? `<div class="sp-pager"><span>${total} ${sw ? 'rekodi' : `record${total === 1 ? '' : 's'}`}</span></div>` : '';
     const pages = Math.ceil(total / limit);
-    return `<div class="sp-pager"><span>Showing ${(page - 1) * limit + 1}–${Math.min(page * limit, total)} of ${total}</span>
-      <span class="sp-row"><button class="sp-btn ghost sm" data-act="page" data-p="${page - 1}" ${page <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i> Previous</button>
-      <span>Page ${page} of ${pages}</span>
-      <button class="sp-btn ghost sm" data-act="page" data-p="${page + 1}" ${page >= pages ? 'disabled' : ''}>Next <i class="fa-solid fa-chevron-right"></i></button></span></div>`;
+    return `<div class="sp-pager"><span>${sw ? 'Inaonyesha' : 'Showing'} ${(page - 1) * limit + 1}–${Math.min(page * limit, total)} ${sw ? 'kati ya' : 'of'} ${total}</span>
+      <span class="sp-row"><button class="sp-btn ghost sm" data-act="page" data-p="${page - 1}" ${page <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i> ${sw ? 'Iliyotangulia' : 'Previous'}</button>
+      <span>${sw ? 'Ukurasa' : 'Page'} ${page} ${sw ? 'kati ya' : 'of'} ${pages}</span>
+      <button class="sp-btn ghost sm" data-act="page" data-p="${page + 1}" ${page >= pages ? 'disabled' : ''}>${sw ? 'Inayofuata' : 'Next'} <i class="fa-solid fa-chevron-right"></i></button></span></div>`;
   };
 
   // Click delegation: <button data-act="name"> -> handlers.name(button, event)
@@ -195,7 +208,7 @@
         ${hint ? `<span class="hint">${esc(hint)}</span>` : ''}<span class="err"></span></div>`;
     },
     select(name, label, options, o = {}) {
-      const { value = '', required = false, placeholder = 'Select…', hint = '', cls = '', attr = {}, noBlank = false } = o;
+      const { value = '', required = false, placeholder = SP.t('Select…', 'Chagua…'), hint = '', cls = '', attr = {}, noBlank = false } = o;
       const opts = options.map((x) => (Array.isArray(x) ? { v: x[0], l: x[1] } : x));
       return `<div class="sp-field ${cls}" data-field="${name}"><label for="f_${name}">${esc(label)}${required ? '<span class="req">*</span>' : ''}</label>
         <select class="sp-select" id="f_${name}" name="${name}" ${required ? 'required data-label="' + esc(label) + '"' : ''} ${attrs(attr)}>
@@ -235,17 +248,18 @@
     form.querySelectorAll('.sp-field').forEach((f) => { f.classList.remove('has-error'); const er = f.querySelector('.err'); if (er) er.textContent = ''; });
     form.querySelectorAll('input, select, textarea').forEach((el) => {
       const wrap = el.closest('.sp-field'); if (!wrap || el.disabled) return;
-      const label = el.dataset.label || 'this field';
+      const sw = SP.isSw();
+      const label = el.dataset.label || (sw ? 'sehemu hii' : 'this field');
       let msg = '';
       const val = el.value.trim();
-      if (el.required && !val) msg = el.tagName === 'SELECT' ? `Please choose ${label.toLowerCase()}.` : `Please enter ${label.toLowerCase()}.`;
-      else if (val && el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) msg = 'Please enter a valid email address, like name@example.com.';
-      else if (val && el.dataset.kind === 'phone' && !/^\+?[0-9][0-9 ()\-]{5,19}$/.test(val)) msg = 'Please enter a valid phone number, like +255 712 345 678.';
+      if (el.required && !val) msg = sw ? `Tafadhali ${el.tagName === 'SELECT' ? 'chagua' : 'jaza'} ${label.toLowerCase()}.` : (el.tagName === 'SELECT' ? `Please choose ${label.toLowerCase()}.` : `Please enter ${label.toLowerCase()}.`);
+      else if (val && el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) msg = sw ? 'Tafadhali weka barua pepe sahihi, mfano name@example.com.' : 'Please enter a valid email address, like name@example.com.';
+      else if (val && el.dataset.kind === 'phone' && !/^\+?[0-9][0-9 ()\-]{5,19}$/.test(val)) msg = sw ? 'Tafadhali weka namba sahihi ya simu, mfano +255 712 345 678.' : 'Please enter a valid phone number, like +255 712 345 678.';
       else if (val && el.type === 'number') {
         const n = Number(val);
-        if (Number.isNaN(n) || (el.min !== '' && n < Number(el.min))) msg = `Please enter a number${el.min !== '' ? ` of ${el.min} or more` : ''}.`;
-        else if (el.max !== '' && n > Number(el.max)) msg = `The number cannot be more than ${el.max}.`;
-      } else if (val && el.minLength > 0 && val.length < el.minLength) msg = `Please use at least ${el.minLength} characters.`;
+        if (Number.isNaN(n) || (el.min !== '' && n < Number(el.min))) msg = sw ? `Tafadhali weka namba${el.min !== '' ? ` ya ${el.min} au zaidi` : ''}.` : `Please enter a number${el.min !== '' ? ` of ${el.min} or more` : ''}.`;
+        else if (el.max !== '' && n > Number(el.max)) msg = sw ? `Namba haiwezi kuzidi ${el.max}.` : `The number cannot be more than ${el.max}.`;
+      } else if (val && el.minLength > 0 && val.length < el.minLength) msg = sw ? `Tafadhali tumia angalau herufi ${el.minLength}.` : `Please use at least ${el.minLength} characters.`;
       if (msg) { wrap.classList.add('has-error'); const er = wrap.querySelector('.err'); if (er) er.textContent = msg; if (!firstBad) firstBad = el; }
     });
     if (firstBad) { firstBad.scrollIntoView({ block: 'center', behavior: 'smooth' }); firstBad.focus({ preventScroll: true }); }
@@ -253,9 +267,9 @@
   };
 
   // Standard modal form: validation, spinner, server error display.
-  SP.formModal = ({ title, body, submit = 'Save', size = '', onSubmit, onOpen, danger = false }) => {
+  SP.formModal = ({ title, body, submit = SP.t('Save', 'Hifadhi'), size = '', onSubmit, onOpen, danger = false }) => {
     const back = SP.modal(title, `<form class="sp-form" novalidate id="spForm"><div class="sp-form-error" role="alert"></div>${body}</form>`, {
-      size, footer: `<button type="button" class="sp-btn ghost" data-close2>Cancel</button><button type="submit" form="spForm" class="sp-btn ${danger ? 'danger' : 'primary'}" data-submit>${esc(submit)}</button>`,
+      size, footer: `<button type="button" class="sp-btn ghost" data-close2>${SP.t('Cancel', 'Ghairi')}</button><button type="submit" form="spForm" class="sp-btn ${danger ? 'danger' : 'primary'}" data-submit>${esc(submit)}</button>`,
     });
     const form = back.querySelector('form');
     back.querySelector('[data-close2]').addEventListener('click', () => SP.closeModal());
@@ -265,7 +279,7 @@
       const btn = back.querySelector('[data-submit]'); const errBox = form.querySelector('.sp-form-error');
       errBox.classList.remove('show');
       if (!SP.validate(form)) return;
-      const label = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="sp-spin"></span> Please wait…';
+      const label = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="sp-spin"></span> ${SP.t('Please wait…', 'Tafadhali subiri…')}`;
       try { await onSubmit(SP.formData(form), form); }
       catch (err) { errBox.textContent = err.message; errBox.classList.add('show'); errBox.scrollIntoView({ block: 'nearest' }); }
       finally { btn.disabled = false; btn.innerHTML = label; }
@@ -288,8 +302,8 @@
     img.src = url;
   });
   SP.photoField = (name = 'photo', current = '') => `<div class="sp-photo-drop"><div class="preview" id="spPhotoPreview">${current ? `<img src="${current}" alt="" onerror="this.remove()">` : '<i class="fa-solid fa-camera"></i>'}</div>
-    <div><label class="sp-btn ghost sm" for="f_${name}"><i class="fa-solid fa-upload"></i> Choose photo</label><input type="file" id="f_${name}" name="${name}" accept="image/png,image/jpeg,image/webp" class="sp-sr">
-    <div class="sp-small sp-muted" style="margin-top:.35rem">PNG, JPG or WEBP, up to 3 MB. Optional.</div></div></div>`;
+    <div><label class="sp-btn ghost sm" for="f_${name}"><i class="fa-solid fa-upload"></i> ${SP.t('Choose photo', 'Chagua picha')}</label><input type="file" id="f_${name}" name="${name}" accept="image/png,image/jpeg,image/webp" class="sp-sr">
+    <div class="sp-small sp-muted" style="margin-top:.35rem">${SP.t('PNG, JPG or WEBP, up to 3 MB. Optional.', 'PNG, JPG au WEBP, hadi MB 3. Si lazima.')}</div></div></div>`;
   SP.wirePhotoField = (form, name = 'photo') => {
     const input = form.querySelector(`[name=${name}]`); if (!input) return;
     input.addEventListener('change', () => {
