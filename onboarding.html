@@ -204,7 +204,7 @@
       localStorage.setItem('s21-onboarding-answers', JSON.stringify(answers));
       if (answers.language === 'Kiswahili') localStorage.setItem('s21-lang', 'sw');
     } catch (e) { /* ignore */ }
-    window.location.href = 'splash.html';
+    window.location.href = 'welcome.html';
   }
 
   // Single/multi-select option groups (steps 1, 3, 4, 5)
@@ -247,7 +247,7 @@
       localStorage.removeItem('s21-needs-onboarding');
       localStorage.setItem('s21-account-type', 'guest');
     } catch (e) { /* ignore */ }
-    window.location.href = 'splash.html';
+    window.location.href = 'welcome.html';
   }
 
   $$('.onboard-choice').forEach((btn) => {
@@ -282,7 +282,7 @@
       localStorage.setItem('s21-onboarded', '1');
       localStorage.removeItem('s21-needs-onboarding');
     } catch (e) { /* ignore */ }
-    window.location.href = 'splash.html';
+    window.location.href = 'welcome.html';
   });
 })();
 </script>
