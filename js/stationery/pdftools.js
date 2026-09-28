@@ -1,19 +1,22 @@
 (function () {
   'use strict';
   const STN = window.STN;
+  const t = (k) => (window.S21_t ? window.S21_t(k) : k);
   window.STN_MODULES = window.STN_MODULES || {};
 
-  const TOOLS = [
-    { id: 'merge', label: 'Merge PDFs', icon: 'fa-object-group', desc: 'Combine two or more PDF files into one, in the order you pick them.' },
-    { id: 'split', label: 'Split PDF', icon: 'fa-scissors', desc: 'Break a PDF into one file per page, downloaded as a ZIP.' },
-    { id: 'rotate', label: 'Rotate Pages', icon: 'fa-rotate', desc: 'Rotate every page in a PDF by 90°, 180° or 270°.' },
-    { id: 'compress', label: 'Compress PDF', icon: 'fa-compress', desc: 'Re-render pages as JPEG at a lower quality to shrink scanned/image-heavy PDFs.' },
-    { id: 'jpg2pdf', label: 'JPG/PNG → PDF', icon: 'fa-file-pdf', desc: 'Turn one or more photos into a single PDF, one image per page.' },
-    { id: 'pdf2jpg', label: 'PDF → JPG', icon: 'fa-file-image', desc: 'Export every page of a PDF as a JPG image (ZIP for multi-page).' },
-    { id: 'watermark', label: 'Watermark', icon: 'fa-stamp', desc: 'Stamp a diagonal text watermark across every page.' },
-    { id: 'pagenumbers', label: 'Page Numbers', icon: 'fa-list-ol', desc: 'Add page numbers to the bottom of every page.' },
-    { id: 'ocr', label: 'OCR (Text from Image/PDF)', icon: 'fa-font', desc: 'Extract readable text from a scanned page or photo using on-device OCR.' },
+  const TOOL_DEFS = [
+    { id: 'merge', icon: 'fa-object-group' },
+    { id: 'split', icon: 'fa-scissors' },
+    { id: 'rotate', icon: 'fa-rotate' },
+    { id: 'compress', icon: 'fa-compress' },
+    { id: 'jpg2pdf', icon: 'fa-file-pdf' },
+    { id: 'pdf2jpg', icon: 'fa-file-image' },
+    { id: 'watermark', icon: 'fa-stamp' },
+    { id: 'pagenumbers', icon: 'fa-list-ol' },
+    { id: 'ocr', icon: 'fa-font' },
   ];
+  function getTools() { return TOOL_DEFS.map((d) => ({ ...d, label: t('stn_pdf_' + d.id + '_label'), desc: t('stn_pdf_' + d.id + '_desc') })); }
+
 
   window.STN_MODULES.pdftools = async function (root) {
     root.innerHTML = `
@@ -21,11 +24,11 @@
       <div id="stnToolPane"></div>
     `;
     const grid = document.getElementById('stnToolGrid');
-    grid.innerHTML = TOOLS.map((t) => `
-      <div class="stn-card stn-card-tight" style="cursor:pointer" data-tool="${t.id}">
-        <i class="fa-solid ${t.icon} text-emerald mb-2" style="font-size:1.2rem"></i>
-        <div style="font-weight:700;font-size:.88rem">${t.label}</div>
-        <div class="text-soft" style="font-size:.76rem">${t.desc}</div>
+    grid.innerHTML = getTools().map((tool) => `
+      <div class="stn-card stn-card-tight" style="cursor:pointer" data-tool="${tool.id}">
+        <i class="fa-solid ${tool.icon} text-emerald mb-2" style="font-size:1.2rem"></i>
+        <div style="font-weight:700;font-size:.88rem">${tool.label}</div>
+        <div class="text-soft" style="font-size:.76rem">${tool.desc}</div>
       </div>`).join('');
     grid.querySelectorAll('[data-tool]').forEach((card) => card.addEventListener('click', () => openTool(card.dataset.tool)));
   };
@@ -49,7 +52,7 @@
   async function checkLibs(...names) {
     const missing = names.filter((n) => !window[n]);
     if (!missing.length) return true;
-    STN.toast(`Loading ${missing.join(', ')}…`);
+    STN.toast(`${t('stn_pdf_loading')} ${missing.join(', ')}…`);
     try {
       await STN.loadScripts(missing.map((n) => LIB_URLS[n]));
       if (missing.includes('pdfjsLib')) {
@@ -57,13 +60,13 @@
       }
       return true;
     } catch (e) {
-      STN.toast('Could not load a required library — check your connection and try again.', 'error');
+      STN.toast(t('stn_pdf_lib_load_failed'), 'error');
       return false;
     }
   }
 
   function openTool(id) {
-    const tool = TOOLS.find((t) => t.id === id);
+    const tool = getTools().find((x) => x.id === id);
     const box = pane();
     box.innerHTML = toolHeader(tool) + renderers[id]();
     wireTool(id);
@@ -74,58 +77,58 @@
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" multiple class="stn-input mb-3">
         <div id="stnFileOrder" class="mb-3 text-soft" style="font-size:.82rem"></div>
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-object-group"></i> Merge & Download</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-object-group"></i> ${t('stn_pdf_btn_merge')}</button>
       </div>`,
     split: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-scissors"></i> Split & Download ZIP</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-scissors"></i> ${t('stn_pdf_btn_split')}</button>
       </div>`,
     rotate: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <div class="stn-field"><label class="stn-label">Rotate by</label>
+        <div class="stn-field"><label class="stn-label">${t('stn_pdf_rotate_by')}</label>
           <select class="stn-select" id="stnRotateDeg"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select>
         </div>
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-rotate"></i> Rotate & Download</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-rotate"></i> ${t('stn_pdf_btn_rotate')}</button>
       </div>`,
     compress: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <div class="stn-field"><label class="stn-label">JPEG Quality</label><input type="range" min="20" max="90" value="55" id="stnQuality" class="w-100"></div>
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-compress"></i> Compress & Download</button>
+        <div class="stn-field"><label class="stn-label">${t('stn_pdf_jpeg_quality')}</label><input type="range" min="20" max="90" value="55" id="stnQuality" class="w-100"></div>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-compress"></i> ${t('stn_pdf_btn_compress')}</button>
       </div>`,
     jpg2pdf: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="image/jpeg,image/png" multiple class="stn-input mb-3">
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-file-pdf"></i> Create PDF</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-file-pdf"></i> ${t('stn_pdf_btn_jpg2pdf')}</button>
       </div>`,
     pdf2jpg: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-file-image"></i> Export JPGs</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-file-image"></i> ${t('stn_pdf_btn_pdf2jpg')}</button>
       </div>`,
     watermark: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <div class="stn-field"><label class="stn-label">Watermark Text</label><input class="stn-input" id="stnWmText" value="COPY"></div>
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-stamp"></i> Apply & Download</button>
+        <div class="stn-field"><label class="stn-label">${t('stn_pdf_watermark_text')}</label><input class="stn-input" id="stnWmText" value="COPY"></div>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-stamp"></i> ${t('stn_pdf_btn_watermark')}</button>
       </div>`,
     pagenumbers: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="application/pdf" class="stn-input mb-3">
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-list-ol"></i> Add Numbers & Download</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-list-ol"></i> ${t('stn_pdf_btn_pagenumbers')}</button>
       </div>`,
     ocr: () => `
       <div class="stn-card">
         <input type="file" id="stnFiles" accept="image/*,application/pdf" class="stn-input mb-3">
-        <div class="stn-field"><label class="stn-label">Language</label>
+        <div class="stn-field"><label class="stn-label">${t('stn_pdf_language')}</label>
           <select class="stn-select" id="stnOcrLang"><option value="eng">English</option><option value="swa">Kiswahili</option></select>
         </div>
-        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-font"></i> Extract Text</button>
+        <button class="stn-btn stn-btn-primary" id="stnRun"><i class="fa-solid fa-font"></i> ${t('stn_pdf_btn_ocr')}</button>
         <div id="stnOcrProgress" class="text-soft mt-2" style="font-size:.8rem"></div>
-        <textarea class="stn-textarea mt-3" id="stnOcrOut" rows="8" placeholder="Extracted text will appear here…"></textarea>
-        <button class="stn-btn stn-btn-outline stn-btn-sm mt-2" id="stnOcrDownload" style="display:none"><i class="fa-solid fa-download"></i> Download .txt</button>
+        <textarea class="stn-textarea mt-3" id="stnOcrOut" rows="8" placeholder="${t('stn_pdf_ocr_placeholder')}"></textarea>
+        <button class="stn-btn stn-btn-outline stn-btn-sm mt-2" id="stnOcrDownload" style="display:none"><i class="fa-solid fa-download"></i> ${t('stn_pdf_btn_download_txt')}</button>
       </div>`,
   };
 
@@ -151,15 +154,15 @@
   async function runTool(id) {
     const btn = document.getElementById('stnRun');
     const files = document.getElementById('stnFiles')?.files;
-    if (!files || !files.length) return STN.toast('Choose a file first.', 'error');
+    if (!files || !files.length) return STN.toast(t('stn_pdf_choose_file_first'), 'error');
     if (btn) { btn.disabled = true; btn.innerHTML = '<div class="stn-spin" style="width:16px;height:16px;border-width:2px"></div>'; }
     try {
       await HANDLERS[id](files);
     } catch (err) {
       console.error(err);
-      STN.toast('Something went wrong: ' + err.message, 'error');
+      STN.toast(t('stn_pdf_something_wrong') + ' ' + err.message, 'error');
     } finally {
-      if (btn) { btn.disabled = false; const t = TOOLS.find((x) => x.id === id); btn.innerHTML = `<i class="fa-solid ${t.icon}"></i> Run again`; }
+      if (btn) { btn.disabled = false; const tl = TOOL_DEFS.find((x) => x.id === id); btn.innerHTML = `<i class="fa-solid ${tl.icon}"></i> ${t('stn_pdf_run_again')}`; }
     }
   }
 
@@ -176,7 +179,7 @@
       }
       const bytes = await out.save();
       downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'merged.pdf');
-      STN.toast('Merged PDF downloaded.');
+      STN.toast(t('stn_pdf_merged_done'));
     },
 
     async split(files) {
@@ -194,7 +197,7 @@
       }
       const blob = await zip.generateAsync({ type: 'blob' });
       downloadBlob(blob, 'split-pages.zip');
-      STN.toast('Pages exported as ZIP.');
+      STN.toast(t('stn_pdf_split_done'));
     },
 
     async rotate(files) {
@@ -206,7 +209,7 @@
       doc.getPages().forEach((p) => p.setRotation(degrees((p.getRotation().angle + deg) % 360)));
       const out = await doc.save();
       downloadBlob(new Blob([out], { type: 'application/pdf' }), 'rotated.pdf');
-      STN.toast('Rotated PDF downloaded.');
+      STN.toast(t('stn_pdf_rotate_done'));
     },
 
     async compress(files) {
@@ -225,7 +228,7 @@
       }
       const pdfBytes = await out.save();
       downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'compressed.pdf');
-      STN.toast(`Compressed: ${(bytes.byteLength / 1024).toFixed(0)}KB → ${(pdfBytes.byteLength / 1024).toFixed(0)}KB`);
+      STN.toast(`${t('stn_pdf_compressed')}: ${(bytes.byteLength / 1024).toFixed(0)}KB → ${(pdfBytes.byteLength / 1024).toFixed(0)}KB`);
     },
 
     async jpg2pdf(files) {
@@ -240,7 +243,7 @@
       }
       const bytes = await out.save();
       downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'images.pdf');
-      STN.toast('PDF created from images.');
+      STN.toast(t('stn_pdf_jpg2pdf_done'));
     },
 
     async pdf2jpg(files) {
@@ -248,7 +251,7 @@
       const canvases = await pdfToPageCanvases(bytes, 2);
       if (canvases.length === 1) {
         canvases[0].toBlob((blob) => downloadBlob(blob, 'page-1.jpg'), 'image/jpeg', 0.92);
-        STN.toast('JPG downloaded.');
+        STN.toast(t('stn_pdf_jpg_done'));
         return;
       }
       if (!(await checkLibs('JSZip'))) return;
@@ -259,7 +262,7 @@
       }
       const blob = await zip.generateAsync({ type: 'blob' });
       downloadBlob(blob, 'pdf-pages.zip');
-      STN.toast(`${canvases.length} pages exported as ZIP.`);
+      STN.toast(`${canvases.length} ${t('stn_pdf_n_pages_zip')}`);
     },
 
     async watermark(files) {
@@ -278,7 +281,7 @@
       });
       const out = await doc.save();
       downloadBlob(new Blob([out], { type: 'application/pdf' }), 'watermarked.pdf');
-      STN.toast('Watermark applied.');
+      STN.toast(t('stn_pdf_wm_done'));
     },
 
     async pagenumbers(files) {
@@ -294,7 +297,7 @@
       });
       const out = await doc.save();
       downloadBlob(new Blob([out], { type: 'application/pdf' }), 'numbered.pdf');
-      STN.toast('Page numbers added.');
+      STN.toast(t('stn_pdf_pn_done'));
     },
 
     async ocr(files) {
@@ -315,11 +318,11 @@
       const { data } = await worker.recognize(imageSource);
       await worker.terminate();
       document.getElementById('stnOcrOut').value = data.text;
-      progressEl.textContent = 'Done.';
+      progressEl.textContent = t('stn_pdf_done');
       const dl = document.getElementById('stnOcrDownload');
       dl.style.display = '';
       dl.onclick = () => downloadBlob(new Blob([data.text], { type: 'text/plain' }), 'extracted-text.txt');
-      STN.toast('Text extracted.');
+      STN.toast(t('stn_pdf_ocr_done'));
     },
   };
 })();

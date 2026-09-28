@@ -26,7 +26,7 @@
     let data = null;
     try { data = await res.json(); } catch (e) { /* non-JSON (e.g. file) */ }
     if (!res.ok) {
-      const message = (data && data.error) || `Request failed (${res.status})`;
+      const message = (data && data.error) || `${(window.S21_t ? window.S21_t('stn_request_failed') : 'Request failed')} (${res.status})`;
       throw new Error(message);
     }
     return data;
@@ -50,7 +50,7 @@
       const s = document.createElement('script');
       s.src = src;
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error('Failed to load ' + src));
+      s.onerror = () => reject(new Error((window.S21_t ? window.S21_t('stn_failed_to_load') : 'Failed to load') + ' ' + src));
       document.body.appendChild(s);
     })));
   };

@@ -1,6 +1,7 @@
 (function () {
   'use strict';
   const STN = window.STN;
+  const t = (k) => (window.S21_t ? window.S21_t(k) : k);
   window.STN_MODULES = window.STN_MODULES || {};
 
   const st = {
@@ -21,51 +22,51 @@
       <div class="stn-grid" style="grid-template-columns: 1fr 340px; align-items:flex-start">
         <div class="stn-card">
           <div class="stn-card-head">
-            <h3><i class="fa-solid fa-camera-retro me-1"></i>Passport Photo Studio</h3>
+            <h3><i class="fa-solid fa-camera-retro me-1"></i>${t('stn_ps_title')}</h3>
             <input type="file" accept="image/*" id="stnPhotoFile" class="d-none">
-            <button class="stn-btn stn-btn-primary stn-btn-sm" id="stnPhotoUploadBtn"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+            <button class="stn-btn stn-btn-primary stn-btn-sm" id="stnPhotoUploadBtn"><i class="fa-solid fa-upload"></i> ${t('stn_ps_upload_photo')}</button>
           </div>
           <div class="stn-photo-stage"><canvas id="stnPhotoCanvas" width="360" height="450"></canvas></div>
           <div class="d-flex justify-content-between text-soft mt-2" style="font-size:.78rem" id="stnPhotoDims">—</div>
 
           <div class="stn-grid stn-grid-2 mt-3">
-            <div class="stn-field"><label class="stn-label">Zoom</label><input type="range" min="0.5" max="3" step="0.01" value="1" id="stnZoom" class="w-100"></div>
-            <div class="stn-field"><label class="stn-label">Sharpen</label><input type="range" min="0" max="100" value="0" id="stnSharpen" class="w-100"></div>
-            <div class="stn-field"><label class="stn-label">Brightness</label><input type="range" min="50" max="150" value="100" id="stnBrightness" class="w-100"></div>
-            <div class="stn-field"><label class="stn-label">Contrast</label><input type="range" min="50" max="150" value="100" id="stnContrast" class="w-100"></div>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_zoom')}</label><input type="range" min="0.5" max="3" step="0.01" value="1" id="stnZoom" class="w-100"></div>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_sharpen')}</label><input type="range" min="0" max="100" value="0" id="stnSharpen" class="w-100"></div>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_brightness')}</label><input type="range" min="50" max="150" value="100" id="stnBrightness" class="w-100"></div>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_contrast')}</label><input type="range" min="50" max="150" value="100" id="stnContrast" class="w-100"></div>
           </div>
-          <p class="text-soft mb-0" style="font-size:.76rem"><i class="fa-solid fa-arrows-up-down-left-right me-1"></i>Drag the photo to reposition. Keep the face inside the dashed guide.</p>
+          <p class="text-soft mb-0" style="font-size:.76rem"><i class="fa-solid fa-arrows-up-down-left-right me-1"></i>${t('stn_ps_drag_hint')}</p>
         </div>
 
         <div class="d-flex flex-column gap-3">
           <div class="stn-card">
-            <div class="stn-card-head"><h3>Preset</h3></div>
+            <div class="stn-card-head"><h3>${t('stn_ps_preset')}</h3></div>
             <select class="stn-select mb-2" id="stnPresetSelect"></select>
             <div class="text-soft" style="font-size:.78rem" id="stnPresetInfo"></div>
           </div>
 
           <div class="stn-card">
-            <div class="stn-card-head"><h3>Background</h3></div>
+            <div class="stn-card-head"><h3>${t('stn_ps_background')}</h3></div>
             <div class="d-flex gap-2 mb-2">
               <span class="stn-swatch active" style="background:#fff" data-bg="#FFFFFF"></span>
               <span class="stn-swatch" style="background:#1d4ed8" data-bg="#1d4ed8"></span>
               <span class="stn-swatch" style="background:#dc2626" data-bg="#dc2626"></span>
               <input type="color" id="stnBgCustom" value="#ffffff" style="width:28px;height:28px;border-radius:.5rem;border:none;padding:0">
             </div>
-            <div class="stn-field"><label class="stn-label">Tolerance</label><input type="range" min="5" max="80" value="32" id="stnTolerance" class="w-100"></div>
-            <button class="stn-btn stn-btn-outline stn-btn-sm w-100" id="stnBgRemove"><i class="fa-solid fa-wand-magic-sparkles"></i> Click photo background to remove</button>
-            <p class="text-soft mt-2 mb-0" style="font-size:.72rem">Works best with a plain, even-colour backdrop. Toggle off when done.</p>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_tolerance')}</label><input type="range" min="5" max="80" value="32" id="stnTolerance" class="w-100"></div>
+            <button class="stn-btn stn-btn-outline stn-btn-sm w-100" id="stnBgRemove"><i class="fa-solid fa-wand-magic-sparkles"></i> ${t('stn_ps_click_bg_remove')}</button>
+            <p class="text-soft mt-2 mb-0" style="font-size:.72rem">${t('stn_ps_bg_hint')}</p>
           </div>
 
           <div class="stn-card">
-            <div class="stn-card-head"><h3>Export</h3></div>
-            <div class="stn-field"><label class="stn-label">A4 Layout</label>
-              <select class="stn-select" id="stnLayoutCount"><option value="1">Single photo</option><option value="4">4 per A4</option><option value="6" selected>6 per A4</option><option value="8">8 per A4</option><option value="12">12 per A4</option></select>
+            <div class="stn-card-head"><h3>${t('stn_ps_export')}</h3></div>
+            <div class="stn-field"><label class="stn-label">${t('stn_ps_a4_layout')}</label>
+              <select class="stn-select" id="stnLayoutCount"><option value="1">${t('stn_ps_single_photo')}</option><option value="4">4 ${t('stn_ps_per_a4')}</option><option value="6" selected>6 ${t('stn_ps_per_a4')}</option><option value="8">8 ${t('stn_ps_per_a4')}</option><option value="12">12 ${t('stn_ps_per_a4')}</option></select>
             </div>
             <div class="d-flex flex-column gap-2">
-              <button class="stn-btn stn-btn-primary" id="stnExportPng"><i class="fa-solid fa-file-image"></i> Export PNG (300 DPI)</button>
-              <button class="stn-btn stn-btn-outline" id="stnExportJpg"><i class="fa-solid fa-file-image"></i> Export JPEG</button>
-              <button class="stn-btn stn-btn-outline" id="stnExportPdf"><i class="fa-solid fa-file-pdf"></i> Export PDF (A4 sheet)</button>
+              <button class="stn-btn stn-btn-primary" id="stnExportPng"><i class="fa-solid fa-file-image"></i> ${t('stn_ps_export_png')}</button>
+              <button class="stn-btn stn-btn-outline" id="stnExportJpg"><i class="fa-solid fa-file-image"></i> ${t('stn_ps_export_jpeg')}</button>
+              <button class="stn-btn stn-btn-outline" id="stnExportPdf"><i class="fa-solid fa-file-pdf"></i> ${t('stn_ps_export_pdf')}</button>
             </div>
           </div>
         </div>
@@ -99,8 +100,8 @@
   function updatePresetInfo() {
     const p = st.preset;
     const w = pxFor(p.width_mm, p.dpi), h = pxFor(p.height_mm, p.dpi);
-    document.getElementById('stnPresetInfo').innerHTML = `${p.width_mm}×${p.height_mm} mm · ${p.dpi} DPI · <strong>${w}×${h} px</strong><br>Face height ${p.face_min_pct}–${p.face_max_pct}% of frame${p.notes ? '<br>' + STN.esc(p.notes) : ''}`;
-    document.getElementById('stnPhotoDims').textContent = `Output: ${w}×${h}px (${p.width_mm}×${p.height_mm}mm @ ${p.dpi}dpi)`;
+    document.getElementById('stnPresetInfo').innerHTML = `${p.width_mm}×${p.height_mm} mm · ${p.dpi} DPI · <strong>${w}×${h} px</strong><br>${t('stn_ps_face_height')} ${p.face_min_pct}–${p.face_max_pct}% ${t('stn_ps_of_frame')}${p.notes ? '<br>' + STN.esc(p.notes) : ''}`;
+    document.getElementById('stnPhotoDims').textContent = `${t('stn_ps_output')}: ${w}×${h}px (${p.width_mm}×${p.height_mm}mm @ ${p.dpi}dpi)`;
   }
 
   function resizeCanvasToPreset() {
@@ -144,7 +145,7 @@
       st.offX = (img.width / 2 - cx) / img.width;
       st.offY = (img.height / 2 - cy) / img.height * 0.6; // gentle pull, keep some headroom
       document.getElementById('stnZoom').value = st.scale;
-      STN.toast('Face detected — auto-aligned. Fine-tune if needed.');
+      STN.toast(t('stn_ps_face_detected'));
     } catch (e) { /* no worries — manual alignment still works */ }
   }
 
@@ -191,10 +192,10 @@
 
     let removeMode = false;
     document.getElementById('stnBgRemove').addEventListener('click', () => {
-      if (!st.img) return STN.toast('Upload a photo first.', 'error');
+      if (!st.img) return STN.toast(t('stn_ps_upload_first'), 'error');
       removeMode = !removeMode;
       document.getElementById('stnBgRemove').classList.toggle('stn-btn-primary', removeMode);
-      STN.toast(removeMode ? 'Click a background area on the photo to remove it.' : 'Background removal tool off.');
+      STN.toast(removeMode ? t('stn_ps_bg_tool_on') : t('stn_ps_bg_tool_off'));
     });
     canvas.addEventListener('click', (e) => {
       if (!removeMode || !st.img) return;
@@ -297,7 +298,7 @@
 
     st.workingImageData = imageData;
     draw();
-    STN.toast('Background area removed. Click more spots, or export.');
+    STN.toast(t('stn_ps_bg_removed'));
   }
 
   // ---------------- Sharpen (simple unsharp mask convolution) ----------------
@@ -364,7 +365,7 @@
   }
 
   function exportImage(format) {
-    if (!st.img) return STN.toast('Upload a photo first.', 'error');
+    if (!st.img) return STN.toast(t('stn_ps_upload_first'), 'error');
     const photoCanvas = renderExportCanvas();
     const count = Number(document.getElementById('stnLayoutCount').value);
     const finalCanvas = count > 1 ? renderA4Sheet(photoCanvas, count) : photoCanvas;
@@ -377,11 +378,11 @@
   }
 
   async function exportPdf() {
-    if (!st.img) return STN.toast('Upload a photo first.', 'error');
+    if (!st.img) return STN.toast(t('stn_ps_upload_first'), 'error');
     if (!window.jspdf) {
-      STN.toast('Loading PDF export…');
+      STN.toast(t('stn_ps_loading_pdf'));
       try { await STN.loadScripts(['https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js']); }
-      catch (e) { return STN.toast('Could not load the PDF library — check your connection and retry.', 'error'); }
+      catch (e) { return STN.toast(t('stn_ps_pdf_lib_failed'), 'error'); }
     }
     const photoCanvas = renderExportCanvas();
     const count = Number(document.getElementById('stnLayoutCount').value);
@@ -398,6 +399,6 @@
 
   function showResultPreview(canvas) {
     const box = document.getElementById('stnPhotoResult');
-    box.innerHTML = `<div class="stn-card"><div class="stn-card-head"><h3>Export Preview</h3></div><div class="text-center"><img src="${canvas.toDataURL('image/jpeg', 0.9)}" style="max-width:100%;border-radius:.6rem;border:1px solid var(--stn-border)"></div></div>`;
+    box.innerHTML = `<div class="stn-card"><div class="stn-card-head"><h3>${t('stn_ps_export_preview')}</h3></div><div class="text-center"><img src="${canvas.toDataURL('image/jpeg', 0.9)}" style="max-width:100%;border-radius:.6rem;border:1px solid var(--stn-border)"></div></div>`;
   }
 })();

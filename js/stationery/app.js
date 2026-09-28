@@ -2,43 +2,47 @@
 (function () {
   'use strict';
   const STN = window.STN;
+  const t = (k) => (window.S21_t ? window.S21_t(k) : k);
 
   const NAV = [
-    { group: 'Overview', items: [
-      { route: 'dashboard', icon: 'fa-gauge-high', label: 'Dashboard' },
+    { group: 'stn_nav_group_overview', items: [
+      { route: 'dashboard', icon: 'fa-gauge-high', label: 'stn_nav_dashboard' },
     ]},
-    { group: 'Business', items: [
-      { route: 'pos', icon: 'fa-cash-register', label: 'POS / New Order' },
-      { route: 'orders', icon: 'fa-receipt', label: 'Orders' },
-      { route: 'customers', icon: 'fa-address-book', label: 'Customers' },
-      { route: 'inventory', icon: 'fa-boxes-stacked', label: 'Inventory' },
-      { route: 'finance', icon: 'fa-sack-dollar', label: 'Finance' },
-      { route: 'reports', icon: 'fa-chart-line', label: 'Reports' },
+    { group: 'stn_nav_group_business', items: [
+      { route: 'pos', icon: 'fa-cash-register', label: 'stn_nav_pos' },
+      { route: 'orders', icon: 'fa-receipt', label: 'stn_nav_orders' },
+      { route: 'customers', icon: 'fa-address-book', label: 'stn_nav_customers' },
+      { route: 'inventory', icon: 'fa-boxes-stacked', label: 'stn_nav_inventory' },
+      { route: 'finance', icon: 'fa-sack-dollar', label: 'stn_nav_finance' },
+      { route: 'reports', icon: 'fa-chart-line', label: 'stn_nav_reports' },
     ]},
-    { group: 'Print & Design', items: [
-      { route: 'photostudio', icon: 'fa-camera-retro', label: 'Photo Studio' },
-      { route: 'pdftools', icon: 'fa-file-pdf', label: 'PDF & Image Tools' },
+    { group: 'stn_nav_group_print_design', items: [
+      { route: 'photostudio', icon: 'fa-camera-retro', label: 'stn_nav_photostudio' },
+      { route: 'pdftools', icon: 'fa-file-pdf', label: 'stn_nav_pdftools' },
     ]},
-    { group: 'Services', items: [
-      { route: 'onlineservices', icon: 'fa-passport', label: 'Online Services' },
-      { route: 'machines', icon: 'fa-print', label: 'Machine Center' },
-      { route: 'academy', icon: 'fa-graduation-cap', label: 'Academy' },
-      { route: 'chopaai', icon: 'fa-robot', label: 'Smart21brain AI' },
+    { group: 'stn_nav_group_services', items: [
+      { route: 'onlineservices', icon: 'fa-passport', label: 'stn_nav_onlineservices' },
+      { route: 'machines', icon: 'fa-print', label: 'stn_nav_machines' },
+      { route: 'academy', icon: 'fa-graduation-cap', label: 'stn_nav_academy' },
+      { route: 'chopaai', icon: 'fa-robot', label: 'stn_nav_chopaai' },
     ]},
-    { group: 'Admin', items: [
-      { route: 'employees', icon: 'fa-users-gear', label: 'Employees' },
-      { route: 'settings', icon: 'fa-sliders', label: 'Settings & Pricing' },
-      { route: 'security', icon: 'fa-shield-halved', label: 'Security & Backup' },
+    { group: 'stn_nav_group_admin', items: [
+      { route: 'employees', icon: 'fa-users-gear', label: 'stn_nav_employees' },
+      { route: 'settings', icon: 'fa-sliders', label: 'stn_nav_settings' },
+      { route: 'security', icon: 'fa-shield-halved', label: 'stn_nav_security' },
     ]},
   ];
 
+  function currentLang() { try { return localStorage.getItem('s21-lang') || 'en'; } catch (e) { return 'en'; } }
+
   function sidebarHtml() {
+    const langLabel = currentLang() === 'en' ? 'Kiswahili' : 'English';
     const groups = NAV.map((g) => `
       <div class="stn-nav-group">
-        <div class="stn-nav-label">${g.group}</div>
+        <div class="stn-nav-label">${t(g.group)}</div>
         ${g.items.map((item) => `
           <div class="stn-nav-link" data-route="${item.route}">
-            <i class="fa-solid ${item.icon}"></i> <span>${item.label}</span>
+            <i class="fa-solid ${item.icon}"></i> <span>${t(item.label)}</span>
             ${item.route === 'inventory' ? '<span class="badge-dot" id="stnLowStockBadge" style="display:none">0</span>' : ''}
           </div>`).join('')}
       </div>`).join('');
@@ -50,11 +54,12 @@
       </div>
       <div class="stn-nav">${groups}</div>
       <div class="stn-sidebar-foot">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="stn-role-pill" id="stnRolePill">owner</span>
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+          <span class="stn-role-pill" id="stnRolePill">${t('stn_role_owner')}</span>
+          <button class="stn-btn stn-btn-ghost stn-btn-sm" id="stnLangToggle" title="${t('stn_switch_language')}"><i class="fa-solid fa-language"></i> <span id="stnLangToggleLabel">${langLabel}</span></button>
         </div>
         <select class="stn-select" id="stnBusinessSwitcher" style="font-size:.78rem"></select>
-        <a href="stationery.html" class="stn-btn stn-btn-ghost stn-btn-sm w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> Back to site</a>
+        <a href="stationery.html" class="stn-btn stn-btn-ghost stn-btn-sm w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> ${t('stn_back_to_site')}</a>
       </div>`;
   }
 
@@ -62,15 +67,15 @@
     return `
       <button class="stn-icon-btn stn-menu-toggle" id="stnMenuToggle"><i class="fa-solid fa-bars"></i></button>
       <div>
-        <h1 id="stnPageTitle">Dashboard</h1>
+        <h1 id="stnPageTitle">${t('stn_nav_dashboard')}</h1>
         <div class="stn-sub" id="stnBusinessName">—</div>
       </div>
       <div class="ms-auto d-flex align-items-center gap-2">
-        <button class="stn-icon-btn" id="stnNotifBtn" title="Notifications">
+        <button class="stn-icon-btn" id="stnNotifBtn" title="${t('stn_notifications')}">
           <i class="fa-solid fa-bell"></i>
           <span class="badge-dot" id="stnNotifBadge" style="display:none;position:absolute;top:-4px;right:-4px"></span>
         </button>
-        <button class="stn-icon-btn" id="stnChopaBtn" title="Ask Smart21brain AI"><i class="fa-solid fa-robot"></i></button>
+        <button class="stn-icon-btn" id="stnChopaBtn" title="${t('stn_ask_ai')}"><i class="fa-solid fa-robot"></i></button>
       </div>`;
   }
 
@@ -110,26 +115,46 @@
       await loadContext(id);
       route();
     });
+    document.getElementById('stnLangToggle')?.addEventListener('click', () => {
+      const current = (function () { try { return localStorage.getItem('s21-lang') || 'en'; } catch (e) { return 'en'; } })();
+      const next = current === 'en' ? 'sw' : 'en';
+      try { localStorage.setItem('s21-lang', next); } catch (e) { /* ignore */ }
+      if (window.S21_applyLang) window.S21_applyLang(next);
+      const hash = location.hash;
+      buildShell();
+      if (STN.state && STN.state.business) document.getElementById('stnBusinessName').textContent = STN.state.business.name;
+      if (STN.state && STN.state.role) document.getElementById('stnRolePill').innerHTML = `<i class="fa-solid fa-user-shield"></i> ${t('stn_role_' + STN.state.role) || STN.state.role}`;
+      applyRoleVisibility();
+      refreshNotifBadge();
+      refreshLowStockBadge();
+      route();
+    });
   }
 
-  const ROUTE_TITLES = {
-    dashboard: 'Dashboard', pos: 'Point of Sale', orders: 'Orders', customers: 'Customers',
-    inventory: 'Inventory', finance: 'Finance', reports: 'Reports', photostudio: 'Photo Studio',
-    pdftools: 'PDF & Image Tools', onlineservices: 'Online Services (TRA / BRELA / NIDA / Passport / Visa / TIN)',
-    machines: 'Machine Center', academy: 'Academy', chopaai: 'Smart21brain AI', employees: 'Employees',
-    settings: 'Settings & Pricing', security: 'Security & Backup',
-  };
+  function routeTitleKey(hash) {
+    if (hash === 'pos') return 'stn_title_pos';
+    if (hash === 'onlineservices') return 'stn_title_onlineservices';
+    const map = {
+      dashboard: 'stn_nav_dashboard', orders: 'stn_nav_orders', customers: 'stn_nav_customers',
+      inventory: 'stn_nav_inventory', finance: 'stn_nav_finance', reports: 'stn_nav_reports',
+      photostudio: 'stn_nav_photostudio', pdftools: 'stn_nav_pdftools', machines: 'stn_nav_machines',
+      academy: 'stn_nav_academy', chopaai: 'stn_nav_chopaai', employees: 'stn_nav_employees',
+      settings: 'stn_nav_settings', security: 'stn_nav_security',
+    };
+    return map[hash];
+  }
 
   async function route() {
     const hash = (location.hash || '#dashboard').replace('#', '');
     document.querySelectorAll('.stn-nav-link').forEach((el) => el.classList.toggle('active', el.dataset.route === hash));
-    document.getElementById('stnPageTitle').textContent = ROUTE_TITLES[hash] || 'Stationery OS';
+    const titleKey = routeTitleKey(hash);
+    document.getElementById('stnPageTitle').textContent = titleKey ? t(titleKey) : 'Stationery OS';
 
     const content = document.getElementById('stnContent');
     content.innerHTML = '<div class="stn-loading"><div class="stn-spin"></div></div>';
 
     const renderer = window.STN_MODULES && window.STN_MODULES[hash];
-    if (!renderer) { content.innerHTML = `<div class="stn-empty"><i class="fa-solid fa-triangle-exclamation"></i>Module not found.</div>`; return; }
+    if (!renderer) { content.innerHTML = `<div class="stn-empty"><i class="fa-solid fa-triangle-exclamation"></i>${t('stn_module_not_found')}</div>`; return; }
     try {
       await renderer(content);
     } catch (err) {
@@ -146,9 +171,9 @@
     STN.state.memberships = ctx.memberships;
 
     document.getElementById('stnBusinessName').textContent = ctx.business.name;
-    document.getElementById('stnRolePill').innerHTML = `<i class="fa-solid fa-user-shield"></i> ${ctx.role}`;
+    document.getElementById('stnRolePill').innerHTML = `<i class="fa-solid fa-user-shield"></i> ${t('stn_role_' + ctx.role) || ctx.role}`;
     const switcher = document.getElementById('stnBusinessSwitcher');
-    switcher.innerHTML = ctx.memberships.map((m) => `<option value="${m.id}" ${m.id === ctx.business.id ? 'selected' : ''}>${STN.esc(m.name)} (${m.role})</option>`).join('');
+    switcher.innerHTML = ctx.memberships.map((m) => `<option value="${m.id}" ${m.id === ctx.business.id ? 'selected' : ''}>${STN.esc(m.name)} (${t('stn_role_' + m.role) || m.role})</option>`).join('');
 
     applyRoleVisibility();
     refreshNotifBadge();
@@ -191,12 +216,12 @@
       <div class="stn-checklist-item ${n.is_read ? 'done' : ''}">
         <i class="fa-solid ${n.level === 'warning' ? 'fa-triangle-exclamation text-amber' : n.level === 'danger' ? 'fa-circle-exclamation text-red' : 'fa-circle-info text-cyan'}"></i>
         <div><div class="label">${STN.esc(n.title)}</div><div class="text-soft" style="font-size:.78rem">${STN.esc(n.message)}</div></div>
-      </div>`).join('') : '<div class="stn-empty"><i class="fa-solid fa-bell-slash"></i>No notifications yet.</div>';
+      </div>`).join('') : `<div class="stn-empty"><i class="fa-solid fa-bell-slash"></i>${t('stn_no_notifications_yet')}</div>`;
 
     STN.openModal(`
-      <div class="stn-modal-head"><h3 class="mb-0">Notifications</h3><button class="stn-icon-btn" onclick="STN.closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="stn-modal-head"><h3 class="mb-0">${t('stn_notifications')}</h3><button class="stn-icon-btn" onclick="STN.closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
       <div class="stn-modal-body">${rows}</div>
-      <div class="stn-modal-foot"><button class="stn-btn stn-btn-outline stn-btn-sm" id="stnMarkAllRead">Mark all read</button></div>
+      <div class="stn-modal-foot"><button class="stn-btn stn-btn-outline stn-btn-sm" id="stnMarkAllRead">${t('stn_mark_all_read')}</button></div>
     `);
     document.getElementById('stnMarkAllRead')?.addEventListener('click', async () => {
       await STN.api.put('/notifications/read-all');
