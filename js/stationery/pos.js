@@ -55,7 +55,7 @@
         <div class="stn-card">
           <div class="stn-card-head"><h3><i class="fa-solid fa-cart-shopping me-1"></i>${t('stn_pos_cart')}</h3><button class="stn-btn stn-btn-ghost stn-btn-sm" id="stnClearCart">${t('stn_clear')}</button></div>
           <div id="stnCartItems"></div>
-          <hr style="border-color:var(--stn-border)">
+          <hr style="border-color:var(--s21-border)">
           <div class="stn-field">
             <label class="stn-label">${t('stn_th_customer')}</label>
             <input class="stn-input" id="stnCustomerName" placeholder="${t('stn_pos_customer_placeholder')}">
