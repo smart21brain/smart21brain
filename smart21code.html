@@ -2,254 +2,118 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart21Code — Free Tutorials for HTML, CSS, JavaScript, Python & SQL | Smart21Brain</title>
-<meta name="description" content="Smart21Code: free, bite-sized coding tutorials with live Try it Yourself editors for HTML, CSS, JavaScript, Python and SQL — right inside Smart21Brain.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart21Code — Learn HTML, CSS, JavaScript, Python & SQL | Smart21Brain</title>
+<meta name="description" content="Smart21Code: free tutorials with a real Try it Yourself editor for HTML, CSS, JavaScript, Python and SQL. Python and SQL run in your browser.">
 <link rel="canonical" href="https://smart21brain.com/smart21code.html">
 <link rel="icon" href="images/logo/coool.png" type="image/png">
 <link rel="apple-touch-icon" href="images/logo/coool.png">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=10">
-<link rel="stylesheet" href="css/responsive.css?v=5">
-<link rel="stylesheet" href="css/animations.css?v=4">
-<link rel="stylesheet" href="css/smart21code.css?v=1">
-
+<link rel="stylesheet" href="css/s21c.css?v=1">
+<script src="js/darkmode.js"></script>
 </head>
-<body class="s21code-page">
-<a href="#main" class="skip-link" data-i18n="blog_skip_to_main_content">Skip to main content</a>
+<body class="s21c">
 
-<header class="s21-navbar">
-  <nav class="navbar navbar-expand-lg container-fluid px-3 px-lg-4">
-    <a class="s21-logo" href="index.html">
-      <span class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2C8 2 6 4.5 6 7c0 1.2.4 2 1 2.7C6.4 10.6 6 11.7 6 13c0 3 2 5 2 5v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2s2-2 2-5c0-1.3-.4-2.4-1-3.3.6-.7 1-1.5 1-2.7 0-2.5-2-5-6-5Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 9c1 .8 4 .8 5 0M9 13h6" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg></span>
-      Smart<span class="brand-21">21</span>Brain
-    </a>
-    <div class="d-flex d-lg-none align-items-center gap-2 s21-mobile-actions">
-      <button class="icon-btn icon-btn-sm" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.68rem">SW</button>
-      <button class="icon-btn icon-btn-sm" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+<header class="c-head">
+  <div class="c-top">
+    <button class="c-iconbtn" id="cMenu" aria-label="Open tutorial menu"><i class="fa-solid fa-bars"></i></button>
+    <a class="c-brand" href="#/" aria-label="Smart21Code home"><span class="mark">21</span><span class="txt">Smart<em>21</em>Code</span></a>
+    <div class="c-search" role="search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="cSearch" type="search" placeholder="Search tutorials…  ( / )" aria-label="Search tutorials" autocomplete="off">
+      <div class="c-results" id="cResults"></div>
     </div>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open menu"><i class="fa-solid fa-bars fa-lg"></i></button>
-    <div class="collapse navbar-collapse d-none d-lg-flex justify-content-center">
-      <ul class="navbar-nav gap-1">
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="index.html" data-i18n="nav_home">Home</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="subjects.html" data-i18n="nav_learn">Learn</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="videos.html" data-i18n="nav_videos">Videos</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="library.html" data-i18n="nav_books">Books</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="games.html" data-i18n="nav_games">Games</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link active" href="courses.html" data-i18n="nav_courses">Courses</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="kids.html" data-i18n="nav_kids">Kids</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="stationery.html" data-i18n="nav_stationery">Stationery</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="earth21.html">Earth21</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="blog.html" data-i18n="nav_blog">Blog</a></li>
-        <li class="nav-item"><a class="nav-link s21-nav-link" href="about.html" data-i18n="nav_about">About</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="contact.html" data-i18n="nav_contact">Contact</a></li>
-      </ul>
+    <button class="c-iconbtn" id="cSearchBtn" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <div class="c-toplinks">
+      <a href="courses.html">Courses</a>
+      <a href="index.html"><i class="fa-solid fa-house"></i> Smart21Brain</a>
     </div>
-    <div class="d-none d-lg-flex align-items-center gap-2">
-      <button class="icon-btn" data-lang-toggle aria-label="Switch language" style="font-weight:800;font-size:.72rem">SW</button>
-      <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
-      <span data-guest-nav="desktop" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary" data-i18n="nav_start">Get Started</a></span>
-    </div>
-  </nav>
+    <button class="c-iconbtn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+  </div>
+  <nav class="c-langs" id="cLangs" aria-label="Languages"></nav>
 </header>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
-  <div class="offcanvas-header">
-    <h5 id="mobileNavLabel" class="font-display mb-0" data-i18n="blog_menu">Menu</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body d-flex flex-column">
-    <ul class="navbar-nav gap-1 mb-4">
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="index.html" data-i18n="nav_home">Home</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="subjects.html" data-i18n="nav_learn">Learn</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="videos.html" data-i18n="nav_videos">Videos</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="library.html" data-i18n="nav_books">Books</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="games.html" data-i18n="nav_games">Games</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link active" href="courses.html" data-i18n="nav_courses">Courses</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="kids.html" data-i18n="nav_kids">Kids</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="stationery.html" data-i18n="nav_stationery">Stationery</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="earth21.html">Earth21</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="blog.html" data-i18n="nav_blog">Blog</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="about.html" data-i18n="nav_about">About</a></li>
-      <li class="nav-item"><a class="nav-link s21-nav-link" href="contact.html" data-i18n="nav_contact">Contact</a></li>
-    </ul>
-    <div class="mt-auto d-flex flex-column gap-2">
-      <span data-guest-nav="mobile" style="display:contents"><a href="login.html" class="btn-s21 btn-s21-outline w-100" data-i18n="nav_login">Log In</a>
-      <a href="register.html" class="btn-s21 btn-s21-primary w-100" data-i18n="nav_start">Get Started</a></span>
-    </div>
-  </div>
+<div class="c-backdrop" id="cBackdrop"></div>
+<div class="c-layout" id="cLayout">
+  <aside class="c-side" id="cSide" aria-label="Tutorial menu"></aside>
+  <main class="c-main" id="cMain"></main>
+  <aside class="c-right" id="cRight"></aside>
 </div>
 
-<main id="main">
-
-  <section class="s21code-masthead">
-    <div class="container">
-      <nav aria-label="breadcrumb" style="font-size:.85rem">
-        <ol class="breadcrumb mb-2">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item"><a href="courses.html">Courses</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Smart21Code</li>
-        </ol>
-      </nav>
-      <span class="badge-pill mb-2"><i class="fa-solid fa-laptop-code"></i> 100% free · no sign-up needed</span>
-      <h1 class="mb-2">Smart21Code</h1>
-      <p class="lead mb-0">Learn to code with short lessons, clear examples, and a live <strong>Try it Yourself</strong> editor — for HTML, CSS, JavaScript, Python and SQL. Pick a language below to get started.</p>
-    </div>
-  </section>
-
-  <div class="s21code-topbar">
-    <div class="container">
-      <div class="s21code-lang-tabs" id="s21code-lang-tabs" role="tablist" aria-label="Programming language"></div>
-    </div>
-  </div>
-
-  <section class="section pt-4">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-lg-9">
-          <div class="s21code-page-body">
-            <aside class="s21code-sidebar">
-              <div class="s21code-search-wrap">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="search" id="s21code-search" placeholder="Filter topics…" aria-label="Filter Smart21Code topics">
-              </div>
-              <div id="s21code-sidebar-list" role="tablist" aria-label="Topics"></div>
-            </aside>
-
-            <div class="s21code-lesson" id="s21code-lesson"></div>
-          </div>
-        </div>
-
-        <div class="col-lg-3 d-none d-lg-block">
-          <div class="s21code-side-panel mb-3">
-            <h6><i class="fa-solid fa-certificate text-warning"></i> Want the full course?</h6>
-            <p class="text-soft small mb-2">Smart21Code is a free quick reference. For structured lessons, quizzes, projects and a certificate, take a full computer studies course.</p>
-            <a href="courses.html?category=Computer%20Studies" class="btn-s21 btn-s21-primary w-100 btn-sm-s21">Browse Coding Courses</a>
-          </div>
-          <div class="s21code-side-panel">
-            <h6><i class="fa-solid fa-list-check text-soft"></i> On this page</h6>
-            <ul>
-              <li><i class="fa-brands fa-html5" style="color:#E34F26"></i> HTML — structure</li>
-              <li><i class="fa-brands fa-css3-alt" style="color:#2965F1"></i> CSS — style & layout</li>
-              <li><i class="fa-brands fa-js" style="color:#F0B90B"></i> JavaScript — interactivity</li>
-              <li><i class="fa-brands fa-python" style="color:#3776AB"></i> Python — logic & data</li>
-              <li><i class="fa-solid fa-database" style="color:#7B61FF"></i> SQL — databases</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="s21-footer">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-6 col-lg-3">
-        <div class="s21-logo mb-3" style="color:#fff">
-          <span class="mark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2C8 2 6 4.5 6 7c0 1.2.4 2 1 2.7C6.4 10.6 6 11.7 6 13c0 3 2 5 2 5v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2s2-2 2-5c0-1.3-.4-2.4-1-3.3.6-.7 1-1.5 1-2.7 0-2.5-2-5-6-5Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-          Smart<span class="brand-21">21</span>Brain
-        </div>
-        <p style="font-size:.88rem" data-i18n="footer_tagline">A safe, joyful home for kids, students, teachers and parents to learn together.</p>
-        <div class="d-flex gap-2 mt-3">
-          <a href="#" class="social-circle" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#" class="social-circle" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#" class="social-circle" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-          <a href="#" class="social-circle" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#" class="social-circle" aria-label="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <h6 data-i18n="footer_quicklinks">Quick Links</h6>
-        <ul class="list-unstyled d-flex flex-column gap-2">
-          <li><a href="index.html" data-i18n="nav_home">Home</a></li>
-          <li><a href="courses.html" data-i18n="nav_courses">Courses</a></li>
-          <li><a href="smart21code.html">Smart21Code</a></li>
-          <li><a href="videos.html" data-i18n="nav_videos">Videos</a></li>
-          <li><a href="library.html" data-i18n="nav_books">Books</a></li>
-          <li><a href="games.html" data-i18n="nav_games">Games</a></li>
-          <li><a href="blog.html" data-i18n="nav_blog">Blog</a></li>
-          <li><a href="about.html" data-i18n="nav_about">About</a></li>
-          <li><a href="contact.html" data-i18n="nav_contact">Contact</a></li>
-        </ul>
-      </div>
-      <div class="col-6 col-lg-3">
-        <h6 data-i18n="footer_learning">Learning</h6>
-        <ul class="list-unstyled d-flex flex-column gap-2">
-          <li><a href="subjects.html" data-i18n="footer_mathematics">Mathematics</a></li>
-          <li><a href="subjects.html" data-i18n="book_science">Science</a></li>
-          <li><a href="subjects.html" data-i18n="book_english">English</a></li>
-          <li><a href="subjects.html" data-i18n="footer_kiswahili">Kiswahili</a></li>
-          <li><a href="subjects.html" data-i18n="dash_coding">Coding</a></li>
-        </ul>
-      </div>
-      <div class="col-6 col-lg-3">
-        <h6 data-i18n="footer_resources">Resources</h6>
-        <ul class="list-unstyled d-flex flex-column gap-2">
-          <li><a href="library.html" data-i18n="footer_library">Library</a></li>
-          <li><a href="quiz.html" data-i18n="footer_quizzes">Quizzes</a></li>
-          <li><a href="teachers.html" data-i18n="footer_teacher_resources">Teacher Resources</a></li>
-          <li><a href="parents.html" data-i18n="footer_parent_resources">Parent Resources</a></li>
-          <li><a href="pricing.html" data-i18n="footer_pricing">Pricing</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2 mt-5">
-      <span data-i18n="footer_copyright">© 2026 Smart21Brain. All rights reserved.</span>
-      <div class="d-flex flex-wrap gap-3">
-        <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
-        <a href="#" data-i18n="footer_terms">Terms</a>
-        <a href="#" data-i18n="footer_cookies">Cookie Policy</a>
-        <a href="#" data-i18n="footer_childsafety">Child Safety</a>
-        <a href="#" data-i18n="footer_community">Community Guidelines</a>
-      </div>
-    </div>
-  </div>
+<footer class="c-foot">
+  <div><a href="index.html">Smart21Brain</a><a href="courses.html">Courses</a><a href="earth21.html">Earth21</a><a href="contact.html">Contact</a></div>
+  <p style="margin:.7rem 0 0">© <span id="cYear"></span> Smart21Brain · Free tutorials with original lessons. Python runs with Pyodide and SQL with SQLite, right in your browser.</p>
 </footer>
 
-<div class="floating-stack">
-  <button class="fab top" aria-label="Back to top"><i class="fa-solid fa-chevron-up"></i></button>
-  <button class="fab-avatar" data-ai-trigger aria-label="Open AI learning assistant — Study Buddy">
-    <img src="images/logo/coool.png" alt="Study Buddy AI assistant — Smart21Brain logo" loading="lazy">
-  </button>
-  <a class="fab whatsapp" href="https://wa.me/255000000000" aria-label="Chat on WhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i></a>
-  <a class="fab facebook" href="#" aria-label="Follow us on Facebook" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i></a>
-  <a class="fab instagram" href="#" aria-label="Follow us on Instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a>
-  <a class="fab tiktok" href="#" aria-label="Follow us on TikTok" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i></a>
+<!-- Try it Yourself — full-screen editor -->
+<div class="c-try" id="cTry" hidden data-layout="h" data-panel="code" role="dialog" aria-modal="true" aria-label="Code editor">
+  <div class="c-try-bar">
+    <strong id="tryTitle">Try it Yourself</strong>
+    <span class="sp"></span>
+    <button class="c-btn run" id="tryRun"><i class="fa-solid fa-play"></i> Run</button>
+    <button class="c-btn ghost" id="tryRestore" hidden><i class="fa-solid fa-database"></i> <span class="hide-sm">Restore DB</span></button>
+    <button class="c-btn ghost" id="tryReset" title="Reset code"><i class="fa-solid fa-rotate-left"></i> <span class="hide-sm">Reset</span></button>
+    <button class="c-btn ghost hide-sm" id="tryLayout" title="Switch layout"><i class="fa-solid fa-table-columns"></i></button>
+    <button class="c-btn ghost" id="tryClose" aria-label="Close editor"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="c-try-tabs" id="tryTabs"><button class="active" data-p="code">Code</button><button data-p="result">Result</button></div>
+  <div class="c-try-body" id="tryBody">
+    <section class="c-pane c-pane-code" id="paneCode" aria-label="Code">
+      <div id="tryEditorHost"></div>
+      <div class="c-stdin" id="tryStdinWrap" hidden><label for="tryStdin">Input (one line for each input() call)</label><textarea id="tryStdin" spellcheck="false" placeholder="Amina&#10;12"></textarea></div>
+    </section>
+    <div class="c-split" id="trySplit" role="separator" aria-label="Resize panels"></div>
+    <section class="c-pane c-pane-result" aria-label="Result">
+      <div class="c-result-head"><span>Result</span><span id="tryStatus" role="status"></span></div>
+      <iframe id="tryFrame" title="Result" sandbox="allow-scripts allow-modals allow-forms allow-popups"></iframe>
+      <pre id="tryOut" hidden></pre>
+      <div id="trySql" hidden></div>
+      <div class="c-console" id="tryConsole" hidden>
+        <div class="c-console-head"><span>Console</span><button id="tryClearConsole">Clear</button></div>
+        <div id="tryConsoleBody"></div>
+      </div>
+    </section>
+  </div>
 </div>
 
+<div class="floating-stack">
+  <button class="fab-avatar" data-ai-trigger aria-label="Open Smart21brain AI assistant">
+    <img src="images/logo/coool.png" alt="Smart21brain AI" loading="lazy">
+  </button>
+</div>
 <div id="s21-ai-panel" aria-hidden="true">
   <div class="ai-head">
-    <span class="fw-bold"><img src="images/logo/coool.png" alt="Smart21Brain logo" class="ai-head-logo"> <span data-i18n="blog_study_buddy">Study Buddy</span></span>
+    <span class="fw-bold"><img src="images/logo/coool.png" alt="Smart21Brain logo" class="ai-head-logo"> Smart21brain AI</span>
     <button type="button" data-ai-close aria-label="Close assistant" style="background:none;border:none;color:#fff"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <div class="ai-log"><div class="ai-bubble ai-bubble-ai" data-i18n="blog_hi_ask_me_to_explain_a_topic_or_sugg">Hi! Ask me to explain a topic or suggest a video or book to try next.</div></div>
-  <p class="ai-disclaimer" data-i18n="blog_ai_generated_answers_are_separate_fr">AI-generated answers are separate from verified lessons — always check with your teacher.</p>
+  <div class="ai-log"><div class="ai-bubble ai-bubble-ai">Hi! Ask me to explain a lesson, fix your code, or suggest what to build next.</div></div>
+  <p class="ai-disclaimer">AI-generated answers are separate from verified lessons — always check with your teacher.</p>
   <form>
-    <input type="text" placeholder="Ask a question…" data-i18n-placeholder="blog_ph_ask_a_question" aria-label="Ask the study buddy">
+    <input type="text" placeholder="Ask a question…" aria-label="Ask the AI">
     <button type="submit" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
   </form>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-<script src="js/darkmode.js"></script>
-<script src="js/polish-animations.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/toast.js"></script>
-<script src="js/search.js"></script>
-<script src="js/voice-search.js"></script>
-<script src="js/ai-assistant.js"></script>
-<script src="js/main.js"></script>
-<script src="js/nav-account.js"></script>
+<noscript><p style="padding:2rem;text-align:center">Smart21Code needs JavaScript to run the tutorials and editor.</p></noscript>
 
-<script>AOS.init({duration:650,once:true,offset:60});</script>
-<script src="js/smart21code-data.js"></script>
-<script src="js/smart21code.js"></script>
-<script src="js/cookie-consent.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/runmode/runmode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="js/s21c-data-web.js?v=1"></script>
+<script src="js/s21c-data-py.js?v=1"></script>
+<script src="js/s21c-refs.js?v=1"></script>
+<script src="js/s21c-runner.js?v=1"></script>
+<script src="js/ai-assistant.js"></script>
+<script src="js/s21c-app.js?v=1"></script>
 </body>
 </html>
