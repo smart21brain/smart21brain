@@ -103,6 +103,9 @@
         <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
         <div class="s21-search-panel" role="listbox"></div>
       </form>
+      <div class="mt-3">
+        <a href="#allCourses" class="btn-s21 btn-s21-primary" id="viewAllCoursesBtn"><i class="fa-solid fa-list"></i> <span data-i18n="courses_view_all">View all courses</span></a>
+      </div>
     </div>
   </section>
 
@@ -113,7 +116,7 @@
         <div>
           <span class="badge-pill pink mb-2"><i class="fa-solid fa-laptop-code"></i> Free coding reference</span>
           <h2 id="s21code-heading" class="h3 mb-1">Smart21Code — learn to code, right here</h2>
-          <p class="text-soft mb-0" style="max-width:640px">A bite-sized, W3Schools-style reference for HTML, CSS, JavaScript, Python and SQL. Pick a language, pick a topic, read a short explanation, then edit the code and hit <strong>Run</strong> to see it work — no sign-up needed.</p>
+          <p class="text-soft mb-0" style="max-width:640px">Learn code, use our Editor and get more advance with our smart21brain AI</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
           <button type="button" class="btn-s21 btn-s21-outline" id="s21code-toggle"><i class="fa-solid fa-chevron-down"></i> Show Smart21Code</button>
@@ -140,7 +143,7 @@
   </section>
   <!-- ================================================================================= -->
 
-  <section class="section-tight">
+  <section class="section-tight" id="allCourses">
     <div class="container">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class="d-flex flex-wrap gap-2" role="tablist" aria-label="Course filters" id="courseLevelFilters">
@@ -414,6 +417,16 @@
 <script>AOS.init({duration:650,once:true,offset:60});</script>
 <script src="js/smart21code-data.js"></script>
 <script src="js/smart21code.js"></script>
+<script>
+document.getElementById('viewAllCoursesBtn')?.addEventListener('click', function () {
+  var all = document.querySelector('#courseLevelFilters [data-course-level="all"]');
+  if (all && all.getAttribute('aria-pressed') !== 'true') all.click();
+  ['courseCategoryFilter','coursePriceFilter'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el && el.value) { el.value = ''; el.dispatchEvent(new Event('change', { bubbles: true })); }
+  });
+});
+</script>
 <script src="js/cookie-consent.js"></script>
 </body>
 </html>

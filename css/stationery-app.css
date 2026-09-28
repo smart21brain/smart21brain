@@ -383,3 +383,35 @@ body.stn-lock { overflow: hidden; }
   .stn-grid-4 { grid-template-columns: minmax(0, 1fr); }
   .stn-grid-3 { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---------------- Pinned top bar ----------------
+   The top bar is fixed to the viewport and the page itself never scrolls;
+   only .stn-content scrolls underneath it, so the bar cannot move. */
+html:has(body.stn-app), body.stn-app {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.stn-app {
+  --stn-topbar-h: calc(58px + env(safe-area-inset-top, 0px));
+  --stn-side-w: 240px;
+}
+.stn-app.stn-desk-collapsed { --stn-side-w: 68px; }
+.stn-app .stn-topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--stn-side-w);
+  height: var(--stn-topbar-h);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: 0;
+  box-sizing: border-box;
+  z-index: 45;
+  transform: none;
+  transition: left .2s var(--ease);
+}
+.stn-app .stn-main { padding-top: var(--stn-topbar-h); }
+@media (max-width: 991px) {
+  .stn-app, .stn-app.stn-desk-collapsed { --stn-side-w: 60px; }
+}
+@media print { .stn-app .stn-topbar { display: none; } .stn-app .stn-main { padding-top: 0; } }
