@@ -3,6 +3,7 @@ import { json } from '../../lib/auth.js';
 import {
   fail, secure, readJson, V, audit, getSettings, likeTerm, paging, can, round2, localDate, offsetMin,
 } from '../../lib/shop-auth.js';
+import { cleanQrList } from '../../lib/shop-qr.js';
 
 // ---------------------------------------------------------------------
 // Everything a receipt needs, in one object
@@ -21,13 +22,17 @@ export async function loadSaleData(env, ctx, id) {
        LEFT JOIN users u ON u.id = p.received_by WHERE p.sale_id = ? ORDER BY p.id`).bind(sale.id).all(),
     getSettings(env, ctx.shop.id),
   ]);
+  // Item numbers of the QR-tagged pieces on this sale (shown on the receipt / warranty proof).
+  const { results: qrUnits } = await env.DB.prepare(
+    'SELECT product_id, serial FROM shp_qr_codes WHERE sale_id = ? AND shop_id = ? ORDER BY product_id, serial'
+  ).bind(sale.id, ctx.shop.id).all();
   const profit = can(ctx, 'profit.view');
   const cust = sale.customer_id
     ? await env.DB.prepare('SELECT id, customer_no, full_name, phone, loyalty_points FROM shp_customers WHERE id = ?').bind(sale.customer_id).first()
     : null;
   if (!profit) { delete sale.cost_total; items.forEach((i) => { delete i.cost_price; }); }
   return {
-    sale, items, payments, customer: cust,
+    sale, items, payments, customer: cust, qr_units: qrUnits,
     shop: {
       id: ctx.shop.id, name: ctx.shop.name, phone: ctx.shop.phone, email: ctx.shop.email, address: ctx.shop.address,
       tax_no: ctx.shop.tax_no, currency: ctx.shop.currency, has_logo: !!ctx.shop.logo_key, primary_color: ctx.shop.primary_color,
@@ -60,8 +65,16 @@ export const createSale = secure({ perm: 'sales.create' }, async ({ request, env
 
   // ---- lines
   const lines = []; const need = new Map();
+  const qrWanted = []; // { code, product_id, name } — QR-tagged pieces scanned at the till
   for (const it of b.items) {
     const qty = V.num(it.qty, 'Quantity', { required: true, min: 0.001, max: 1e7 });
+    if (it.qr_codes !== undefined && it.qr_codes !== null && !(Array.isArray(it.qr_codes) && !it.qr_codes.length)) {
+      if (!it.product_id) fail(400, 'QR codes can only be used on products from the product list.');
+      const clean = cleanQrList(it.qr_codes);
+      if (clean.error) fail(400, clean.error);
+      if (clean.codes.length > qty + 0.0001) fail(400, 'More QR-tagged items were scanned than the quantity being sold.');
+      clean.codes.forEach((code) => qrWanted.push({ code, product_id: Number(it.product_id) }));
+    }
     if (it.product_id) {
       const p = byId.get(Number(it.product_id));
       if (!p) fail(400, 'One of the products no longer exists. Please refresh the till.');
@@ -83,6 +96,25 @@ export const createSale = secure({ perm: 'sales.create' }, async ({ request, env
     for (const [pid, q] of need) {
       const p = byId.get(pid);
       if (q > p.stock_qty + 0.0001) fail(400, `Not enough stock for "${p.name}" — only ${p.stock_qty} ${p.unit} left.`);
+    }
+  }
+
+  // ---- QR-tagged pieces: each must exist in this shop, belong to that product and still be on the shelf
+  const qrCodes = qrWanted.map((x) => x.code);
+  if (new Set(qrCodes).size !== qrCodes.length) fail(400, 'The same item was scanned twice.');
+  if (qrCodes.length > 500) fail(400, 'Too many QR-tagged items in one sale (500 maximum).');
+  if (qrCodes.length) {
+    const { results: found } = await env.DB.prepare(
+      `SELECT q.code, q.serial, q.status, q.product_id, p.name FROM shp_qr_codes q JOIN shp_products p ON p.id = q.product_id
+       WHERE q.shop_id = ?1 AND q.code IN (SELECT value FROM json_each(?2))`
+    ).bind(sid, JSON.stringify(qrCodes)).all();
+    const byCode = new Map(found.map((f) => [f.code, f]));
+    for (const w of qrWanted) {
+      const f = byCode.get(w.code);
+      if (!f) fail(400, 'One of the scanned QR codes was not found in this shop.');
+      if (f.product_id !== w.product_id) fail(400, `QR code #${f.serial} belongs to \"${f.name}\", not to the item it was added to.`);
+      if (f.status === 'sold') fail(409, `\"${f.name}\" #${f.serial} has already been sold.`);
+      if (f.status === 'disabled') fail(400, `\"${f.name}\" #${f.serial} is disabled and cannot be sold.`);
     }
   }
 
@@ -137,6 +169,23 @@ export const createSale = secure({ perm: 'sales.create' }, async ({ request, env
     costTotal, payStatus, balance > 0.004 ? dueDate : null, V.str(b.note, 'Note', { max: 300 }), ctx.user.id).run();
   const saleId = ins.meta.last_row_id;
 
+  // Claim the scanned pieces. The UPDATE only touches pieces that are STILL in_stock, so if another
+  // till sold one a moment ago the counts differ and this sale is rolled back instead of selling it twice.
+  const releaseQr = () => env.DB.prepare(
+    `UPDATE shp_qr_codes SET status = 'in_stock', sale_id = NULL, sold_at = NULL WHERE sale_id = ? AND shop_id = ?`
+  ).bind(saleId, sid).run().catch(() => {});
+  if (qrCodes.length) {
+    const claim = await env.DB.prepare(
+      `UPDATE shp_qr_codes SET status = 'sold', sale_id = ?1, sold_at = datetime('now')
+       WHERE shop_id = ?2 AND status = 'in_stock' AND code IN (SELECT value FROM json_each(?3))`
+    ).bind(saleId, sid, JSON.stringify(qrCodes)).run();
+    if (claim.meta.changes !== qrCodes.length) {
+      await releaseQr();
+      await env.DB.prepare('DELETE FROM shp_sales WHERE id = ?').bind(saleId).run().catch(() => {});
+      fail(409, 'One of the scanned items was just sold by someone else. Please scan it again.');
+    }
+  }
+
   const stmts = [];
   for (const l of lines) {
     stmts.push(env.DB.prepare('INSERT INTO shp_sale_items (shop_id, sale_id, product_id, name, unit, qty, unit_price, cost_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -160,11 +209,12 @@ export const createSale = secure({ perm: 'sales.create' }, async ({ request, env
   try {
     await env.DB.batch(stmts);
   } catch (e) {
+    await releaseQr();
     await env.DB.prepare('DELETE FROM shp_sales WHERE id = ?').bind(saleId).run().catch(() => {});
     throw e;
   }
   const data = await loadSaleData(env, ctx, saleId);
-  await audit(env, request, ctx, 'sale.create', 'sale', saleId, `${data.sale.receipt_no} — ${total}${balance > 0.004 ? ` (owing ${balance})` : ''}`);
+  await audit(env, request, ctx, 'sale.create', 'sale', saleId, `${data.sale.receipt_no} — ${total}${balance > 0.004 ? ` (owing ${balance})` : ''}${qrCodes.length ? ` · ${qrCodes.length} QR item(s)` : ''}`);
   return json({ ok: true, id: saleId, ...data }, { status: 201 });
 });
 
@@ -243,7 +293,11 @@ export const voidSale = secure({ perm: 'sales.void' }, async ({ request, env, pa
   const { results: items } = await env.DB.prepare(
     `SELECT i.product_id, SUM(i.qty) AS qty FROM shp_sale_items i JOIN shp_products p ON p.id = i.product_id
      WHERE i.sale_id = ? AND p.track_stock = 1 GROUP BY i.product_id`).bind(sale.id).all();
-  const stmts = [env.DB.prepare(`UPDATE shp_sales SET status = 'void', void_reason = ?, voided_by = ?, voided_at = datetime('now') WHERE id = ?`).bind(reason, ctx.user.id, sale.id)];
+  const stmts = [
+    env.DB.prepare(`UPDATE shp_sales SET status = 'void', void_reason = ?, voided_by = ?, voided_at = datetime('now') WHERE id = ?`).bind(reason, ctx.user.id, sale.id),
+    // QR-tagged pieces on this sale go back on the shelf (scanning them says "not sold" again).
+    env.DB.prepare(`UPDATE shp_qr_codes SET status = 'in_stock', sale_id = NULL, sold_at = NULL WHERE sale_id = ? AND shop_id = ?`).bind(sale.id, sid),
+  ];
   for (const it of items) {
     stmts.push(
       env.DB.prepare(`UPDATE shp_products SET stock_qty = stock_qty + ?, updated_at = datetime('now') WHERE id = ? AND shop_id = ?`).bind(it.qty, it.product_id, sid),

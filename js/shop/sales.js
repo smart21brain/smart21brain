@@ -69,7 +69,7 @@
         <div class="sp-stack">
           <div class="sp-card"><div class="sp-card-head"><h3>${SP.t('Items', 'Bidhaa')}</h3></div>${SP.table([
             { label: SP.t('Item', 'Bidhaa') }, { label: SP.t('Qty', 'Idadi'), cls: 'end' }, { label: SP.t('Unit price', 'Bei ya Kipande'), cls: 'end' }, { label: SP.t('Amount', 'Kiasi'), cls: 'end' },
-          ].map((c, i) => ({ ...c, render: [(x) => esc(x.name), (x) => SP.num(x.qty) + ' ' + esc(x.unit || ''), (x) => SP.money(x.unit_price), (x) => SP.money(x.line_total)][i] })), items)}
+          ].map((c, i) => ({ ...c, render: [(x) => esc(x.name) + SP.qr.serialsHtml(d, x.product_id), (x) => SP.num(x.qty) + ' ' + esc(x.unit || ''), (x) => SP.money(x.unit_price), (x) => SP.money(x.line_total)][i] })), items)}
             <div class="sp-cart-row total" style="border-top:1px solid var(--sp-border);padding-top:.6rem;margin-top:.4rem"><span>${SP.t('Subtotal', 'Jumla Ndogo')}</span><span>${SP.money(sale.subtotal)}</span></div>
             ${sale.discount ? `<div class="sp-cart-row"><span>${SP.t('Discount', 'Punguzo')}</span><span>-${SP.money(sale.discount)}</span></div>` : ''}
             ${sale.tax ? `<div class="sp-cart-row"><span>${SP.t('VAT', 'Kodi')}</span><span>${SP.money(sale.tax)}</span></div>` : ''}

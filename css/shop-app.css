@@ -500,3 +500,51 @@ body.sp-body { background-image: url("../images/shop/bg-app-light.svg"); backgro
 .sp-tl-row:last-child::before { display: none; }
 .sp-tl-dot { position: absolute; left: 0; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--sp-primary); box-shadow: 0 0 0 3px var(--sp-primary-100); }
 .sp-tl-body { font-size: .9rem; line-height: 1.5; }
+
+/* ---------- QR tags: scanner, labels, scan page ---------- */
+.sp-chip.sold { background: var(--sp-info-bg); color: var(--sp-info); }
+.sp-chip.disabled { background: var(--sp-danger-bg); color: var(--sp-danger); }
+
+.sp-scan { position: relative; border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; max-height: 60vh; }
+.sp-scan video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sp-scan-frame { position: absolute; inset: 18%; border: 3px solid rgba(255,255,255,.92); border-radius: 18px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); pointer-events: none; }
+.sp-scan-msg { position: absolute; left: .6rem; right: .6rem; bottom: .6rem; padding: .5rem .75rem; border-radius: 10px; background: rgba(0,0,0,.75); color: #fff; font-size: .85rem; text-align: center; display: none; }
+.sp-scan-msg.show { display: block; }
+.sp-scan-msg.warn { background: var(--sp-warn); }
+
+.sp-scan-card { text-align: center; padding: 1.8rem 1.25rem; }
+.sp-scan-card .ico { width: 72px; height: 72px; margin: 0 auto .8rem; border-radius: 22px; display: grid; place-items: center; font-size: 2rem; background: var(--sp-primary-100); color: var(--sp-primary); }
+.sp-qr-recent { width: 100%; text-align: left; border: 0; background: none; padding: .55rem 0; cursor: pointer; color: inherit; }
+
+.sp-qr-result { border-left: 5px solid var(--sp-border); }
+.sp-qr-result.ok { border-left-color: var(--sp-ok); }
+.sp-qr-result.sold { border-left-color: var(--sp-info); }
+.sp-qr-result.bad { border-left-color: var(--sp-danger); }
+.sp-qr-verdict { display: flex; gap: .9rem; align-items: center; margin-bottom: .9rem; }
+.sp-qr-verdict .ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 1.4rem; flex-shrink: 0; }
+.sp-qr-result.ok .ico { background: var(--sp-ok-bg); color: var(--sp-ok); }
+.sp-qr-result.sold .ico { background: var(--sp-info-bg); color: var(--sp-info); }
+.sp-qr-result.bad .ico { background: var(--sp-danger-bg); color: var(--sp-danger); }
+.sp-qr-kv { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1rem; margin: 0; }
+.sp-qr-kv dt { color: var(--sp-muted); font-weight: 600; }
+.sp-qr-kv dd { margin: 0; }
+.sp-qr-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; letter-spacing: .04em; }
+
+.sp-qr-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin: .2rem 0; }
+.sp-qr-tag { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; font-weight: 700; background: var(--sp-primary-100); color: var(--sp-primary); border-radius: 999px; padding: .05rem .2rem .05rem .5rem; }
+.sp-qr-tag button { border: 0; background: none; color: inherit; cursor: pointer; font-size: .95rem; line-height: 1; padding: 0 .3rem; }
+.sp-qr-serials { font-size: .72em; opacity: .8; }
+
+.sp-qr-preview { max-height: 58vh; overflow: auto; padding: .2rem; }
+.sp-qr-one { text-align: center; }
+.sp-qr-one .qr { width: min(280px, 80%); margin: 0 auto .6rem; background: #fff; border-radius: 12px; padding: 4px; }
+.sp-qr-one .qr svg, .sp-qr-label .qr svg { width: 100%; height: auto; display: block; }
+
+.sp-qr-sheet { display: grid; grid-template-columns: repeat(var(--qr-cols, 4), minmax(0, 1fr)); gap: 3mm; }
+.sp-qr-label { display: flex; flex-direction: column; align-items: center; gap: 1.5mm; padding: 2.5mm; border: 1px dashed #b8bccb; border-radius: 6px; background: #fff; color: #111; text-align: center; break-inside: avoid; page-break-inside: avoid; }
+.sp-qr-label .qr { width: 100%; }
+.sp-qr-label .tx { display: flex; flex-direction: column; gap: .5mm; min-width: 0; width: 100%; line-height: 1.2; }
+.sp-qr-label .shop { font-size: 7pt; text-transform: uppercase; letter-spacing: .05em; color: #555; }
+.sp-qr-label .pn { font-size: 9pt; overflow-wrap: anywhere; }
+.sp-qr-label .sn { font-size: 7pt; color: #444; font-family: ui-monospace, Menlo, Consolas, monospace; }
+@media print { .sp-qr-label { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }

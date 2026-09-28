@@ -177,6 +177,7 @@ export const resetShopData = secure({ roles: ['owner'], perm: 'settings.manage' 
   if (String(b.confirm || '').trim().toUpperCase() !== 'RESET') fail(400, 'Type RESET to confirm.');
   const sid = ctx.shop.id;
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM shp_qr_codes WHERE shop_id = ?').bind(sid),
     env.DB.prepare('DELETE FROM shp_sales WHERE shop_id = ?').bind(sid),
     env.DB.prepare('DELETE FROM shp_stock_moves WHERE shop_id = ?').bind(sid),
     env.DB.prepare('DELETE FROM shp_customer_notes WHERE shop_id = ?').bind(sid),

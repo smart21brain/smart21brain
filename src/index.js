@@ -56,6 +56,7 @@ import * as shpSales from './handlers/shop/sales.js';
 import * as shpExpenses from './handlers/shop/expenses.js';
 import * as shpInsights from './handlers/shop/insights.js';
 import * as shpDemo from './handlers/shop/demo.js';
+import * as shpQr from './handlers/shop/qr.js';
 
 const router = new Router();
 
@@ -392,6 +393,8 @@ router.get('/api/shop/context', shpCore.context);
 router.post('/api/shop/shops', shpCore.createShop);
 router.get('/api/shop/lookups', shpCore.lookups);
 router.get('/api/shop/public/logo/:id', shpCore.publicLogo);
+// Public QR check: anyone who scans an item's label can see if it is still available (basic facts only).
+router.get('/api/shop/public/qr/:code', shpQr.publicQr);
 
 // Settings, roles, staff
 router.get('/api/shop/shop-info', shpCore.getShopInfo);
@@ -432,6 +435,12 @@ router.post('/api/shop/products/:id/image', shpProducts.uploadProductImage);
 router.get('/api/shop/products/:id/image', shpProducts.getProductImage);
 router.post('/api/shop/products/:id/stock', shpProducts.adjustStock);
 router.get('/api/shop/products/:id/history', shpProducts.stockHistory);
+
+// QR tags (one code per physical item; scan to see if it is sold)
+router.get('/api/shop/products/:id/qr', shpQr.listProductQr);
+router.post('/api/shop/products/:id/qr', shpQr.generateProductQr);
+router.get('/api/shop/qr/lookup', shpQr.lookupQr);
+router.post('/api/shop/qr/:id/status', shpQr.setQrStatus);
 
 // Sales (Point of Sale)
 router.get('/api/shop/sales', shpSales.listSales);

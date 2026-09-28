@@ -12,6 +12,7 @@
     debts: { mod: 'debts', nav: 'debts', title: SP.t('Customer Debts', 'Madeni ya Wateja') },
     customers: { mod: 'customers', nav: 'customers', title: SP.t('Customers', 'Wateja') },
     customer: { mod: 'customer', nav: 'customers', title: SP.t('Customer', 'Mteja') },
+    scan: { mod: 'scan', nav: 'scan', title: SP.t('Scan QR', 'Changanua QR') },
     products: { mod: 'products', nav: 'products', title: SP.t('Products', 'Bidhaa') },
     product: { mod: 'product', nav: 'products', title: SP.t('Product', 'Bidhaa') },
     categories: { mod: 'categories', nav: 'products', title: SP.t('Categories', 'Jamii') },
@@ -36,6 +37,7 @@
       { group: SP.t('Customers & Stock', 'Wateja na Bidhaa'), items: [
         { r: 'customers', i: 'fa-users', l: SP.t('Customers', 'Wateja'), show: c('customers.view') },
         { r: 'products', i: 'fa-boxes-stacked', l: SP.t('Products', 'Bidhaa'), show: c('products.view') },
+        { r: 'scan', i: 'fa-qrcode', l: SP.t('Scan QR', 'Changanua QR'), show: c('products.view') || c('sales.create') },
       ] },
       { group: SP.t('Finance', 'Fedha'), items: [
         { r: 'expenses', i: 'fa-money-bill-wave', l: SP.t('Expenses', 'Matumizi'), show: c('expenses.manage') },

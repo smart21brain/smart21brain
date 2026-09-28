@@ -88,6 +88,9 @@
     chart: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
     pdf: 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
     xlsx: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    // QR tags: drawing a code, and reading one from the camera (kept in the project, no CDN needed).
+    qr: '/js/vendor/qrcode.min.js?v=1',
+    jsqr: '/js/vendor/jsQR.min.js?v=1',
   };
   const loading = {};
   SP.lib = (name) => {

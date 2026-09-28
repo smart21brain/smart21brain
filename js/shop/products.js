@@ -161,6 +161,7 @@
         <div class="sp-stack">
           ${p.description ? `<div class="sp-card"><h3 style="margin-bottom:.6rem">${SP.t('Description', 'Maelezo')}</h3><p style="margin:0">${esc(p.description)}</p></div>` : ''}
           ${d.sold.profit !== undefined ? `<div class="sp-card"><h3 style="margin-bottom:.6rem">${SP.t('Profit so far', 'Faida Hadi Sasa')}</h3><div class="sp-stat" style="border:0;box-shadow:none;padding:0"><div class="ico green"><i class="fa-solid fa-chart-line"></i></div><div><div class="val">${SP.moneyHtml(d.sold.profit)}</div><div class="lbl">${SP.t(`From ${SP.num(d.sold.qty)} units sold`, `Kutoka vipande ${SP.num(d.sold.qty)} vilivyouzwa`)}</div></div></div></div>` : ''}
+          ${SP.can('products.view') ? '<div class="sp-card" id="qrCard"></div>' : ''}
         </div>
         <div class="sp-stack">
           <div class="sp-card"><div class="th" style="width:100%;aspect-ratio:1.6/1;border-radius:14px;background:var(--sp-primary-50);display:grid;place-items:center;overflow:hidden;color:var(--sp-primary);font-size:2rem;margin-bottom:.8rem">${p.has_image ? `<img src="/api/shop/products/${p.id}/image?v=${SP.state.photoV}" alt="" style="width:100%;height:100%;object-fit:cover">` : '<i class="fa-solid fa-box"></i>'}</div>${SP.can('products.manage') ? `<label class="sp-btn ghost sm block" for="fPhoto"><i class="fa-solid fa-camera"></i> ${p.has_image ? SP.t('Change photo', 'Badilisha picha') : SP.t('Add photo', 'Ongeza picha')}</label><input type="file" id="fPhoto" accept="image/png,image/jpeg,image/webp" class="sp-sr">` : ''}</div>
@@ -184,6 +185,7 @@
         ], h.moves, { cls: 'compact' }) : SP.empty('fa-clock-rotate-left', SP.t('No movements yet', 'Hakuna mabadiliko bado'), '');
       }).catch((e) => { el.querySelector('#stockHist').innerHTML = SP.errorBox(e); });
     }
+    if (SP.can('products.view') && SP.qr) SP.qr.mountProductCard(el.querySelector('#qrCard'), p).catch(SP.fail);
     SP.delegate(el, { edit: () => openProductForm(p, () => SP.go(`product/${p.id}`)), adjust: () => openStockAdjust(p, () => SP.go(`product/${p.id}`)) });
   };
 })();
