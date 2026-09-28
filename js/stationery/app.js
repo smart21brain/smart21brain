@@ -58,7 +58,7 @@
           <span class="stn-role-pill" id="stnRolePill">${t('stn_role_owner')}</span>
         </div>
         <select class="stn-select" id="stnBusinessSwitcher" style="font-size:.78rem"></select>
-        <a href="stationery.html" class="stn-btn stn-btn-ghost stn-btn-sm w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> ${t('stn_back_to_site')}</a>
+        <a href="stationery.html" class="stn-btn stn-btn-ghost stn-btn-sm w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> <span class="stn-back-text">${t('stn_back_to_site')}</span></a>
       </div>`;
   }
 
@@ -98,19 +98,42 @@
     const sidebar = document.getElementById('stnSidebar');
     const backdrop = document.getElementById('stnSidebarBackdrop');
     const toggle = document.getElementById('stnMenuToggle');
-    const setDrawer = (open) => {
-      sidebar.classList.toggle('open', open);
-      backdrop.classList.toggle('show', open);
-      document.body.classList.toggle('stn-lock', open);
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const mq = window.matchMedia('(max-width: 991px)');
+    const DESK_KEY = 'stn-sidebar-collapsed';
+    let deskCollapsed = false;
+    try { deskCollapsed = localStorage.getItem(DESK_KEY) === '1'; } catch (e) { /* ignore */ }
+    let mobileOpen = false;
+
+    // Hamburger toggles between full sidebar and an icons-only rail.
+    const applySidebar = () => {
+      const mobile = mq.matches;
+      const rail = mobile ? !mobileOpen : deskCollapsed;
+      sidebar.classList.toggle('rail', rail);
+      sidebar.classList.toggle('open', mobile && mobileOpen);
+      backdrop.classList.toggle('show', mobile && mobileOpen);
+      document.body.classList.toggle('stn-desk-collapsed', !mobile && deskCollapsed);
+      document.body.classList.toggle('stn-lock', mobile && mobileOpen);
+      toggle.setAttribute('aria-expanded', rail ? 'false' : 'true');
     };
     toggle.setAttribute('aria-label', 'Menu');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
-    backdrop.addEventListener('click', () => setDrawer(false));
-    STN.closeDrawer = () => setDrawer(false);
+    toggle.addEventListener('click', () => {
+      if (mq.matches) mobileOpen = !mobileOpen;
+      else {
+        deskCollapsed = !deskCollapsed;
+        try { localStorage.setItem(DESK_KEY, deskCollapsed ? '1' : '0'); } catch (e) { /* ignore */ }
+      }
+      applySidebar();
+    });
+    backdrop.addEventListener('click', () => { mobileOpen = false; applySidebar(); });
+    STN.closeDrawer = () => { mobileOpen = false; applySidebar(); };
+    if (STN._sbListener) mq.removeEventListener('change', STN._sbListener);
+    STN._sbListener = () => { mobileOpen = false; applySidebar(); };
+    mq.addEventListener('change', STN._sbListener);
+    // Tooltips so icon-only items are still identifiable.
+    document.querySelectorAll('.stn-nav-link').forEach((el) => { el.title = (el.querySelector('span') || el).textContent.trim(); });
+    applySidebar();
     document.querySelectorAll('.stn-nav-link').forEach((el) => {
-      el.addEventListener('click', () => { location.hash = '#' + el.dataset.route; setDrawer(false); });
+      el.addEventListener('click', () => { location.hash = '#' + el.dataset.route; STN.closeDrawer(); });
     });
     document.getElementById('stnNotifBtn').addEventListener('click', showNotifications);
     document.getElementById('stnChopaBtn').addEventListener('click', () => { location.hash = '#chopaai'; });
@@ -248,7 +271,6 @@
     }
     window.addEventListener('hashchange', route);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && STN.closeDrawer) STN.closeDrawer(); });
-    window.matchMedia('(min-width: 992px)').addEventListener('change', (e) => { if (e.matches && STN.closeDrawer) STN.closeDrawer(); });
     route();
   }
 

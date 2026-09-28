@@ -22,10 +22,11 @@
 .stn-app .text-red { color: var(--s21-accent) !important; }
 
 /* ---------------- Shell layout ---------------- */
-.stn-shell { display: flex; min-height: 100vh; }
+.stn-shell { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 
 .stn-sidebar {
   width: 240px;
+  overflow: hidden;
   flex-shrink: 0;
   background: var(--s21-white);
   border-right: 1px solid var(--s21-border);
@@ -34,7 +35,7 @@
   position: fixed;
   top: 0; bottom: 0; left: 0;
   z-index: 40;
-  transition: transform .2s var(--ease);
+  transition: transform .2s var(--ease), width .2s var(--ease);
 }
 .stn-sidebar-brand {
   display: flex; align-items: center; gap: .6rem;
@@ -77,9 +78,9 @@
   padding: .2rem .5rem; border-radius: var(--radius-pill);
 }
 
-.stn-main { margin-left: 240px; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.stn-main { margin-left: 240px; flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; transition: margin-left .2s var(--ease); }
 .stn-topbar {
-  position: sticky; top: 0; z-index: 30;
+  flex-shrink: 0; z-index: 30;
   display: flex; align-items: center; gap: .7rem;
   padding: .8rem 1.1rem;
   background: var(--s21-white);
@@ -87,7 +88,7 @@
 }
 .stn-topbar h1 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin: 0; }
 .stn-topbar .stn-sub { font-size: .76rem; color: var(--s21-text-soft); }
-.stn-menu-toggle { display: none; }
+.stn-menu-toggle { display: inline-flex; flex-shrink: 0; }
 
 .stn-icon-btn {
   width: 36px; height: 36px; border-radius: var(--radius-sm);
@@ -97,7 +98,7 @@
 }
 .stn-icon-btn:hover { border-color: var(--s21-primary); color: var(--s21-primary); }
 
-.stn-content { padding: 1.1rem; flex: 1; }
+.stn-content { padding: 1.1rem; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 
 /* ---------------- Cards & primitives (mirror .s21-card / .btn-s21) ---------------- */
 .stn-card {
@@ -211,6 +212,7 @@
 /* Receipt / print styles */
 .stn-receipt { background: #fff; color: #1E2A24; border-radius: var(--radius-sm); padding: 1.1rem; font-size: .85rem; max-width: 320px; margin: 0 auto; font-family: 'Courier New', monospace; }
 @media print {
+  .stn-shell, .stn-main, .stn-content { height: auto !important; overflow: visible !important; }
   body * { visibility: hidden; }
   .stn-print-area, .stn-print-area * { visibility: visible; }
   .stn-print-area { position: absolute; top: 0; left: 0; width: 100%; }
@@ -247,19 +249,40 @@
 .stn-sidebar-backdrop.show { display: block; }
 body.stn-lock { overflow: hidden; }
 
-/* Tablet & below: off-canvas sidebar, single-column layouts */
+/* Icon rail (collapsed sidebar) — used on desktop when the hamburger is
+   clicked, and always on phones/tablets until the hamburger expands it. */
+.stn-sidebar.rail { width: 68px; }
+.stn-sidebar.rail .stn-nav-label,
+.stn-sidebar.rail .stn-sidebar-brand .name,
+.stn-sidebar.rail .stn-nav-link > span:not(.badge-dot),
+.stn-sidebar.rail .stn-sidebar-foot .stn-role-pill,
+.stn-sidebar.rail .stn-sidebar-foot select,
+.stn-sidebar.rail .stn-sidebar-foot .stn-back-text { display: none; }
+.stn-sidebar.rail .stn-sidebar-brand { justify-content: center; padding: 1.1rem .4rem; }
+.stn-sidebar.rail .stn-nav { padding: .5rem .4rem; overflow-x: hidden; }
+.stn-sidebar.rail .stn-nav-group + .stn-nav-group { border-top: 1px solid var(--s21-border); margin-top: .3rem; padding-top: .3rem; }
+.stn-sidebar.rail .stn-nav-link { justify-content: center; padding: .65rem 0; position: relative; }
+.stn-sidebar.rail .stn-nav-link i { font-size: 1.05rem; width: auto; }
+.stn-sidebar.rail .stn-nav-link .badge-dot { position: absolute; top: 2px; right: 6px; margin: 0; min-width: 15px; height: 15px; font-size: .58rem; }
+.stn-sidebar.rail .stn-sidebar-foot { padding: .6rem .4rem; text-align: center; }
+.stn-sidebar.rail .stn-sidebar-foot .stn-btn { padding-left: 0; padding-right: 0; }
+.stn-app.stn-desk-collapsed .stn-main { margin-left: 68px; }
+
+/* Tablet & below: sidebar is a permanent icon rail; hamburger expands it
+   as an overlay drawer over the page. */
 @media (max-width: 991px) {
   .stn-sidebar {
-    transform: translateX(-100%);
     width: min(285px, 86vw);
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
     overscroll-behavior: contain;
   }
-  .stn-sidebar.open { transform: translateX(0); box-shadow: var(--card-shadow-hover); }
-  .stn-main { margin-left: 0; }
+  .stn-sidebar.rail { width: 60px; }
+  .stn-sidebar.open { box-shadow: var(--card-shadow-hover); }
+  .stn-main, .stn-app.stn-desk-collapsed .stn-main { margin-left: 60px; }
   .stn-menu-toggle { display: inline-flex; flex-shrink: 0; }
   .stn-nav-link { padding: .7rem .75rem; font-size: .92rem; }
+  .stn-sidebar.rail .stn-nav-link { padding: .7rem 0; }
 
   /* Two-column layouts set inline by modules (POS, dashboard, photo studio,
      reports, security, Chopa AI) stack into one column. */
