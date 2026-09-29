@@ -107,7 +107,8 @@
       try { await SP.api.del(`/products/${row.id}`); SP.toast(SP.t('Product deleted.', 'Bidhaa imefutwa.')); load(); } catch (e) { SP.fail(e); }
     };
     SP.delegate(el, {
-      new: () => openProductForm(null, () => load()),
+      // After adding, jump straight to the product's own page — that's where QR codes are generated.
+      new: () => openProductForm(null, (r) => SP.go(`product/${r.id}`)),
       cats: () => openCategoriesModal(() => { SP.refreshLookups(); load(); }),
       page: (b) => { st.page = Number(b.dataset.p); load(); },
       menu: (b) => {
